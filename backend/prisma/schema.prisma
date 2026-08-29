@@ -1,0 +1,60 @@
+// Prisma schema for the Chess persistence layer.
+// Saved games and user accounts are optional add-ons on top of the core
+// in-memory real-time game state (see src/realtime/gameHub.ts) - the app
+// runs fully without a database connection; this schema only backs
+// long-term history and auth.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  displayName  String
+  passwordHash String
+  rating       Int      @default(1200)
+  createdAt    DateTime @default(now())
+  gamesAsWhite Game[]   @relation("WhitePlayer")
+  gamesAsBlack Game[]   @relation("BlackPlayer")
+}
+
+model Game {
+  id          String   @id @default(uuid())
+  roomId      String   @unique
+  mode        GameMode
+  pgn         String   @db.Text
+  result      String? // "1-0", "0-1", "1/2-1/2", or null if in progress
+  whitePlayer   User?  @relation("WhitePlayer", fields: [whitePlayerId], references: [id])
+  whitePlayerId String?
+  blackPlayer   User?  @relation("BlackPlayer", fields: [blackPlayerId], references: [id])
+  blackPlayerId String?
+  aiDifficulty String? // set when mode = VS_AI
+  moves       Move[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Move {
+  id            String   @id @default(uuid())
+  game          Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId        String
+  ply           Int
+  san           String
+  fenAfter      String   @db.Text
+  coachComment  String?  @db.Text
+  createdAt     DateTime @default(now())
+
+  @@unique([gameId, ply])
+}
+
+enum GameMode {
+  PASS_AND_PLAY
+  ONLINE
+  VS_AI
+}

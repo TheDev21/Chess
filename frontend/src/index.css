@@ -1,0 +1,285 @@
+:root {
+  color-scheme: dark;
+  --bg: #14181c;
+  --panel: #1e2429;
+  --accent: #7a9169;
+  --text: #eef1f4;
+  --muted: #9aa5ad;
+  --danger: #e07a5f;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #2a3138;
+}
+
+.brand {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+main {
+  flex: 1;
+  padding: 1rem;
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.home-page h1 {
+  margin-bottom: 0.25rem;
+}
+
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 700px) {
+  .mode-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.mode-card {
+  display: block;
+  background: var(--panel);
+  border: 1px solid #2a3138;
+  border-radius: 10px;
+  padding: 1.25rem;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.mode-card:hover {
+  border-color: var(--accent);
+}
+
+.mode-card h2 {
+  margin: 0 0 0.5rem;
+}
+
+.mode-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.game-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 900px) {
+  .game-page {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.game-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.board-container {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  justify-content: center;
+}
+
+.game-status {
+  font-weight: 600;
+}
+
+.game-sidebar {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  .game-sidebar {
+    max-width: 300px;
+  }
+}
+
+.move-history,
+.coach-panel {
+  background: var(--panel);
+  border: 1px solid #2a3138;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.move-history h3,
+.coach-panel h3 {
+  margin: 0 0 0.5rem;
+}
+
+.move-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.move-list li {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.move-number {
+  color: var(--muted);
+  width: 2rem;
+}
+
+.move-san {
+  flex: 1;
+}
+
+.coach-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.coach-text {
+  line-height: 1.4;
+}
+
+.coach-error {
+  color: var(--danger);
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.difficulty-selector {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.pill {
+  background: transparent;
+  border: 1px solid #2a3138;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+}
+
+.pill-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0e120f;
+  font-weight: 600;
+}
+
+.pill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn {
+  background: var(--panel);
+  border: 1px solid #2a3138;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.55rem 1.1rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0e120f;
+  font-weight: 600;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.lobby-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.join-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.join-form input {
+  background: var(--panel);
+  border: 1px solid #2a3138;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+}
+
+.room-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+}
