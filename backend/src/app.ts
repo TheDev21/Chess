@@ -9,6 +9,10 @@ import { generalRateLimiter } from "./middleware/rateLimit";
 export function createApp() {
   const app = express();
 
+  // Correct client IPs (used by the rate limiters) when running behind a
+  // reverse proxy / serverless edge, e.g. Vercel.
+  app.set("trust proxy", 1);
+
   app.use(cors({ origin: process.env.CORS_ORIGIN || "*" }));
   app.use(express.json({ limit: "100kb" }));
   app.use(generalRateLimiter);
