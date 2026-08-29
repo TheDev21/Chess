@@ -5,7 +5,7 @@ import { MoveHistory } from "../components/MoveHistory";
 import { CoachPanel } from "../components/CoachPanel";
 import { DifficultySelector } from "../components/DifficultySelector";
 import { useCoach } from "../hooks/useCoach";
-import { requestAiMove } from "../api/client";
+import { useAiWorker } from "../hooks/useAiWorker";
 import type { Difficulty, MoveHistoryEntry } from "../types";
 
 export function VsAI() {
@@ -16,6 +16,7 @@ export function VsAI() {
   const [aiThinking, setAiThinking] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const coach = useCoach();
+  const aiWorker = useAiWorker();
 
   const playerColor: "white" = "white";
   const turn = game.turn() === "w" ? "white" : "black";
@@ -34,7 +35,11 @@ export function VsAI() {
       setAiThinking(true);
       setAiError(null);
       try {
-        const { move } = await requestAiMove(currentFen, difficulty);
+        const move = await aiWorker.requestMove(currentFen, difficulty);
+        if (!move) {
+          setAiError("The AI found no legal moves.");
+          return;
+        }
         const fenBefore = game.fen();
         const applied = game.move({ from: move.from, to: move.to, promotion: move.promotion || "q" });
         if (!applied) return;
@@ -49,7 +54,7 @@ export function VsAI() {
         setAiThinking(false);
       }
     },
-    [game, difficulty, coach]
+    [game, difficulty, coach, aiWorker]
   );
 
   const handleDrop = useCallback(

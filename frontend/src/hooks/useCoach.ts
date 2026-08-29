@@ -1,5 +1,10 @@
 import { useCallback, useState } from "react";
-import { requestCoachExplanation } from "../api/client";
+import { HAS_BACKEND, requestCoachExplanation } from "../api/client";
+
+const NO_BACKEND_MESSAGE =
+  "Move Coach needs a backend server to call the LLM (it keeps the API key private). " +
+  "This deployment is a static, backend-free build, so commentary isn't available here - " +
+  "clone the repo and run the backend locally (see the README) to try it.";
 
 export function useCoach() {
   const [enabled, setEnabled] = useState(true);
@@ -10,6 +15,10 @@ export function useCoach() {
   const explain = useCallback(
     async (fenBefore: string, fenAfter: string, san: string, mover: "white" | "black") => {
       if (!enabled) return;
+      if (!HAS_BACKEND) {
+        setExplanation(NO_BACKEND_MESSAGE);
+        return;
+      }
       setLoading(true);
       setError(null);
       try {

@@ -6,6 +6,7 @@ import { MoveHistory } from "../components/MoveHistory";
 import { CoachPanel } from "../components/CoachPanel";
 import { useCoach } from "../hooks/useCoach";
 import { useSocket, getOrCreatePlayerId } from "../hooks/useSocket";
+import { HAS_BACKEND } from "../api/client";
 import type { MoveHistoryEntry, RoomState, SeatColor } from "../types";
 
 export function OnlineGame() {
@@ -88,6 +89,18 @@ export function OnlineGame() {
   );
 
   const shareUrl = `${window.location.origin}/online/${roomId}`;
+
+  if (!HAS_BACKEND) {
+    return (
+      <div className="page lobby-page">
+        <h1>1v1 Online</h1>
+        <p className="muted">
+          This mode needs a running backend server, and this deployment is a static, backend-free build.
+          Clone the repo and run the backend locally (see the README) to play online.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="page game-page">

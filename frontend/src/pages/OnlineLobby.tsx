@@ -1,12 +1,25 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createRoom } from "../api/client";
+import { HAS_BACKEND, createRoom } from "../api/client";
 
 export function OnlineLobby() {
   const navigate = useNavigate();
   const [joinCode, setJoinCode] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (!HAS_BACKEND) {
+    return (
+      <div className="page lobby-page">
+        <h1>1v1 Online</h1>
+        <p className="muted">
+          This mode needs a running backend server to hold game state and sync moves live, and this
+          deployment is a static, backend-free build. Clone the repo and run the backend locally (see the
+          README) to play online.
+        </p>
+      </div>
+    );
+  }
 
   const handleCreate = async () => {
     setCreating(true);

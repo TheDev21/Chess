@@ -3,6 +3,10 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
+  // GitHub Pages serves this as a project site under /Chess/, not the
+  // domain root, so asset URLs need that prefix. Local dev and any other
+  // host (Vercel, Netlify, a custom domain) keep the default root base.
+  base: process.env.VITE_GITHUB_PAGES ? "/Chess/" : "/",
   server: {
     port: 5173,
     proxy: {

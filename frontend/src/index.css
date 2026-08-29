@@ -83,6 +83,15 @@ main {
   border-color: var(--accent);
 }
 
+.mode-card-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.mode-card-disabled:hover {
+  border-color: #2a3138;
+}
+
 .mode-card h2 {
   margin: 0 0 0.5rem;
 }

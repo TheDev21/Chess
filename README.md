@@ -5,6 +5,15 @@ AI opponent, and an LLM-powered move coach that explains moves in plain
 English. Responsive for phone, tablet, laptop, and desktop, in portrait and
 landscape.
 
+## Play it now
+
+**[thedev21.github.io/Chess](https://thedev21.github.io/Chess/)** - a free,
+static build on GitHub Pages. Pass and Play and vs AI work fully (the AI
+runs client-side in a Web Worker - see below); 1v1 Online and the Move
+Coach need a live backend and are disabled on this build with an
+explanation in the UI. Run the backend locally (below) for the full
+feature set.
+
 ## Game Modes
 
 - **Pass and Play** - two players, one device, board flips each turn.
@@ -24,6 +33,13 @@ move does.
 - **Backend**: Node.js + Express + TypeScript, Socket.io for real-time
   multiplayer, a hand-written minimax/alpha-beta chess engine, Prisma +
   MySQL for optional persistence, JWT for optional auth.
+- **AI opponent**: runs in both places. `backend/src/engine/` is the
+  server-side copy used when a backend is available; `frontend/src/engine/`
+  is an identical copy that runs in a Web Worker in the browser, so vs-AI
+  works with zero backend at all (see GitHub Pages Deployment below). The
+  two are plain TypeScript + `chess.js` with no server-only APIs, so they're
+  kept as a deliberate duplicate rather than an awkward shared package for
+  a two-app repo - see `frontend/src/hooks/useAiWorker.ts`.
 - **LLM integration**: Anthropic API (`@anthropic-ai/sdk`), called
   server-side only - the API key never reaches the client.
 
@@ -76,6 +92,9 @@ Stockfish binary/UCI process for that one difficulty tier.
 
 ## Real-Time Multiplayer
 
+Needs a running backend - not available on the static GitHub Pages build
+(the Home page and `/online` route show why instead of a broken UI).
+
 `backend/src/realtime/gameHub.ts` - Socket.io. Creating a game
 (`POST /api/rooms`) returns a room ID used to build a shareable link
 (`/online/:roomId`). The server is authoritative: it validates every move
@@ -88,6 +107,10 @@ stretch goal from the spec without any separate spectator-specific code
 path.
 
 ## LLM Move Coach
+
+Needs a running backend (the key must never reach the client) - not
+available on the static GitHub Pages build, which shows an explanation in
+the coach panel instead of attempting a request.
 
 `POST /api/coach/explain` takes the FEN before/after a move and the SAN,
 and returns a short explanation from Claude. It's rate-limited separately
@@ -152,20 +175,50 @@ picked up by `docker-compose.yml`.
 
 ## Deployment
 
-The suggested production split from the spec is Vercel (frontend) +
-Railway (backend + MySQL):
+### GitHub Pages (current, static, no backend)
+
+`.github/workflows/deploy-pages.yml` builds `frontend/` with
+`VITE_GITHUB_PAGES=true` and `VITE_HAS_BACKEND=false` and publishes it via
+`actions/deploy-pages`. Two things make this build backend-free:
+
+- **Base path**: `vite.config.ts` sets `base: "/Chess/"` under
+  `VITE_GITHUB_PAGES` (a GitHub Pages project site is served under
+  `/<repo>/`, not the domain root).
+- **Router**: `main.tsx` swaps `BrowserRouter` for `HashRouter` under the
+  same flag, since GitHub Pages has no server-side rewrite for
+  client-side routes - a refresh on `/Chess/vs-ai` would 404 under
+  history-based routing, but `/Chess/#/vs-ai` always resolves to the one
+  static `index.html`.
+
+`VITE_HAS_BACKEND=false` is read in `src/api/client.ts` and threaded
+through `useCoach`, `useSocket`, `Home`, `OnlineLobby`, and `OnlineGame` to
+gate off the Move Coach and 1v1 Online instead of letting them fail against
+a backend that doesn't exist.
+
+**One-time setup**: in the repo's Settings -> Pages, set Source to "GitHub
+Actions". After that, every push to `main` redeploys automatically.
+
+### Full-featured (frontend + backend + MySQL)
+
+For 1v1 Online and the Move Coach, the backend needs to actually run
+somewhere. The suggested split from the original spec is Vercel (frontend)
++ Railway (backend + MySQL):
 
 - **Backend on Railway**: deploy `backend/` (it has its own `Dockerfile`),
   attach a MySQL plugin, set `DATABASE_URL`, `ANTHROPIC_API_KEY`,
-  `JWT_SECRET`, and `CORS_ORIGIN` (your Vercel domain).
-- **Frontend on Vercel**: deploy `frontend/`, set `VITE_API_BASE` and
-  `VITE_SOCKET_URL` at build time to your Railway backend's public URL
-  (e.g. `https://your-app.up.railway.app`).
+  `JWT_SECRET`, and `CORS_ORIGIN` (your frontend's domain).
+- **Frontend on Vercel** (or any static host): deploy `frontend/`, set
+  `VITE_API_BASE` and `VITE_SOCKET_URL` at build time to your backend's
+  public URL (e.g. `https://your-app.up.railway.app`), and leave
+  `VITE_GITHUB_PAGES`/`VITE_HAS_BACKEND` unset so routing and feature
+  gating both default back to normal.
 
 ## CI
 
 `.github/workflows/ci.yml` runs backend typecheck + tests + build and
 frontend typecheck + build on every push to `main` and every pull request.
+`.github/workflows/deploy-pages.yml` builds and publishes the static
+GitHub Pages build (see Deployment above) on every push to `main`.
 
 ## Security / Input Validation
 

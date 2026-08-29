@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { HAS_BACKEND } from "../api/client";
 
 export function Home() {
   return (
@@ -14,10 +15,17 @@ export function Home() {
           <h2>vs AI</h2>
           <p>Play against a minimax + alpha-beta engine with adjustable difficulty.</p>
         </Link>
-        <Link className="mode-card" to="/online">
-          <h2>1v1 Online</h2>
-          <p>Create a game, share the link, play live with a friend.</p>
-        </Link>
+        {HAS_BACKEND ? (
+          <Link className="mode-card" to="/online">
+            <h2>1v1 Online</h2>
+            <p>Create a game, share the link, play live with a friend.</p>
+          </Link>
+        ) : (
+          <div className="mode-card mode-card-disabled" aria-disabled="true">
+            <h2>1v1 Online</h2>
+            <p>Needs a running backend server - not available on this static build. Run it locally to try it.</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,13 @@
-import type { Difficulty } from "../types";
-
 const BASE = import.meta.env.VITE_API_BASE || "/api";
+
+// The AI opponent runs entirely client-side (see src/engine + useAiWorker),
+// so it needs no backend. The LLM move coach and 1v1 online multiplayer do:
+// the coach must keep the Anthropic API key server-side, and multiplayer
+// needs a persistent process holding room state and live WebSocket
+// connections. Set VITE_HAS_BACKEND=false at build time (e.g. for a static
+// GitHub Pages deploy) to gate those two features off cleanly instead of
+// letting them fail with network errors against a backend that isn't there.
+export const HAS_BACKEND = import.meta.env.VITE_HAS_BACKEND !== "false";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
@@ -12,25 +19,6 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     throw new Error(data.error || `Request failed: ${res.status}`);
   }
   return data as T;
-}
-
-export interface AiMoveResponse {
-  move: {
-    from: string;
-    to: string;
-    promotion?: string;
-    san: string;
-    fenAfter: string;
-    evaluation: number;
-  };
-  depth: number;
-}
-
-export function requestAiMove(fen: string, difficulty: Difficulty) {
-  return request<AiMoveResponse>("/ai/move", {
-    method: "POST",
-    body: JSON.stringify({ fen, difficulty }),
-  });
 }
 
 export interface CoachExplainResponse {
