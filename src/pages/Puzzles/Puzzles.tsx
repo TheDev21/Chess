@@ -18,6 +18,7 @@ export function Puzzles() {
   const [current, setCurrent] = useState<Puzzle | null>(null);
   const [status, setStatus] = useState<PuzzleStatus>("playing");
   const [fen, setFen] = useState("");
+  const [lastMove, setLastMove] = useState<{ from: string; to: string } | null>(null);
   const [moveIndex, setMoveIndex] = useState(0);
   const [streak, setStreak] = useState(getStreak());
   const [showHint, setShowHint] = useState(false);
@@ -33,6 +34,7 @@ export function Puzzles() {
   function startPuzzle(puzzle: Puzzle) {
     setCurrent(puzzle);
     setFen(puzzle.fen);
+    setLastMove(null);
     setMoveIndex(0);
     setStatus("playing");
     setShowHint(false);
@@ -55,12 +57,14 @@ export function Puzzles() {
 
     if (from !== expectedFrom || to !== expectedTo) {
       setStatus("failed");
+      setLastMove({ from, to });
       resetStreak();
       setStreak(0);
       return true; // the illegal-for-the-puzzle move still visually happens; status banner explains it
     }
 
     setFen(game.fen());
+    setLastMove({ from, to });
     const nextIndex = moveIndex + 1;
 
     if (nextIndex >= current.solution.length) {
@@ -80,6 +84,7 @@ export function Puzzles() {
         try {
           g2.move({ from: replyFrom, to: replyTo, promotion: (replyPromotion as "q" | "r" | "b" | "n" | undefined) || "q" });
           setFen(g2.fen());
+          setLastMove({ from: replyFrom, to: replyTo });
           setMoveIndex(nextIndex + 1);
           if (nextIndex + 1 >= current.solution.length) {
             setStatus("solved");
@@ -99,17 +104,20 @@ export function Puzzles() {
   function revealSolution() {
     if (!current) return;
     const game = new Chess(current.fen);
+    let last: { from: string; to: string } | null = null;
     for (const uci of current.solution) {
       const from = uci.slice(0, 2);
       const to = uci.slice(2, 4);
       const promotion = uci.length > 4 ? uci.slice(4, 5) : undefined;
       try {
         game.move({ from, to, promotion: (promotion as "q" | "r" | "b" | "n" | undefined) || "q" });
+        last = { from, to };
       } catch {
         break;
       }
     }
     setFen(game.fen());
+    setLastMove(last);
     setStatus("revealed");
     resetStreak();
     setStreak(0);
@@ -123,7 +131,7 @@ export function Puzzles() {
     <div className="flex flex-col gap-6 lg:flex-row">
       <div className="flex flex-1 flex-col items-center gap-3">
         <div className="w-full max-w-[480px]" style={{ aspectRatio: "1" }}>
-          <ChessBoard fen={fen} onMove={handleMove} orientation="white" draggable={status === "playing"} />
+          <ChessBoard fen={fen} onMove={handleMove} orientation="white" draggable={status === "playing"} lastMove={lastMove} />
         </div>
 
         {status === "solved" && <div className="text-[14px] font-medium text-success">Solved!</div>}

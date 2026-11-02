@@ -143,7 +143,13 @@ export function Analysis() {
                 <EvaluationBar cp={current?.evalAfter.cp ?? null} mate={current?.evalAfter.mate ?? null} />
               </div>
               <div className="flex-1" style={{ aspectRatio: "1" }}>
-                <ChessBoard fen={displayFen} onMove={() => false} orientation="white" draggable={false} />
+                <ChessBoard
+                  fen={displayFen}
+                  onMove={() => false}
+                  orientation="white"
+                  draggable={false}
+                  lastMove={current ? { from: current.uci.slice(0, 2), to: current.uci.slice(2, 4) } : null}
+                />
               </div>
             </div>
 

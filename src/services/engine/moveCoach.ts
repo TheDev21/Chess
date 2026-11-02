@@ -83,13 +83,18 @@ function pieceName(type: string): string {
   return names[type] ?? "piece";
 }
 
+const CENTER_SQUARES = new Set(["d4", "d5", "e4", "e5"]);
+const EXTENDED_CENTER_SQUARES = new Set(["c3", "c4", "c5", "c6", "d3", "d4", "d5", "d6", "e3", "e4", "e5", "e6", "f3", "f4", "f5", "f6"]);
+
 function describeMoveFacts(move: Move): string[] {
   const facts: string[] = [];
   if (move.captured) facts.push(`captured a ${pieceName(move.captured)}`);
   if (move.flags.includes("k") || move.flags.includes("q")) facts.push("castled, improving king safety");
   if (move.promotion) facts.push(`promoted to a ${pieceName(move.promotion)}`);
-  if (move.san.includes("+")) facts.push("gave check");
   if (move.san.includes("#")) facts.push("delivered checkmate");
+  else if (move.san.includes("+")) facts.push("gave check");
+  if (CENTER_SQUARES.has(move.to)) facts.push("took a central square");
+  else if (EXTENDED_CENTER_SQUARES.has(move.to) && "nbq".includes(move.piece)) facts.push("pushed toward the center");
   return facts;
 }
 
@@ -118,13 +123,15 @@ function buildExplanation(
 
   const whatWentWell = facts.length > 0 ? facts : [];
 
+  const factsClause = facts.length > 0 ? ` You ${facts.join(" and ")}.` : "";
+
   let summary: string;
   switch (classification) {
     case "best":
-      summary = "This was the engine's top choice in this position.";
+      summary = `This was the engine's top choice in this position.${factsClause}`;
       break;
     case "excellent":
-      summary = "A very strong move, essentially as good as the engine's top choice.";
+      summary = `A very strong move, essentially as good as the engine's top choice.${factsClause}`;
       break;
     case "good":
       summary =
@@ -133,13 +140,13 @@ function buildExplanation(
           : "A solid, reasonable move that keeps your position healthy.";
       break;
     case "inaccuracy":
-      summary = "This move is slightly less precise than the best continuation available.";
+      summary = `This move is slightly less precise than the best continuation available.${factsClause}`;
       break;
     case "mistake":
-      summary = "This move gives up a meaningful amount of your advantage.";
+      summary = `This move gives up a meaningful amount of your advantage.${factsClause}`;
       break;
     case "blunder":
-      summary = "This move loses significant material or position - the engine sees a much stronger reply for your opponent.";
+      summary = `This move loses significant material or position - the engine sees a much stronger reply for your opponent.${factsClause}`;
       break;
   }
 

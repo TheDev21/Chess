@@ -91,6 +91,19 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
     return true;
   };
 
+  const lastMove = (() => {
+    if (history.length === 0) return null;
+    const last = history[history.length - 1];
+    const fenBefore = history.length > 1 ? history[history.length - 2].fen : new Chess().fen();
+    try {
+      const replay = new Chess(fenBefore);
+      const move = replay.move(last.san);
+      return move ? { from: move.from, to: move.to } : null;
+    } catch {
+      return null;
+    }
+  })();
+
   const shareUrl = `${window.location.origin}${window.location.pathname}#/play/online/${roomId}`;
   const copyLink = async () => {
     await navigator.clipboard.writeText(shareUrl);
@@ -140,7 +153,7 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
             orientation={seat === "black" ? "black" : "white"}
             showLegalMoves={settings.showLegalMoves}
             showCoordinates={settings.showCoordinates}
-            lastMove={null}
+            lastMove={lastMove}
             draggable={Boolean(seat) && !state?.isGameOver}
           />
         </div>

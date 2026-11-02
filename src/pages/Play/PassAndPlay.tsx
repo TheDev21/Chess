@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Chess } from "chess.js";
 import { ChessBoard } from "../../components/ChessBoard/ChessBoard";
 import { GameControls } from "../../components/GameControls/GameControls";
 import { MoveHistory } from "../../components/MoveHistory/MoveHistory";
@@ -6,22 +7,26 @@ import { MoveCoachPanel } from "../../components/MoveCoach/MoveCoachPanel";
 import { GameResult } from "../../components/GameResult/GameResult";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useMoveCoach } from "../../hooks/useMoveCoach";
+import { useMoveViewer } from "../../hooks/useMoveViewer";
 import { getCapturedPieces, colorToMove } from "../../services/chess/gameEngine";
 import { saveGame } from "../../services/storage/gameHistory";
 import type { AppSettings } from "../../services/storage/settings";
 
 const PIECE_GLYPH: Record<string, string> = { p: "♟", n: "♞", b: "♝", r: "♜", q: "♛" };
+const START_FEN = new Chess().fen();
 
 export function PassAndPlay({ settings }: { settings: AppSettings }) {
   const g = useChessGame();
   const coach = useMoveCoach();
+  const viewer = useMoveViewer(g.moves.length);
   const [coachEnabled, setCoachEnabled] = useState(settings.moveCoachEnabled);
   const [savedThisGame, setSavedThisGame] = useState(false);
   const [flipBoard, setFlipBoard] = useState(true);
 
   const captured = useMemo(() => getCapturedPieces(g.game), [g.fen]);
   const orientation = flipBoard ? colorToMove(g.game) : "white";
-  const lastMove = g.moves[g.moves.length - 1];
+  const viewedMove = viewer.isLive ? g.moves[g.moves.length - 1] : viewer.displayIndex >= 0 ? g.moves[viewer.displayIndex] : undefined;
+  const displayFen = viewer.isLive ? g.fen : viewer.displayIndex >= 0 ? g.moves[viewer.displayIndex].fenAfter : START_FEN;
 
   useEffect(() => {
     if (g.isOver && g.result && !savedThisGame) {
@@ -44,6 +49,7 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
     const color = colorToMove(g.game);
     const move = g.makeMove(from, to, promotion);
     if (!move) return false;
+    viewer.goLive();
     coach.reset();
     if (coachEnabled) {
       void coach.analyzeMove(g.moves.length, color, fenBefore, move, g.fen);
@@ -53,6 +59,7 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
 
   const handleNewGame = () => {
     g.reset();
+    viewer.goLive();
     coach.reset();
     setSavedThisGame(false);
   };
@@ -72,15 +79,24 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
 
         <div className="w-full max-w-[560px]" style={{ aspectRatio: "1" }}>
           <ChessBoard
-            fen={g.fen}
+            fen={displayFen}
             onMove={handleMove}
             orientation={orientation}
             showLegalMoves={settings.showLegalMoves}
             showCoordinates={settings.showCoordinates}
-            lastMove={lastMove ? { from: lastMove.uci.slice(0, 2), to: lastMove.uci.slice(2, 4) } : null}
-            draggable={!g.isOver}
+            lastMove={viewedMove ? { from: viewedMove.uci.slice(0, 2), to: viewedMove.uci.slice(2, 4) } : null}
+            draggable={!g.isOver && viewer.isLive}
           />
         </div>
+
+        {!viewer.isLive && (
+          <button
+            onClick={viewer.goLive}
+            className="rounded border border-accent px-3 py-1 text-[13px] font-medium text-accent dark:border-accent-dark dark:text-accent-dark"
+          >
+            Viewing move {viewer.displayIndex + 1} of {g.moves.length} - back to current position
+          </button>
+        )}
 
         <div className="flex w-full max-w-[560px] items-center justify-between text-[13px]">
           <span className="text-muted dark:text-muted-dark">
@@ -105,7 +121,7 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
       </div>
 
       <div className="flex w-full flex-col gap-4 lg:w-72">
-        <MoveHistory sanMoves={g.moves.map((m) => m.san)} />
+        <MoveHistory sanMoves={g.moves.map((m) => m.san)} activeIndex={viewer.displayIndex} onSelectMove={viewer.selectIndex} />
         <MoveCoachPanel
           enabled={coachEnabled}
           onToggle={setCoachEnabled}

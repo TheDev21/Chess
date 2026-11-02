@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Chess } from "chess.js";
 import { ChessBoard } from "../../components/ChessBoard/ChessBoard";
 import { GameControls } from "../../components/GameControls/GameControls";
 import { MoveHistory } from "../../components/MoveHistory/MoveHistory";
@@ -6,12 +7,15 @@ import { MoveCoachPanel } from "../../components/MoveCoach/MoveCoachPanel";
 import { GameResult } from "../../components/GameResult/GameResult";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useMoveCoach } from "../../hooks/useMoveCoach";
+import { useMoveViewer } from "../../hooks/useMoveViewer";
 import { useStockfish } from "../../hooks/useStockfish";
 import { colorToMove } from "../../services/chess/gameEngine";
 import { saveGame } from "../../services/storage/gameHistory";
 import { DIFFICULTY_CONFIG, TIME_CONTROLS, type Difficulty, type PlayerColor, type TimeControlId } from "../../types/chess";
 import type { AppSettings } from "../../services/storage/settings";
 import clsx from "clsx";
+
+const START_FEN = new Chess().fen();
 
 function formatClock(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -28,6 +32,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
   const g = useChessGame();
   const coach = useMoveCoach();
+  const viewer = useMoveViewer(g.moves.length);
   const opponent = useStockfish();
   const [coachEnabled, setCoachEnabled] = useState(settings.moveCoachEnabled);
   const [thinking, setThinking] = useState(false);
@@ -38,7 +43,8 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
   const [clocks, setClocks] = useState({ white: seconds ?? 0, black: seconds ?? 0 });
 
   const gameOver = g.isOver || flagFall !== null;
-  const lastMove = g.moves[g.moves.length - 1];
+  const viewedMove = viewer.isLive ? g.moves[g.moves.length - 1] : viewer.displayIndex >= 0 ? g.moves[viewer.displayIndex] : undefined;
+  const displayFen = viewer.isLive ? g.fen : viewer.displayIndex >= 0 ? g.moves[viewer.displayIndex].fenAfter : START_FEN;
 
   // Clock ticking
   useEffect(() => {
@@ -60,6 +66,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
     setClocks({ white: seconds ?? 0, black: seconds ?? 0 });
     setFlagFall(null);
     savedRef.current = false;
+    viewer.goLive();
     setStarted(true);
   };
 
@@ -115,6 +122,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
     const fenBefore = g.fen;
     const move = g.makeMove(from, to, promotion);
     if (!move) return false;
+    viewer.goLive();
     coach.reset();
     if (coachEnabled) void coach.analyzeMove(g.moves.length, playerColor, fenBefore, move, g.fen);
     return true;
@@ -213,15 +221,24 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
         <div className="w-full max-w-[560px]" style={{ aspectRatio: "1" }}>
           <ChessBoard
-            fen={g.fen}
+            fen={displayFen}
             onMove={handleMove}
             orientation={orientation}
             showLegalMoves={settings.showLegalMoves}
             showCoordinates={settings.showCoordinates}
-            lastMove={lastMove ? { from: lastMove.uci.slice(0, 2), to: lastMove.uci.slice(2, 4) } : null}
-            draggable={!gameOver && colorToMove(g.game) === playerColor && !thinking}
+            lastMove={viewedMove ? { from: viewedMove.uci.slice(0, 2), to: viewedMove.uci.slice(2, 4) } : null}
+            draggable={!gameOver && colorToMove(g.game) === playerColor && !thinking && viewer.isLive}
           />
         </div>
+
+        {!viewer.isLive && (
+          <button
+            onClick={viewer.goLive}
+            className="rounded border border-accent px-3 py-1 text-[13px] font-medium text-accent dark:border-accent-dark dark:text-accent-dark"
+          >
+            Viewing move {viewer.displayIndex + 1} of {g.moves.length} - back to current position
+          </button>
+        )}
 
         <div className="flex w-full max-w-[560px] items-center justify-between text-[13px]">
           <span className="text-ink dark:text-ink-dark">You</span>
@@ -242,7 +259,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
       </div>
 
       <div className="flex w-full flex-col gap-4 lg:w-72">
-        <MoveHistory sanMoves={g.moves.map((m) => m.san)} />
+        <MoveHistory sanMoves={g.moves.map((m) => m.san)} activeIndex={viewer.displayIndex} onSelectMove={viewer.selectIndex} />
         <MoveCoachPanel
           enabled={coachEnabled}
           onToggle={setCoachEnabled}

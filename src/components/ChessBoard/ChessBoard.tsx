@@ -100,8 +100,8 @@ export function ChessBoard({
 
   const squareStyles: Record<string, React.CSSProperties> = {};
   if (lastMove) {
-    squareStyles[lastMove.from] = { backgroundColor: "rgba(53,94,59,0.18)" };
-    squareStyles[lastMove.to] = { backgroundColor: "rgba(53,94,59,0.22)" };
+    squareStyles[lastMove.from] = { backgroundColor: "rgba(255,199,0,0.45)" };
+    squareStyles[lastMove.to] = { backgroundColor: "rgba(255,199,0,0.55)" };
   }
   if (selected) {
     squareStyles[selected] = { ...squareStyles[selected], boxShadow: "inset 0 0 0 3px rgba(53,94,59,0.6)" };
