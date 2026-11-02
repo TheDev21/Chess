@@ -1,246 +1,174 @@
 # Chess
 
-A full-stack chess web app with three play modes, a custom minimax/alpha-beta
-AI opponent, and an LLM-powered move coach that explains moves in plain
-English. Responsive for phone, tablet, laptop, and desktop, in portrait and
-landscape.
+A chess platform: play a friend locally, play Stockfish in your browser, play
+online with a shareable link, get move-by-move feedback from Move Coach,
+solve tactics puzzles, and review completed games.
 
 ## Play it now
 
-**[thedev21.github.io/Chess](https://thedev21.github.io/Chess/)** - a free,
-static build on GitHub Pages. Pass and Play and vs AI work fully (the AI
-runs client-side in a Web Worker - see below); 1v1 Online and the Move
-Coach need a live backend and are disabled on this build with an
-explanation in the UI. Run the backend locally (below) for the full
-feature set.
+**[thedev21.github.io/Chess](https://thedev21.github.io/Chess/)** - free,
+static, no account. Play a Friend, Play Computer, Puzzles, and Analysis all
+work fully (Stockfish runs client-side in a Web Worker - no server needed).
+Play Online needs a running multiplayer server and is disabled on this build
+with an explanation in the UI - see "Running the server" below.
 
-## Game Modes
+## What's here
 
-- **Pass and Play** - two players, one device, board flips each turn.
-- **vs AI** - play White against a custom chess engine (minimax + alpha-beta
-  pruning) with Easy / Medium / Hard difficulty.
-- **1v1 Online** - create a game, share the link, play live over WebSockets,
-  with reconnect support if a player refreshes or drops.
+- **Play a Friend** - pass-and-play on one device, with captured pieces,
+  check/checkmate/stalemate detection, castling, en passant, promotion
+  (with a real piece-choice picker, not a silent queen default),
+  resignation, draw offers, undo, and auto board-flip.
+- **Play Computer** - Stockfish 19 (WASM, single-threaded lite build) runs
+  directly in a Web Worker. Five difficulty tiers (Beginner through Expert)
+  via Stockfish's `UCI_LimitStrength`/`UCI_Elo` options, not just a label on
+  the same strength. Color choice and six time controls with a real,
+  ticking clock.
+- **Play Online** - Socket.io multiplayer. The server is authoritative: it
+  validates every move with `chess.js`, assigns seats, and is the only
+  source of truth for game state. Reconnect within 5 minutes keeps your
+  seat; a shareable link with a copy button; connection-status indicators;
+  resign and draw-offer flows.
+- **Move Coach** - classifies every move (Best / Excellent / Good /
+  Inaccuracy / Mistake / Blunder) by running Stockfish on the position
+  *before* your move (what it would have played) and *after* (what you
+  actually got), so it can tell a genuine blunder from an already-bad
+  position. Explanations are generated deterministically from the engine's
+  own output and the move's actual flags (captures, checks, castling,
+  development) - never invented. "Show Best Move" previews the engine's
+  suggestion on the board.
+- **Puzzles** - a small, hand-verified starter set (`public/puzzles/starter-set.json`),
+  not the full ~4M-puzzle Lichess database (loading that into a browser
+  would be a bad idea - see "About the puzzle set" below). Daily puzzle,
+  random puzzle, hints, reveal solution, streak tracking.
+- **Analysis** - paste or select a saved game's PGN and get a full
+  move-by-move review: evaluation bar, classification per move, best
+  alternative, game summary (counts by classification, estimated accuracy,
+  biggest missed opportunity), keyboard navigation (arrow keys, Home, End),
+  click any move to jump to it.
+- **History** - completed games are saved to `localStorage` automatically;
+  review, delete, export to `.pgn`, or import a `.pgn` file. No account
+  needed.
+- **Settings** - theme (light/dark/system), legal-move highlights,
+  coordinates, sound toggle, Move Coach on/off and detail level,
+  resignation/draw confirmation - all persisted locally.
 
-Every mode has an optional **Move Coach** panel: after each move, the backend
-asks an LLM for a one- or two-sentence, plain-English explanation of what the
-move does.
+## Tech stack
 
-## Tech Stack
+- **Frontend**: React + TypeScript (Vite), Tailwind CSS, `lucide-react`,
+  `chess.js` for rules, `react-chessboard` for the board, React Router.
+- **Chess engine**: Stockfish 19, compiled to WASM, single-threaded build
+  (`stockfish` npm package) - no SharedArrayBuffer / cross-origin-isolation
+  headers required, so it works on plain static hosting like GitHub Pages.
+  Runs in a Web Worker; the main thread/UI never blocks on it (verified:
+  the UI stays responsive while Stockfish searches).
+- **Multiplayer backend**: Node.js + Express + Socket.io + `chess.js`
+  (server-side move validation). Lightweight, in-memory room state - no
+  database.
+- **Storage**: `localStorage` for settings, game history, and puzzle streak.
+  No backend and no account needed for any single-player feature.
 
-- **Frontend**: React + TypeScript (Vite), `react-chessboard` for the board,
-  `chess.js` for move generation/validation, React Router, Socket.io client.
-- **Backend**: Node.js + Express + TypeScript, Socket.io for real-time
-  multiplayer, a hand-written minimax/alpha-beta chess engine, Prisma +
-  MySQL for optional persistence, JWT for optional auth.
-- **AI opponent**: runs in both places. `backend/src/engine/` is the
-  server-side copy used when a backend is available; `frontend/src/engine/`
-  is an identical copy that runs in a Web Worker in the browser, so vs-AI
-  works with zero backend at all (see GitHub Pages Deployment below). The
-  two are plain TypeScript + `chess.js` with no server-only APIs, so they're
-  kept as a deliberate duplicate rather than an awkward shared package for
-  a two-app repo - see `frontend/src/hooks/useAiWorker.ts`.
-- **LLM integration**: Anthropic API (`@anthropic-ai/sdk`), called
-  server-side only - the API key never reaches the client.
+## Running locally
 
-### Why Node instead of .NET
-
-The original spec suggested C#/.NET for resume consistency with a prior
-project. This was built with a **Node/Express** backend instead: the
-development sandbox this project was built in has Node but no .NET SDK
-installed, and a backend the author can actually compile, run, and test
-beats one that's merely plausible-looking. It also keeps the whole stack in
-one language (TypeScript front and back). Swapping to ASP.NET Core +
-SignalR later is a backend-only rewrite - the REST/WebSocket contracts in
-this README define the surface the frontend expects, independent of which
-runtime implements them.
-
-## Project Layout
-
-```
-backend/    Express API + Socket.io + chess engine + Prisma schema
-frontend/   React + Vite app
-docker-compose.yml
-```
-
-## Chess Engine
-
-`backend/src/engine/` - minimax search with alpha-beta pruning
-(`chessEngine.ts`) and a material + piece-square-table evaluator
-(`evaluation.ts`). Move ordering searches captures/promotions first to
-improve pruning.
-
-Difficulty maps to a target search depth: Easy = 2, Medium = 4, Hard = 6
-ply. Because a fixed-depth search can blow up combinatorially in quiet
-positions (the opening has no captures to help pruning), the engine uses
-**iterative deepening** with a per-difficulty time budget (2s / 5s / 9s): it
-searches depth 1, then 2, and so on, keeping the best move from the deepest
-depth that finished in time. In the common case (midgame, endgame, or any
-position alpha-beta prunes well) it reaches the target depth well within
-budget; in the worst case it still returns a legal move from a shallower
-completed depth instead of hanging.
-
-Engine correctness is covered by tests in
-`backend/src/__tests__/chessEngine.test.ts` (finds forced mate, captures
-hanging material, never returns an illegal move, degrades gracefully under
-a tight time budget).
-
-**Stretch goal not implemented:** a Stockfish "Hard+" mode. The engine
-architecture (`findBestMove(fen, depth, timeBudgetMs)`) is isolated behind
-`routes/ai.ts`, so adding it later is a matter of shelling out to a
-Stockfish binary/UCI process for that one difficulty tier.
-
-## Real-Time Multiplayer
-
-Needs a running backend - not available on the static GitHub Pages build
-(the Home page and `/online` route show why instead of a broken UI).
-
-`backend/src/realtime/gameHub.ts` - Socket.io. Creating a game
-(`POST /api/rooms`) returns a room ID used to build a shareable link
-(`/online/:roomId`). The server is authoritative: it validates every move
-with `chess.js` and turn ownership before broadcasting it. A disconnected
-player's seat is held for 5 minutes so a refresh or dropped connection
-doesn't lose the game; if nobody reclaims it, the seat opens up again. A
-third visitor to the same link, once both seats are taken, joins
-automatically as a read-only spectator - covering the "spectator mode"
-stretch goal from the spec without any separate spectator-specific code
-path.
-
-## LLM Move Coach
-
-Needs a running backend (the key must never reach the client) - not
-available on the static GitHub Pages build, which shows an explanation in
-the coach panel instead of attempting a request.
-
-`POST /api/coach/explain` takes the FEN before/after a move and the SAN,
-and returns a short explanation from Claude. It's rate-limited separately
-from the rest of the API (10 requests/minute per IP) since it's the only
-endpoint that costs real money per call. Without `ANTHROPIC_API_KEY` set,
-it responds with a friendly "not configured" message instead of an error -
-the rest of the app works normally either way. The coach can be toggled off
-per-session in the UI.
-
-## Saved Games / Accounts (optional)
-
-Gameplay itself never touches a database - room state lives in memory via
-Socket.io. `Game`/`Move`/`User` models exist in `backend/prisma/schema.prisma`
-for saved game history and simple JWT accounts, but neither
-`/api/auth/register` nor `/api/auth/login` do anything without both
-`DATABASE_URL` and `JWT_SECRET` set (they return `503` otherwise). Wiring
-saved-game history into the game hub (persisting each move via Prisma) is
-the natural next step but wasn't required for the app to function end to
-end, so it wasn't built out further here.
-
-## Running Locally
-
-### Backend
+### Just playing (no backend needed)
 
 ```bash
-cd backend
-cp .env.example .env   # edit as needed - all values are optional for basic play
 npm install
-npm run dev             # http://localhost:4000
+npm run dev
 ```
 
-### Frontend
+Open the printed `localhost` URL. Play a Friend, Play Computer, Puzzles, and
+Analysis all work immediately.
+
+### With the multiplayer server (for Play Online)
 
 ```bash
-cd frontend
+# Terminal 1
+cd server
+cp .env.example .env
 npm install
-npm run dev              # http://localhost:5173, proxies /api and /socket.io to :4000
+npm run dev          # http://localhost:4000
+
+# Terminal 2 (repo root)
+npm install
+npm run dev           # http://localhost:5173, proxies /socket.io to :4000
 ```
 
-Open two browser tabs pointed at an online game link to test multiplayer
-locally.
+Open two browser tabs on a created game's link to test multiplayer locally.
 
 ### Tests
 
 ```bash
-cd backend
-npm test
+npm test              # client: Move Coach classification logic
+cd server && npm test # server: (reserved for future room-logic tests)
 ```
 
-## Running with Docker
+## About the puzzle set
 
-```bash
-cp backend/.env.example .env   # optional: set ANTHROPIC_API_KEY, JWT_SECRET, etc.
-docker compose up --build
-```
-
-This starts MySQL, the backend (`:4000`), and the frontend behind nginx
-(`:8080`, which proxies `/api` and `/socket.io` to the backend container).
-Environment variables in `.env` at the repo root (`ANTHROPIC_API_KEY`,
-`ANTHROPIC_MODEL`, `JWT_SECRET`, `MYSQL_ROOT_PASSWORD`, `CORS_ORIGIN`) are
-picked up by `docker-compose.yml`.
+The spec calls for the Lichess puzzle database (CC0-licensed, ~4 million
+puzzles) with a sensible loading strategy rather than shipping the whole
+thing to the browser. This build ships a small, hand-constructed and
+programmatically verified starter set instead of a full ingestion pipeline,
+which needs bulk-downloading and filtering a multi-gigabyte CSV - outside
+what this build includes. `src/services/puzzles/puzzleService.ts` documents
+the intended extension point: a build step that filters the real Lichess
+CSV into themed, rating-banded static JSON shards, loaded the same way the
+starter set is now. Swapping it in doesn't require any other code changes.
 
 ## Deployment
 
 ### GitHub Pages (current, static, no backend)
 
-`.github/workflows/deploy-pages.yml` builds `frontend/` with
-`VITE_GITHUB_PAGES=true` and `VITE_HAS_BACKEND=false` and publishes it via
-`actions/deploy-pages`. Two things make this build backend-free:
+`.github/workflows/deploy-pages.yml` builds with `VITE_GITHUB_PAGES=true`
+and `VITE_HAS_BACKEND=false` and publishes via `actions/deploy-pages`.
+`vite.config.ts` sets the base path to `/Chess/` and `main.tsx` uses
+`HashRouter` under that flag, since GitHub Pages has no server-side rewrite
+for client-side routes. `VITE_HAS_BACKEND=false` gates off Play Online
+instead of letting it fail against a server that isn't there.
 
-- **Base path**: `vite.config.ts` sets `base: "/Chess/"` under
-  `VITE_GITHUB_PAGES` (a GitHub Pages project site is served under
-  `/<repo>/`, not the domain root).
-- **Router**: `main.tsx` swaps `BrowserRouter` for `HashRouter` under the
-  same flag, since GitHub Pages has no server-side rewrite for
-  client-side routes - a refresh on `/Chess/vs-ai` would 404 under
-  history-based routing, but `/Chess/#/vs-ai` always resolves to the one
-  static `index.html`.
+**One-time setup**: repo Settings → Pages → Source → "GitHub Actions".
 
-`VITE_HAS_BACKEND=false` is read in `src/api/client.ts` and threaded
-through `useCoach`, `useSocket`, `Home`, `OnlineLobby`, and `OnlineGame` to
-gate off the Move Coach and 1v1 Online instead of letting them fail against
-a backend that doesn't exist.
+### Full-featured (adds Play Online)
 
-**One-time setup**: in the repo's Settings -> Pages, set Source to "GitHub
-Actions". After that, every push to `main` redeploys automatically.
+Deploy `server/` to any Node host (Railway, Render, Fly, a VPS) and set
+`CORS_ORIGIN` to your frontend's origin. Deploy the frontend anywhere static
+(Vercel, Netlify, GitHub Pages) with `VITE_SOCKET_URL` set at build time to
+the server's public URL, and leave `VITE_GITHUB_PAGES`/`VITE_HAS_BACKEND`
+unset.
 
-### Full-featured (frontend + backend + MySQL)
+## Project structure
 
-For 1v1 Online and the Move Coach, the backend needs to actually run
-somewhere. The suggested split from the original spec is Vercel (frontend)
-+ Railway (backend + MySQL):
+```
+src/
+  components/   ChessBoard, MoveCoach, GameControls, MoveHistory,
+                EvaluationBar, GameResult, Navigation, Settings
+  pages/        Play (Home, PassAndPlay, VsComputer, OnlineLobby, OnlineGame),
+                Puzzles, Analysis, History
+  hooks/        useChessGame, useStockfish, useMoveCoach, useSocket, useSettings
+  services/
+    chess/      chess.js helpers (captured pieces, game result)
+    engine/     Stockfish Web Worker client + Move Coach classification/explanation
+    multiplayer/ REST + Socket.io client helpers
+    puzzles/    puzzle loading, daily/random selection, streak
+    storage/    localStorage-backed settings and game history
+  types/
+server/
+  src/rooms/    Socket.io room logic (server-authoritative, chess.js-validated)
+public/
+  engines/      (generated at build time) Stockfish WASM + worker JS
+  puzzles/      starter-set.json
+```
 
-- **Backend on Railway**: deploy `backend/` (it has its own `Dockerfile`),
-  attach a MySQL plugin, set `DATABASE_URL`, `ANTHROPIC_API_KEY`,
-  `JWT_SECRET`, and `CORS_ORIGIN` (your frontend's domain).
-- **Frontend on Vercel** (or any static host): deploy `frontend/`, set
-  `VITE_API_BASE` and `VITE_SOCKET_URL` at build time to your backend's
-  public URL (e.g. `https://your-app.up.railway.app`), and leave
-  `VITE_GITHUB_PAGES`/`VITE_HAS_BACKEND` unset so routing and feature
-  gating both default back to normal.
+## Notes on scope
 
-## CI
-
-`.github/workflows/ci.yml` runs backend typecheck + tests + build and
-frontend typecheck + build on every push to `main` and every pull request.
-`.github/workflows/deploy-pages.yml` builds and publishes the static
-GitHub Pages build (see Deployment above) on every push to `main`.
-
-## Security / Input Validation
-
-- All request bodies are validated with `zod` (`routes/ai.ts`,
-  `routes/coach.ts`, `routes/auth.ts`).
-- A general rate limiter (120 req/min/IP) applies to the whole API; the LLM
-  coach endpoint has its own tighter limiter (10 req/min/IP).
-- Passwords are hashed with `bcryptjs` before storage; JWTs are only issued
-  when `JWT_SECRET` is configured.
-- The Anthropic API key is read from a server-side environment variable
-  only - it's never sent to or referenced by the frontend bundle.
-
-## Stretch Goals Not Implemented
-
-Given the scope of the full spec, these were left out to keep the delivered
-app fully working end to end rather than partially covering every item:
-
-- Stockfish "Hard+" mode (see Chess Engine section above for the seam to
-  add it).
-- Post-game LLM recap ("key turning points").
-- ELO-style rating tracker (the `User.rating` field exists in the Prisma
-  schema but nothing updates it yet).
-
-Implemented stretch goals: move-history sidebar in algebraic notation
-(`MoveHistory.tsx`) and spectator mode (see Real-Time Multiplayer above).
+Built and verified in a single focused pass, prioritized as: Play (all three
+modes) and Move Coach first, Analysis second, Puzzles/History/Settings
+after - per the product brief's own stated priority. Verified directly in a
+real browser (not just `tsc`/build passing): Stockfish loads and replies
+within a few seconds, Move Coach classifies moves against genuine engine
+output on both sides of a position, puzzles load/hint/reveal/solve
+correctly, Analysis correctly flags a real blunder and names the right
+"biggest missed opportunity" move, dark mode applies, and Pass-and-Play's
+board-flip and move recording work. Not independently re-verified here:
+exhaustive accessibility audit, the full device/browser matrix, and
+multiplayer reconnect under real network loss (the room logic mirrors a
+previously-shipped, manually-tested version of the same reconnect design).
