@@ -1,18 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 
-/** Tracks a container's rendered box so the board can fill available space on any viewport, bounded by both width and height. */
+/**
+ * Tracks a container's own rendered box (both dimensions), so the board can
+ * be sized to fit whichever of width or height is tighter - e.g. a short
+ * browser window - instead of only ever following its width.
+ */
 export function useContainerSize<T extends HTMLElement>() {
   const ref = useRef<T | null>(null);
-  const [size, setSize] = useState({ width: 360, height: 640 });
+  const [size, setSize] = useState({ width: 360, height: 360 });
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const measure = () => {
-      const parent = el.parentElement;
+      const rect = el.getBoundingClientRect();
       setSize({
-        width: Math.floor(el.getBoundingClientRect().width || 360),
-        height: Math.floor((parent?.getBoundingClientRect().height || window.innerHeight) - 24),
+        width: Math.floor(rect.width || 360),
+        height: Math.floor(rect.height || rect.width || 360),
       });
     };
     const observer = new ResizeObserver(measure);

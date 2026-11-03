@@ -17,9 +17,9 @@ export default function App() {
   const { settings, update } = useSettings();
 
   return (
-    <div className="min-h-screen bg-bg dark:bg-bg-dark">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-bg dark:bg-bg-dark">
       <Navigation onOpenSettings={() => setSettingsOpen(true)} />
-      <main className="mx-auto max-w-5xl px-5 py-8 sm:px-6 sm:py-10">
+      <main className="mx-auto w-full max-w-5xl flex-1 overflow-y-auto px-5 py-4 sm:px-6 sm:py-6">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/play/friend" element={<PassAndPlay settings={settings} />} />

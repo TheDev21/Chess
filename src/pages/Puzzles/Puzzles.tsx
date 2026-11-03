@@ -128,22 +128,22 @@ export function Puzzles() {
   }
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      <div className="flex flex-1 flex-col items-center gap-3">
-        <div className="w-full max-w-[480px]" style={{ aspectRatio: "1" }}>
+    <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
+        <div className="max-h-full w-full min-h-0 max-w-[480px] flex-1">
           <ChessBoard fen={fen} onMove={handleMove} orientation="white" draggable={status === "playing"} lastMove={lastMove} />
         </div>
 
-        {status === "solved" && <div className="text-[14px] font-medium text-success">Solved!</div>}
-        {status === "failed" && <div className="text-[14px] font-medium text-blunder">Not quite — try again.</div>}
-        {status === "revealed" && <div className="text-[14px] font-medium text-ink dark:text-ink-dark">Solution: {current.solution.join(" → ")}</div>}
+        {status === "solved" && <div className="shrink-0 text-[14px] font-medium text-success">Solved!</div>}
+        {status === "failed" && <div className="shrink-0 text-[14px] font-medium text-blunder">Not quite — try again.</div>}
+        {status === "revealed" && <div className="shrink-0 text-[14px] font-medium text-ink dark:text-ink-dark">Solution: {current.solution.join(" → ")}</div>}
         {status === "playing" && (
-          <div className="text-[13px] text-ink dark:text-ink-dark">
+          <div className="shrink-0 text-[13px] text-ink dark:text-ink-dark">
             {current.fen.includes(" w ") === (moveIndex % 2 === 0) ? "White" : "Black"} to move · find the best move
           </div>
         )}
 
-        <div className="flex flex-wrap justify-center gap-2">
+        <div className="flex shrink-0 flex-wrap justify-center gap-2">
           <button onClick={() => setShowHint((v) => !v)} className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark">
             {showHint ? `Hint: ${current.solution[moveIndex]?.slice(0, 2)}` : "Hint"}
           </button>
@@ -162,7 +162,7 @@ export function Puzzles() {
         </div>
       </div>
 
-      <div className="w-full lg:w-72">
+      <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto lg:max-h-none lg:w-72">
         <div className="rounded-xl border border-border bg-surface p-5 dark:border-border-dark dark:bg-surface-dark">
           <h3 className="mb-3 text-[14px] font-semibold text-ink dark:text-ink-dark">Puzzle</h3>
           <div className="space-y-1.5 text-[13px] text-muted dark:text-muted-dark">

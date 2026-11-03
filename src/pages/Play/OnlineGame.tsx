@@ -180,9 +180,9 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
   const drawOfferedByOpponent = state.drawOfferedBy && state.drawOfferedBy !== "agreed" && state.drawOfferedBy !== seat;
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      <div className="flex flex-1 flex-col items-center gap-3">
-        <div className="flex items-center gap-2 text-[13px]">
+    <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 text-[13px]">
           <span className="text-muted dark:text-muted-dark">
             Code: <span className="font-medium text-ink dark:text-ink-dark">{roomId}</span>
           </span>
@@ -192,12 +192,12 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
         </div>
 
         {waiting && (
-          <div className="rounded-xl border border-border bg-surface px-4 py-3 text-center text-[13px] text-muted dark:border-border-dark dark:bg-surface-dark dark:text-muted-dark">
+          <div className="shrink-0 rounded-xl border border-border bg-surface px-4 py-3 text-center text-[13px] text-muted dark:border-border-dark dark:bg-surface-dark dark:text-muted-dark">
             Waiting for the second player to join…
           </div>
         )}
 
-        <div className="w-full max-w-[560px]" style={{ aspectRatio: "1" }}>
+        <div className="max-h-full w-full min-h-0 max-w-[560px] flex-1">
           <ChessBoard
             fen={state.fen}
             onMove={handleMove}
@@ -209,7 +209,7 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
           />
         </div>
 
-        <div className="text-[13px] text-ink dark:text-ink-dark">
+        <div className="shrink-0 text-[13px] text-ink dark:text-ink-dark">
           {seat ? `You are playing ${seat}.` : "Spectating."} White {presence.white ? "connected" : "disconnected"} · Black{" "}
           {presence.black ? "connected" : "disconnected"}
         </div>
@@ -217,11 +217,11 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
         {state.isGameOver && <GameResult result="1/2-1/2" reason={state.resultText ?? "Game over"} playerColor={seat ?? undefined} />}
 
         {drawOfferedByOpponent && (
-          <div className="text-[12px] text-mistake">Your opponent offered a draw. Offer one back to accept.</div>
+          <div className="shrink-0 text-[12px] text-mistake">Your opponent offered a draw. Offer one back to accept.</div>
         )}
 
         {seat && !state.isGameOver && (
-          <div className="flex gap-2">
+          <div className="flex shrink-0 gap-2">
             <button onClick={offerDraw} className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:hover:border-accent-dark">
               Offer Draw
             </button>
@@ -231,10 +231,10 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
           </div>
         )}
 
-        {error && <p className="text-[12px] text-blunder">{error}</p>}
+        {error && <p className="shrink-0 text-[12px] text-blunder">{error}</p>}
       </div>
 
-      <div className="w-full lg:w-72">
+      <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto lg:max-h-none lg:w-72">
         <MoveHistory sanMoves={history.map((h) => h.san)} />
       </div>
     </div>

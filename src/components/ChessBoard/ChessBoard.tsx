@@ -23,7 +23,7 @@ export function ChessBoard({
   lastMove = null,
 }: ChessBoardProps) {
   const { ref, width, height } = useContainerSize<HTMLDivElement>();
-  const boardWidth = Math.max(240, Math.min(width, 640, height * 0.92));
+  const boardWidth = Math.max(220, Math.min(width, height, 640));
   const [selected, setSelected] = useState<string | null>(null);
   const [pendingPromotion, setPendingPromotion] = useState<{ from: string; to: string } | null>(null);
 
@@ -123,7 +123,7 @@ export function ChessBoard({
   }
 
   return (
-    <div className="relative flex w-full justify-center" ref={ref}>
+    <div className="relative flex h-full w-full items-center justify-center" ref={ref}>
       <Chessboard
         position={fen}
         onPieceDrop={handlePieceDrop}

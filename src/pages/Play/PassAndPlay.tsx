@@ -65,9 +65,9 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
   };
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      <div className="flex flex-1 flex-col items-center gap-3">
-        <div className="flex w-full max-w-[560px] items-center justify-between text-[13px]">
+    <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
+        <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
           <span className="text-muted dark:text-muted-dark">
             {captured.white.map((p, i) => <span key={i}>{PIECE_GLYPH[p]}</span>)}
             {captured.materialDiff > 0 && <span className="ml-1">+{captured.materialDiff}</span>}
@@ -77,7 +77,7 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
           </button>
         </div>
 
-        <div className="w-full max-w-[560px]" style={{ aspectRatio: "1" }}>
+        <div className="max-h-full w-full min-h-0 max-w-[560px] flex-1">
           <ChessBoard
             fen={displayFen}
             onMove={handleMove}
@@ -92,13 +92,13 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
         {!viewer.isLive && (
           <button
             onClick={viewer.goLive}
-            className="rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10 dark:border-accent-dark/40 dark:bg-accent-dark/10 dark:text-accent-dark"
+            className="shrink-0 rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10 dark:border-accent-dark/40 dark:bg-accent-dark/10 dark:text-accent-dark"
           >
             Viewing move {viewer.displayIndex + 1} of {g.moves.length} · back to current position
           </button>
         )}
 
-        <div className="flex w-full max-w-[560px] items-center justify-between text-[13px]">
+        <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
           <span className="text-muted dark:text-muted-dark">
             {captured.black.map((p, i) => <span key={i}>{PIECE_GLYPH[p]}</span>)}
             {captured.materialDiff < 0 && <span className="ml-1">+{-captured.materialDiff}</span>}
@@ -110,17 +110,19 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
 
         {g.isOver && g.result && <GameResult result={g.result.result} reason={g.result.reason} />}
 
-        <GameControls
-          onResign={settings.confirmResignation ? () => confirm("Resign the game?") && g.resign() : g.resign}
-          onOfferDraw={settings.confirmDrawOffer ? () => confirm("Offer a draw?") && g.offerDraw() : g.offerDraw}
-          onUndo={g.undo}
-          canUndo={g.moves.length > 0 && !g.isOver}
-          onNewGame={handleNewGame}
-          gameOver={g.isOver}
-        />
+        <div className="shrink-0">
+          <GameControls
+            onResign={settings.confirmResignation ? () => confirm("Resign the game?") && g.resign() : g.resign}
+            onOfferDraw={settings.confirmDrawOffer ? () => confirm("Offer a draw?") && g.offerDraw() : g.offerDraw}
+            onUndo={g.undo}
+            canUndo={g.moves.length > 0 && !g.isOver}
+            onNewGame={handleNewGame}
+            gameOver={g.isOver}
+          />
+        </div>
       </div>
 
-      <div className="flex w-full flex-col gap-4 lg:w-72">
+      <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto lg:max-h-none lg:w-72">
         <MoveHistory sanMoves={g.moves.map((m) => m.san)} activeIndex={viewer.displayIndex} onSelectMove={viewer.selectIndex} />
         <MoveCoachPanel
           enabled={coachEnabled}

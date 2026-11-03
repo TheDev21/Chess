@@ -93,7 +93,7 @@ export function Analysis() {
   }, [coached]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       {!coached && (
         <div className="mx-auto w-full max-w-xl">
           <h1 className="mb-6 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Analysis</h1>
@@ -136,13 +136,13 @@ export function Analysis() {
       )}
 
       {coached && summary && (
-        <div className="flex flex-col gap-6 lg:flex-row">
-          <div className="flex flex-1 flex-col items-center gap-3">
-            <div className="flex w-full max-w-[560px] items-stretch gap-2">
-              <div style={{ height: 420 }}>
+        <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
+          <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
+            <div className="flex w-full min-h-0 max-w-[560px] flex-1 items-stretch gap-2">
+              <div className="h-full">
                 <EvaluationBar cp={current?.evalAfter.cp ?? null} mate={current?.evalAfter.mate ?? null} />
               </div>
-              <div className="flex-1" style={{ aspectRatio: "1" }}>
+              <div className="h-full min-h-0 max-h-full flex-1">
                 <ChessBoard
                   fen={displayFen}
                   onMove={() => false}
@@ -153,7 +153,7 @@ export function Analysis() {
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-1.5">
               <button onClick={() => setCurrentIndex(-1)} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">⏮</button>
               <button onClick={() => setCurrentIndex((i) => Math.max(-1, i - 1))} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">◀</button>
               <button onClick={() => setCurrentIndex((i) => Math.min(coached.length - 1, i + 1))} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">▶</button>
@@ -162,7 +162,7 @@ export function Analysis() {
             </div>
 
             {current && (
-              <div className="w-full max-w-[560px] rounded-xl border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
+              <div className="w-full max-w-[560px] shrink-0 rounded-xl border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-medium text-ink dark:text-ink-dark">{current.san}</span>
                   <span
@@ -186,7 +186,7 @@ export function Analysis() {
             )}
           </div>
 
-          <div className="flex w-full flex-col gap-4 lg:w-80">
+          <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-4 overflow-y-auto lg:max-h-none lg:w-80">
             <div className="rounded-xl border border-border bg-surface p-5 dark:border-border-dark dark:bg-surface-dark">
               <h3 className="mb-3 text-[14px] font-semibold text-ink dark:text-ink-dark">Game Summary</h3>
               <div className="text-[13px] text-muted dark:text-muted-dark">Estimated accuracy (application estimate): {summary.accuracy.toFixed(0)}%</div>
