@@ -1,16 +1,54 @@
-const API_BASE = import.meta.env.VITE_API_BASE || "/api";
+import { HAS_BACKEND, FUNCTIONS_BASE, SUPABASE_KEY } from "./supabaseClient";
 
-// 1v1 Online needs a persistent server holding room state and live
-// WebSocket connections - something a static GitHub Pages build can't run.
-// VITE_HAS_BACKEND=false (set for the Pages build) gates the feature off
-// cleanly with an explanation in the UI instead of letting it fail against
-// a backend that isn't there.
-export const HAS_BACKEND = import.meta.env.VITE_HAS_BACKEND !== "false";
+export { HAS_BACKEND };
+
+export interface RoomState {
+  roomId: string;
+  fen: string;
+  turn: "w" | "b";
+  moveHistory: { san: string; fen: string }[];
+  isGameOver: boolean;
+  resultText: string | null;
+  drawOfferedBy: "white" | "black" | "agreed" | null;
+  hasWhite: boolean;
+  hasBlack: boolean;
+}
+
+async function callFunction<T>(name: string, body: Record<string, unknown>): Promise<T> {
+  const res = await fetch(`${FUNCTIONS_BASE}/${name}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${SUPABASE_KEY}`, apikey: SUPABASE_KEY },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `${name} failed (${res.status})`);
+  return data as T;
+}
 
 export async function createOnlineRoom(): Promise<{ roomId: string }> {
-  const res = await fetch(`${API_BASE}/rooms`, { method: "POST" });
-  if (!res.ok) throw new Error(`Failed to create room (${res.status})`);
-  return res.json();
+  return callFunction("rooms-create", {});
+}
+
+export async function joinRoom(roomId: string, playerId: string): Promise<RoomState & { color: "white" | "black" | null }> {
+  return callFunction("rooms-join", { roomId, playerId });
+}
+
+export async function makeOnlineMove(
+  roomId: string,
+  playerId: string,
+  from: string,
+  to: string,
+  promotion?: string
+): Promise<RoomState & { move: { san: string; from: string; to: string } }> {
+  return callFunction("rooms-move", { roomId, playerId, from, to, promotion });
+}
+
+export async function resignOnlineGame(roomId: string, playerId: string): Promise<RoomState> {
+  return callFunction("rooms-resign", { roomId, playerId });
+}
+
+export async function offerOnlineDraw(roomId: string, playerId: string): Promise<RoomState> {
+  return callFunction("rooms-draw", { roomId, playerId });
 }
 
 export function getOrCreatePlayerId(): string {

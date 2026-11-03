@@ -7,10 +7,10 @@ solve tactics puzzles, and review completed games.
 ## Play it now
 
 **[thedev21.github.io/Chess](https://thedev21.github.io/Chess/)** - free,
-static, no account. Play a Friend, Play Computer, Puzzles, and Analysis all
-work fully (Stockfish runs client-side in a Web Worker - no server needed).
-Play Online needs a running multiplayer server and is disabled on this build
-with an explanation in the UI - see "Running the server" below.
+static, no account. Every mode works on this build, including Play Online:
+Stockfish runs client-side in a Web Worker, and online multiplayer runs on
+Supabase (Postgres + Realtime + Edge Functions) - see "Multiplayer backend"
+below. There is nothing to self-host.
 
 ## What's here
 
@@ -23,11 +23,13 @@ with an explanation in the UI - see "Running the server" below.
   via Stockfish's `UCI_LimitStrength`/`UCI_Elo` options, not just a label on
   the same strength. Color choice and six time controls with a real,
   ticking clock.
-- **Play Online** - Socket.io multiplayer. The server is authoritative: it
-  validates every move with `chess.js`, assigns seats, and is the only
-  source of truth for game state. Reconnect within 5 minutes keeps your
-  seat; a shareable link with a copy button; connection-status indicators;
-  resign and draw-offer flows.
+- **Play Online** - Supabase-backed multiplayer. Every move, seat
+  assignment, resignation, and draw offer goes through a Supabase Edge
+  Function that validates it with `chess.js` server-side (the browser never
+  writes to the database directly); the room's row in Postgres is the only
+  source of truth, and Supabase Realtime pushes updates to both players. A
+  shareable link with a copy button; live connection indicators via Realtime
+  Presence; resign and draw-offer flows.
 - **Move Coach** - classifies every move (Best / Excellent / Good /
   Inaccuracy / Mistake / Blunder) by running Stockfish on the position
   *before* your move (what it would have played) and *after* (what you
@@ -61,45 +63,39 @@ with an explanation in the UI - see "Running the server" below.
   headers required, so it works on plain static hosting like GitHub Pages.
   Runs in a Web Worker; the main thread/UI never blocks on it (verified:
   the UI stays responsive while Stockfish searches).
-- **Multiplayer backend**: Node.js + Express + Socket.io + `chess.js`
-  (server-side move validation). Lightweight, in-memory room state - no
-  database.
+- **Multiplayer backend**: Supabase. A `rooms` table (Postgres, Row Level
+  Security) holds each game's FEN, move history, seats, and draw/resign
+  state; five Edge Functions (`rooms-create`/`-join`/`-move`/`-resign`/
+  `-draw`, in `supabase/functions/`) are the only things allowed to write to
+  it, each re-validating the move or seat claim with `chess.js` before
+  touching the row. Supabase Realtime (`postgres_changes` + Presence) pushes
+  state and connection status to both players - no server process to run or
+  host.
 - **Storage**: `localStorage` for settings, game history, and puzzle streak.
-  No backend and no account needed for any single-player feature.
+  No account needed for any feature, including Play Online (a random
+  per-browser player ID stands in for login).
 
 ## Running locally
-
-### Just playing (no backend needed)
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the printed `localhost` URL. Play a Friend, Play Computer, Puzzles, and
-Analysis all work immediately.
+Open the printed `localhost` URL. Everything works immediately, including
+Play Online - `.env` ships with this project's public Supabase URL and
+anon key (safe to commit; see "Multiplayer backend" above and
+`src/services/multiplayer/supabaseClient.ts`). Open two browser tabs on a
+created game's link to test multiplayer.
 
-### With the multiplayer server (for Play Online)
-
-```bash
-# Terminal 1
-cd server
-cp .env.example .env
-npm install
-npm run dev          # http://localhost:4000
-
-# Terminal 2 (repo root)
-npm install
-npm run dev           # http://localhost:5173, proxies /socket.io to :4000
-```
-
-Open two browser tabs on a created game's link to test multiplayer locally.
+To point this app at your own Supabase project instead, create one, run the
+SQL in `supabase/migrations/`, deploy the functions in
+`supabase/functions/`, and put your own project's URL/anon key in `.env`.
 
 ### Tests
 
 ```bash
-npm test              # client: Move Coach classification logic
-cd server && npm test # server: (reserved for future room-logic tests)
+npm test # Move Coach classification logic
 ```
 
 ## About the puzzle set
@@ -116,24 +112,17 @@ starter set is now. Swapping it in doesn't require any other code changes.
 
 ## Deployment
 
-### GitHub Pages (current, static, no backend)
+### GitHub Pages (current - fully featured, including Play Online)
 
 `.github/workflows/deploy-pages.yml` builds with `VITE_GITHUB_PAGES=true`
-and `VITE_HAS_BACKEND=false` and publishes via `actions/deploy-pages`.
-`vite.config.ts` sets the base path to `/Chess/` and `main.tsx` uses
-`HashRouter` under that flag, since GitHub Pages has no server-side rewrite
-for client-side routes. `VITE_HAS_BACKEND=false` gates off Play Online
-instead of letting it fail against a server that isn't there.
+and publishes via `actions/deploy-pages`. `vite.config.ts` sets the base
+path to `/Chess/` and `main.tsx` uses `HashRouter` under that flag, since
+GitHub Pages has no server-side rewrite for client-side routes. The
+Supabase URL/anon key come from the committed `.env` (public values - see
+"Multiplayer backend" above), so there's no separate backend to deploy or
+host for any feature.
 
 **One-time setup**: repo Settings → Pages → Source → "GitHub Actions".
-
-### Full-featured (adds Play Online)
-
-Deploy `server/` to any Node host (Railway, Render, Fly, a VPS) and set
-`CORS_ORIGIN` to your frontend's origin. Deploy the frontend anywhere static
-(Vercel, Netlify, GitHub Pages) with `VITE_SOCKET_URL` set at build time to
-the server's public URL, and leave `VITE_GITHUB_PAGES`/`VITE_HAS_BACKEND`
-unset.
 
 ## Project structure
 
@@ -143,16 +132,18 @@ src/
                 EvaluationBar, GameResult, Navigation, Settings
   pages/        Play (Home, PassAndPlay, VsComputer, OnlineLobby, OnlineGame),
                 Puzzles, Analysis, History
-  hooks/        useChessGame, useStockfish, useMoveCoach, useSocket, useSettings
+  hooks/        useChessGame, useStockfish, useMoveCoach, useMoveViewer, useSettings
   services/
     chess/      chess.js helpers (captured pieces, game result)
     engine/     Stockfish Web Worker client + Move Coach classification/explanation
-    multiplayer/ REST + Socket.io client helpers
+    multiplayer/ Supabase client + Edge Function calls for Play Online
     puzzles/    puzzle loading, daily/random selection, streak
     storage/    localStorage-backed settings and game history
   types/
-server/
-  src/rooms/    Socket.io room logic (server-authoritative, chess.js-validated)
+supabase/
+  migrations/   SQL schema for the rooms table (Postgres + RLS)
+  functions/    rooms-create/-join/-move/-resign/-draw Edge Functions
+                (chess.js-validated, service-role-only writes)
 public/
   engines/      (generated at build time) Stockfish WASM + worker JS
   puzzles/      starter-set.json

@@ -13,8 +13,7 @@ export function OnlineLobby() {
       <div className="mx-auto max-w-md text-center">
         <h1 className="mb-3 text-[20px] font-medium text-ink dark:text-ink-dark">Play Online</h1>
         <p className="text-[13px] leading-relaxed text-muted dark:text-muted-dark">
-          This mode needs a running multiplayer server, and this deployment is a static build without one. Run the
-          server locally (see the README) to play online.
+          Play Online is not configured on this build (missing Supabase project settings).
         </p>
       </div>
     );

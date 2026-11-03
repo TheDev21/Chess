@@ -11,8 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-.env
 .env.local
+# .env itself is tracked here on purpose: it only holds the public Supabase
+# project URL and anon/publishable key (see src/services/multiplayer/supabaseClient.ts).
 *.tsbuildinfo
 
 # Editor directories and files

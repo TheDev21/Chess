@@ -25,13 +25,6 @@ export default defineConfig({
   base: process.env.VITE_GITHUB_PAGES ? "/Chess/" : "/",
   server: {
     port: 5173,
-    proxy: {
-      "/socket.io": {
-        target: process.env.VITE_BACKEND_URL || "http://localhost:4000",
-        changeOrigin: true,
-        ws: true,
-      },
-    },
   },
   test: {
     environment: "node",
