@@ -54,9 +54,9 @@ export function History() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-[20px] font-medium text-ink dark:text-ink-dark">Game History</h1>
-        <label className="flex cursor-pointer items-center gap-1 rounded border border-border px-3 py-1.5 text-[12px] text-ink dark:border-border-dark dark:text-ink-dark">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Game History</h1>
+        <label className="flex cursor-pointer items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">
           <Upload className="h-3.5 w-3.5" /> Import PGN
           <input type="file" accept=".pgn,text/plain" className="hidden" onChange={handleImport} />
         </label>
@@ -64,30 +64,30 @@ export function History() {
       {importError && <p className="mb-3 text-[13px] text-blunder">{importError}</p>}
 
       {games.length === 0 ? (
-        <p className="text-[13px] text-muted dark:text-muted-dark">No games saved yet. Finish a game or import a PGN to see it here.</p>
+        <p className="text-[14px] text-muted dark:text-muted-dark">No games saved yet. Finish a game or import a PGN to see it here.</p>
       ) : (
-        <div className="divide-y divide-border rounded border border-border dark:divide-border-dark dark:border-border-dark">
+        <div className="divide-y divide-border rounded-xl border border-border dark:divide-border-dark dark:border-border-dark">
           {games.map((g) => (
-            <div key={g.id} className="flex items-center justify-between gap-3 p-3">
+            <div key={g.id} className="flex items-center justify-between gap-3 p-4">
               <div>
-                <div className="text-[13px] font-medium text-ink dark:text-ink-dark">
+                <div className="text-[14px] font-medium text-ink dark:text-ink-dark">
                   {g.opponent} · {g.result}
                 </div>
-                <div className="text-[12px] text-muted dark:text-muted-dark">
+                <div className="mt-0.5 text-[12px] text-muted dark:text-muted-dark">
                   {new Date(g.playedAt).toLocaleString()} · {g.playerColor} · {g.mode} · {g.moveCount} moves
                 </div>
               </div>
-              <div className="flex shrink-0 gap-1">
+              <div className="flex shrink-0 gap-1.5">
                 <button
                   onClick={() => navigate("/analysis", { state: { pgn: g.pgn } })}
-                  className="rounded border border-border px-2 py-1 text-[12px] text-ink dark:border-border-dark dark:text-ink-dark"
+                  className="rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark"
                 >
                   Review
                 </button>
-                <button onClick={() => handleExport(g.pgn, g.id)} aria-label="Export PGN" className="rounded border border-border p-1.5 text-ink dark:border-border-dark dark:text-ink-dark">
+                <button onClick={() => handleExport(g.pgn, g.id)} aria-label="Export PGN" className="rounded-full border border-border p-2 text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">
                   <Download className="h-3.5 w-3.5" />
                 </button>
-                <button onClick={() => handleDelete(g.id)} aria-label="Delete game" className="rounded border border-border p-1.5 text-blunder dark:border-border-dark">
+                <button onClick={() => handleDelete(g.id)} aria-label="Delete game" className="rounded-full border border-border p-2 text-blunder transition-colors hover:border-blunder/40 dark:border-border-dark">
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>

@@ -35,12 +35,12 @@ export type MoveClassification = "best" | "excellent" | "good" | "inaccuracy" | 
 
 export const CLASSIFICATION_META: Record<
   MoveClassification,
-  { label: string; tone: "accent" | "success" | "mistake" | "blunder" }
+  { label: string; tone: "accent" | "success" | "warning" | "mistake" | "blunder" }
 > = {
   best: { label: "Best Move", tone: "success" },
   excellent: { label: "Excellent", tone: "success" },
   good: { label: "Good Move", tone: "accent" },
-  inaccuracy: { label: "Inaccuracy", tone: "mistake" },
+  inaccuracy: { label: "Inaccuracy", tone: "warning" },
   mistake: { label: "Mistake", tone: "mistake" },
   blunder: { label: "Blunder", tone: "blunder" },
 };

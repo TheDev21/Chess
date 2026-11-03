@@ -141,8 +141,8 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
   if (!HAS_BACKEND) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <h1 className="mb-3 text-[20px] font-medium text-ink dark:text-ink-dark">Play Online</h1>
-        <p className="text-[13px] leading-relaxed text-muted dark:text-muted-dark">
+        <h1 className="mb-3 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Play Online</h1>
+        <p className="text-[14px] leading-relaxed text-muted dark:text-muted-dark">
           Play Online is not configured on this build (missing Supabase project settings).
         </p>
       </div>
@@ -152,8 +152,8 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
   if (error && !state) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <h1 className="mb-3 text-[20px] font-medium text-ink dark:text-ink-dark">Play Online</h1>
-        <p className="text-[13px] text-blunder">{error}</p>
+        <h1 className="mb-3 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Play Online</h1>
+        <p className="text-[14px] text-blunder">{error}</p>
       </div>
     );
   }
@@ -186,13 +186,13 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
           <span className="text-muted dark:text-muted-dark">
             Code: <span className="font-medium text-ink dark:text-ink-dark">{roomId}</span>
           </span>
-          <button onClick={copyLink} className="flex items-center gap-1 rounded border border-border px-2 py-1 text-[12px] text-ink dark:border-border-dark dark:text-ink-dark">
+          <button onClick={copyLink} className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">
             <Copy className="h-3 w-3" /> {copied ? "Copied" : "Copy link"}
           </button>
         </div>
 
         {waiting && (
-          <div className="rounded border border-border bg-surface px-4 py-3 text-center text-[13px] text-muted dark:border-border-dark dark:bg-surface-dark dark:text-muted-dark">
+          <div className="rounded-xl border border-border bg-surface px-4 py-3 text-center text-[13px] text-muted dark:border-border-dark dark:bg-surface-dark dark:text-muted-dark">
             Waiting for the second player to join…
           </div>
         )}
@@ -222,10 +222,10 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
 
         {seat && !state.isGameOver && (
           <div className="flex gap-2">
-            <button onClick={offerDraw} className="rounded border border-border px-3 py-1.5 text-[13px] text-ink dark:border-border-dark dark:text-ink-dark">
+            <button onClick={offerDraw} className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:hover:border-accent-dark">
               Offer Draw
             </button>
-            <button onClick={resign} className="rounded border border-border px-3 py-1.5 text-[13px] text-ink dark:border-border-dark dark:text-ink-dark">
+            <button onClick={resign} className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:hover:border-accent-dark">
               Resign
             </button>
           </div>

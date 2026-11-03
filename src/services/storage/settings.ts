@@ -10,7 +10,7 @@ export interface AppSettings {
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  theme: "system",
+  theme: "light",
   showLegalMoves: true,
   showCoordinates: true,
   soundEnabled: true,

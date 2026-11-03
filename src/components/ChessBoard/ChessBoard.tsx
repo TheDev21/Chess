@@ -98,22 +98,28 @@ export function ChessBoard({
     return attemptMove(source, target);
   };
 
+  // A soft, warm highlight for the last move played - visible on both board
+  // squares without reading as a bright "selection" color.
   const squareStyles: Record<string, React.CSSProperties> = {};
   if (lastMove) {
-    squareStyles[lastMove.from] = { backgroundColor: "rgba(255,199,0,0.45)" };
-    squareStyles[lastMove.to] = { backgroundColor: "rgba(255,199,0,0.55)" };
+    squareStyles[lastMove.from] = { backgroundColor: "rgba(210,169,55,0.35)" };
+    squareStyles[lastMove.to] = { backgroundColor: "rgba(210,169,55,0.45)" };
   }
   if (selected) {
-    squareStyles[selected] = { ...squareStyles[selected], boxShadow: "inset 0 0 0 3px rgba(53,94,59,0.6)" };
+    squareStyles[selected] = { ...squareStyles[selected], boxShadow: "inset 0 0 0 3px rgba(82,122,99,0.65)" };
   }
   for (const target of legalTargets) {
     squareStyles[target] = {
       ...squareStyles[target],
-      backgroundImage: "radial-gradient(circle, rgba(43,42,40,0.18) 22%, transparent 24%)",
+      backgroundImage: "radial-gradient(circle, rgba(36,36,36,0.14) 20%, transparent 22%)",
     };
   }
   if (isCheckSquare) {
-    squareStyles[isCheckSquare] = { ...squareStyles[isCheckSquare], backgroundColor: "rgba(192,57,43,0.35)" };
+    squareStyles[isCheckSquare] = {
+      ...squareStyles[isCheckSquare],
+      boxShadow: "inset 0 0 0 3px rgba(192,57,43,0.75)",
+      backgroundColor: "rgba(192,57,43,0.18)",
+    };
   }
 
   return (
@@ -127,18 +133,18 @@ export function ChessBoard({
         arePiecesDraggable={draggable}
         showBoardNotation={showCoordinates}
         customSquareStyles={squareStyles}
-        customBoardStyle={{ borderRadius: "4px", boxShadow: "0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.08)" }}
-        customDarkSquareStyle={{ backgroundColor: "#7a9169" }}
+        customBoardStyle={{ borderRadius: "10px", boxShadow: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08)" }}
+        customDarkSquareStyle={{ backgroundColor: "#769656" }}
         customLightSquareStyle={{ backgroundColor: "#eeeed2" }}
       />
       {pendingPromotion && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-          <div className="flex gap-1 rounded bg-surface p-2 shadow-card dark:bg-surface-dark">
+        <div className="absolute inset-0 flex items-center justify-center rounded-[10px] bg-ink/20 backdrop-blur-[2px] dark:bg-black/40">
+          <div className="flex gap-1.5 rounded-xl bg-surface p-2.5 shadow-panel dark:bg-surface-dark">
             {(["q", "r", "b", "n"] as const).map((p) => (
               <button
                 key={p}
                 onClick={() => choosePromotion(p)}
-                className="flex h-10 w-10 items-center justify-center rounded border border-border text-[13px] font-medium uppercase text-ink hover:border-accent dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
+                className="flex h-11 w-11 items-center justify-center rounded-lg border border-border text-[13px] font-medium uppercase text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
                 aria-label={`Promote to ${p}`}
               >
                 {p}

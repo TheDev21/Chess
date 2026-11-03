@@ -144,18 +144,18 @@ export function Puzzles() {
         )}
 
         <div className="flex flex-wrap justify-center gap-2">
-          <button onClick={() => setShowHint((v) => !v)} className="rounded border border-border px-3 py-1.5 text-[12px] text-ink dark:border-border-dark dark:text-ink-dark">
+          <button onClick={() => setShowHint((v) => !v)} className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark">
             {showHint ? `Hint: ${current.solution[moveIndex]?.slice(0, 2)}` : "Hint"}
           </button>
-          <button onClick={revealSolution} className="rounded border border-border px-3 py-1.5 text-[12px] text-ink dark:border-border-dark dark:text-ink-dark">
+          <button onClick={revealSolution} className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark">
             Reveal Solution
           </button>
-          <button onClick={() => startPuzzle(current)} className="rounded border border-border px-3 py-1.5 text-[12px] text-ink dark:border-border-dark dark:text-ink-dark">
+          <button onClick={() => startPuzzle(current)} className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark">
             Reset
           </button>
           <button
             onClick={() => startPuzzle(randomPuzzle(puzzles, current.id))}
-            className="rounded bg-accent px-3 py-1.5 text-[12px] font-medium text-white dark:bg-accent-dark"
+            className="rounded-full bg-accent px-3.5 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-accent/90 dark:bg-accent-dark dark:text-ink dark:hover:bg-accent-dark/90"
           >
             Next Puzzle
           </button>
@@ -163,9 +163,9 @@ export function Puzzles() {
       </div>
 
       <div className="w-full lg:w-72">
-        <div className="rounded border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
-          <h3 className="mb-2 text-[13px] font-medium text-ink dark:text-ink-dark">Puzzle</h3>
-          <div className="space-y-1 text-[12px] text-muted dark:text-muted-dark">
+        <div className="rounded-xl border border-border bg-surface p-5 dark:border-border-dark dark:bg-surface-dark">
+          <h3 className="mb-3 text-[14px] font-semibold text-ink dark:text-ink-dark">Puzzle</h3>
+          <div className="space-y-1.5 text-[13px] text-muted dark:text-muted-dark">
             <div>Theme: {current.theme}</div>
             <div>Rating: {current.rating}</div>
             <div>Streak: {streak}</div>

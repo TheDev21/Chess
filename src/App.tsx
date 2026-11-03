@@ -19,7 +19,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-bg dark:bg-bg-dark">
       <Navigation onOpenSettings={() => setSettingsOpen(true)} />
-      <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
+      <main className="mx-auto max-w-5xl px-5 py-8 sm:px-6 sm:py-10">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/play/friend" element={<PassAndPlay settings={settings} />} />

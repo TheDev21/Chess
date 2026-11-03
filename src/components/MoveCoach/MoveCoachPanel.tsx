@@ -15,10 +15,11 @@ interface MoveCoachPanelProps {
 }
 
 const TONE_CLASS: Record<string, string> = {
-  accent: "text-accent dark:text-accent-dark border-accent/30 dark:border-accent-dark/30 bg-accent/5",
-  success: "text-success border-success/30 bg-success/5",
-  mistake: "text-mistake border-mistake/30 bg-mistake/5",
-  blunder: "text-blunder border-blunder/30 bg-blunder/5",
+  accent: "text-accent dark:text-accent-dark bg-accent/[0.08] dark:bg-accent-dark/[0.12]",
+  success: "text-success bg-success/[0.08]",
+  warning: "text-warning bg-warning/[0.08]",
+  mistake: "text-mistake bg-mistake/[0.08]",
+  blunder: "text-blunder bg-blunder/[0.08]",
 };
 
 export function MoveCoachPanel({
@@ -35,9 +36,9 @@ export function MoveCoachPanel({
   const meta = move ? CLASSIFICATION_META[move.classification] : null;
 
   return (
-    <div className="rounded border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
+    <div className="rounded-xl border border-border bg-surface p-5 dark:border-border-dark dark:bg-surface-dark">
       <div className="flex items-center justify-between">
-        <h3 className="text-[13px] font-medium text-ink dark:text-ink-dark">Move Coach</h3>
+        <h3 className="text-[14px] font-semibold text-ink dark:text-ink-dark">Move Coach</h3>
         <label className="flex items-center gap-2 text-[12px] text-muted dark:text-muted-dark">
           <span>{enabled ? "On" : "Off"}</span>
           <input
@@ -60,42 +61,47 @@ export function MoveCoachPanel({
       )}
 
       {enabled && !analyzing && move && meta && (
-        <div className="mt-3">
-          <div className="mb-1 text-[12px] text-muted dark:text-muted-dark">Your move: {move.san}</div>
-          <div className={clsx("mb-2 inline-block rounded border px-2 py-0.5 text-[12px] font-medium", TONE_CLASS[meta.tone])}>
-            {meta.label}
+        <div className="mt-4">
+          <div className="mb-2 flex items-center gap-2">
+            <span className={clsx("inline-flex items-center rounded-full px-2.5 py-1 text-[12px] font-medium", TONE_CLASS[meta.tone])}>
+              {meta.label}
+            </span>
+            <span className="text-[12px] text-muted dark:text-muted-dark">{move.san}</span>
           </div>
-          <p className="text-[13px] leading-relaxed text-ink dark:text-ink-dark">{move.summary}</p>
+          <p className="text-[14px] leading-relaxed text-ink dark:text-ink-dark">{move.summary}</p>
 
           {move.whatWentWell.length > 0 && (
-            <ul className="mt-2 list-inside list-disc space-y-0.5 text-[12px] text-muted dark:text-muted-dark">
+            <ul className="mt-2 space-y-1 text-[13px] text-muted dark:text-muted-dark">
               {move.whatWentWell.map((item, i) => (
-                <li key={i} className="capitalize">{item}</li>
+                <li key={i} className="flex items-start gap-1.5">
+                  <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-muted/60 dark:bg-muted-dark/60" />
+                  {item.charAt(0).toUpperCase() + item.slice(1)}
+                </li>
               ))}
             </ul>
           )}
 
           {move.bestAlternativeSan && (
-            <div className="mt-3 border-t border-border pt-3 dark:border-border-dark">
+            <div className="mt-4 border-t border-border pt-4 dark:border-border-dark">
               <div className="text-[12px] text-muted dark:text-muted-dark">
                 Best alternative: <span className="font-medium text-ink dark:text-ink-dark">{move.bestAlternativeSan}</span>
               </div>
               {detail === "detailed" && move.bestAlternativeReason && (
-                <p className="mt-1 text-[12px] leading-relaxed text-muted dark:text-muted-dark">{move.bestAlternativeReason}</p>
+                <p className="mt-1 text-[13px] leading-relaxed text-muted dark:text-muted-dark">{move.bestAlternativeReason}</p>
               )}
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2.5 flex gap-2">
                 {onPreviewBestMove && (
                   <button
                     onClick={onPreviewBestMove}
-                    className="rounded border border-border px-2 py-1 text-[12px] text-ink hover:border-accent dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
+                    className="rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
                   >
-                    {previewing ? "Previewing…" : "Show Best Move"}
+                    {previewing ? "Previewing…" : "Show on board"}
                   </button>
                 )}
                 {previewing && onReturnToGame && (
                   <button
                     onClick={onReturnToGame}
-                    className="rounded border border-border px-2 py-1 text-[12px] text-ink hover:border-accent dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
+                    className="rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
                   >
                     Return to game
                   </button>
@@ -103,21 +109,21 @@ export function MoveCoachPanel({
                 {detail === "basic" && move.bestAlternativeReason && (
                   <button
                     onClick={() => setShowWhy((v) => !v)}
-                    className="rounded border border-border px-2 py-1 text-[12px] text-ink hover:border-accent dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
+                    className="rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
                   >
                     Why?
                   </button>
                 )}
               </div>
               {showWhy && detail === "basic" && move.bestAlternativeReason && (
-                <p className="mt-2 text-[12px] leading-relaxed text-muted dark:text-muted-dark">{move.bestAlternativeReason}</p>
+                <p className="mt-2 text-[13px] leading-relaxed text-muted dark:text-muted-dark">{move.bestAlternativeReason}</p>
               )}
             </div>
           )}
         </div>
       )}
 
-      <p className="mt-4 text-[11px] leading-relaxed text-muted/80 dark:text-muted-dark/80">
+      <p className="mt-5 text-[11px] leading-relaxed text-muted/70 dark:text-muted-dark/70">
         Engine assistance for learning only. Disable Move Coach for fair-play or competitive play.
       </p>
     </div>

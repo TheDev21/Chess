@@ -96,15 +96,15 @@ export function Analysis() {
     <div className="flex flex-col gap-6">
       {!coached && (
         <div className="mx-auto w-full max-w-xl">
-          <h1 className="mb-4 text-[20px] font-medium text-ink dark:text-ink-dark">Analysis</h1>
+          <h1 className="mb-6 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Analysis</h1>
 
           {games.length > 0 && (
             <div className="mb-4">
-              <label className="mb-1 block text-[13px] font-medium text-ink dark:text-ink-dark">Review a saved game</label>
+              <label className="mb-1.5 block text-[13px] font-medium text-muted dark:text-muted-dark">Review a saved game</label>
               <select
                 value={selectedGameId}
                 onChange={(e) => setSelectedGameId(e.target.value)}
-                className="w-full rounded border border-border bg-surface px-3 py-2 text-[13px] dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark"
+                className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-[13px] dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark"
               >
                 <option value="">Select a game…</option>
                 {games.map((g) => (
@@ -116,18 +116,18 @@ export function Analysis() {
             </div>
           )}
 
-          <label className="mb-1 block text-[13px] font-medium text-ink dark:text-ink-dark">Or paste a PGN</label>
+          <label className="mb-1.5 block text-[13px] font-medium text-muted dark:text-muted-dark">Or paste a PGN</label>
           <textarea
             value={pgnInput}
             onChange={(e) => setPgnInput(e.target.value)}
             rows={6}
             placeholder="1. e4 e5 2. Nf3 Nc6 ..."
-            className="w-full rounded border border-border bg-surface px-3 py-2 text-[13px] dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-[13px] dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark"
           />
           <button
             onClick={() => runAnalysis(pgnInput)}
             disabled={reviewing || !pgnInput.trim() || engine.status !== "ready"}
-            className="mt-3 w-full rounded bg-accent px-4 py-2.5 text-[14px] font-medium text-white disabled:opacity-50 dark:bg-accent-dark"
+            className="mt-3 w-full rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-white transition-colors hover:bg-accent/90 disabled:opacity-50 dark:bg-accent-dark dark:text-ink dark:hover:bg-accent-dark/90"
           >
             {reviewing ? `Analyzing ${progress.done}/${progress.total}…` : engine.status !== "ready" ? "Loading engine…" : "Analyze Game"}
           </button>
@@ -153,24 +153,24 @@ export function Analysis() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button onClick={() => setCurrentIndex(-1)} className="rounded border border-border px-2 py-1 text-[12px] dark:border-border-dark dark:text-ink-dark">⏮</button>
-              <button onClick={() => setCurrentIndex((i) => Math.max(-1, i - 1))} className="rounded border border-border px-2 py-1 text-[12px] dark:border-border-dark dark:text-ink-dark">◀</button>
-              <button onClick={() => setCurrentIndex((i) => Math.min(coached.length - 1, i + 1))} className="rounded border border-border px-2 py-1 text-[12px] dark:border-border-dark dark:text-ink-dark">▶</button>
-              <button onClick={() => setCurrentIndex(coached.length - 1)} className="rounded border border-border px-2 py-1 text-[12px] dark:border-border-dark dark:text-ink-dark">⏭</button>
-              <button onClick={() => setCoached(null)} className="ml-3 rounded border border-border px-2 py-1 text-[12px] dark:border-border-dark dark:text-ink-dark">New analysis</button>
+            <div className="flex items-center gap-1.5">
+              <button onClick={() => setCurrentIndex(-1)} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">⏮</button>
+              <button onClick={() => setCurrentIndex((i) => Math.max(-1, i - 1))} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">◀</button>
+              <button onClick={() => setCurrentIndex((i) => Math.min(coached.length - 1, i + 1))} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">▶</button>
+              <button onClick={() => setCurrentIndex(coached.length - 1)} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">⏭</button>
+              <button onClick={() => setCoached(null)} className="ml-3 rounded-full border border-border px-3.5 py-1.5 text-[12px] font-medium transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">New analysis</button>
             </div>
 
             {current && (
-              <div className="w-full max-w-[560px] rounded border border-border bg-surface p-3 dark:border-border-dark dark:bg-surface-dark">
+              <div className="w-full max-w-[560px] rounded-xl border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
                 <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-medium text-ink dark:text-ink-dark">{current.san}</span>
+                  <span className="text-[14px] font-medium text-ink dark:text-ink-dark">{current.san}</span>
                   <span
                     className={clsx(
-                      "rounded px-2 py-0.5 text-[11px] font-medium",
+                      "rounded-full px-2.5 py-1 text-[11px] font-medium",
                       current.classification === "blunder" && "bg-blunder/10 text-blunder",
                       current.classification === "mistake" && "bg-mistake/10 text-mistake",
-                      current.classification === "inaccuracy" && "bg-mistake/10 text-mistake",
+                      current.classification === "inaccuracy" && "bg-warning/10 text-warning",
                       (current.classification === "best" || current.classification === "excellent") && "bg-success/10 text-success",
                       current.classification === "good" && "bg-accent/10 text-accent dark:text-accent-dark"
                     )}
@@ -178,19 +178,19 @@ export function Analysis() {
                     {CLASSIFICATION_META[current.classification].label}
                   </span>
                 </div>
-                <p className="mt-1 text-[12px] text-muted dark:text-muted-dark">{current.summary}</p>
+                <p className="mt-1.5 text-[13px] text-muted dark:text-muted-dark">{current.summary}</p>
                 {current.bestAlternativeSan && (
-                  <p className="mt-1 text-[12px] text-muted dark:text-muted-dark">Engine preferred: {current.bestAlternativeSan}</p>
+                  <p className="mt-1 text-[13px] text-muted dark:text-muted-dark">Engine preferred: {current.bestAlternativeSan}</p>
                 )}
               </div>
             )}
           </div>
 
           <div className="flex w-full flex-col gap-4 lg:w-80">
-            <div className="rounded border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
-              <h3 className="mb-2 text-[13px] font-medium text-ink dark:text-ink-dark">Game Summary</h3>
-              <div className="text-[12px] text-muted dark:text-muted-dark">Estimated accuracy (application estimate): {summary.accuracy.toFixed(0)}%</div>
-              <ul className="mt-2 space-y-1 text-[12px]">
+            <div className="rounded-xl border border-border bg-surface p-5 dark:border-border-dark dark:bg-surface-dark">
+              <h3 className="mb-3 text-[14px] font-semibold text-ink dark:text-ink-dark">Game Summary</h3>
+              <div className="text-[13px] text-muted dark:text-muted-dark">Estimated accuracy (application estimate): {summary.accuracy.toFixed(0)}%</div>
+              <ul className="mt-3 space-y-1.5 text-[13px]">
                 {(Object.keys(summary.counts) as MoveClassification[]).map((c) => (
                   <li key={c} className="flex justify-between text-ink dark:text-ink-dark">
                     <span>{CLASSIFICATION_META[c].label}</span>
@@ -199,7 +199,7 @@ export function Analysis() {
                 ))}
               </ul>
               {summary.worst && (
-                <div className="mt-3 border-t border-border pt-2 text-[12px] text-muted dark:border-border-dark dark:text-muted-dark">
+                <div className="mt-3 border-t border-border pt-3 text-[13px] text-muted dark:border-border-dark dark:text-muted-dark">
                   Biggest missed opportunity: move {summary.worst.ply + 1} ({summary.worst.san})
                 </div>
               )}

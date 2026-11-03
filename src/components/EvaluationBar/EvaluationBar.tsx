@@ -21,13 +21,13 @@ export function EvaluationBar({ cp, mate, orientation = "white" }: EvaluationBar
   const topIsWhite = orientation === "white";
 
   return (
-    <div className="flex h-full w-5 flex-col overflow-hidden rounded border border-border dark:border-border-dark" aria-label="Evaluation">
+    <div className="flex h-full w-5 flex-col overflow-hidden rounded-lg border border-border dark:border-border-dark" aria-label="Evaluation">
       <div
-        className="w-full bg-ink transition-[height] duration-300 dark:bg-ink-dark"
+        className="w-full bg-ink/80 transition-[height] duration-300 dark:bg-ink-dark/80"
         style={{ height: topIsWhite ? `${(1 - whiteFraction) * 100}%` : `${whiteFraction * 100}%` }}
       />
       <div className="w-full flex-1 bg-surface dark:bg-surface-dark" />
-      <div className="py-0.5 text-center text-[9px] text-muted dark:text-muted-dark">{label}</div>
+      <div className="py-1 text-center text-[9px] font-medium text-muted dark:text-muted-dark">{label}</div>
     </div>
   );
 }

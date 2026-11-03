@@ -16,9 +16,9 @@ export function GameResult({ result, reason, playerColor }: GameResultProps) {
   }
 
   return (
-    <div className="rounded border border-border bg-surface px-4 py-3 text-center dark:border-border-dark dark:bg-surface-dark">
-      <div className="text-[15px] font-medium text-ink dark:text-ink-dark">{headline}</div>
-      <div className="text-[12px] text-muted dark:text-muted-dark">{reason}</div>
+    <div className="rounded-xl border border-border bg-surface px-5 py-4 text-center dark:border-border-dark dark:bg-surface-dark">
+      <div className="text-[16px] font-semibold text-ink dark:text-ink-dark">{headline}</div>
+      <div className="mt-0.5 text-[13px] text-muted dark:text-muted-dark">{reason}</div>
     </div>
   );
 }

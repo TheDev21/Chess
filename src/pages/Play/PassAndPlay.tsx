@@ -92,9 +92,9 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
         {!viewer.isLive && (
           <button
             onClick={viewer.goLive}
-            className="rounded border border-accent px-3 py-1 text-[13px] font-medium text-accent dark:border-accent-dark dark:text-accent-dark"
+            className="rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10 dark:border-accent-dark/40 dark:bg-accent-dark/10 dark:text-accent-dark"
           >
-            Viewing move {viewer.displayIndex + 1} of {g.moves.length} - back to current position
+            Viewing move {viewer.displayIndex + 1} of {g.moves.length} · back to current position
           </button>
         )}
 

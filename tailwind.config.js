@@ -5,46 +5,54 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["-apple-system", "BlinkMacSystemFont", "Inter", "Segoe UI", "sans-serif"],
+        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
       },
       colors: {
+        // A warm, faintly green-tinted parchment, not a neutral gray-white -
+        // the same family as the board's own light squares, just diluted
+        // enough to sit quietly behind everything else.
         bg: {
-          DEFAULT: "#faf8f5",
-          dark: "#1c1b19",
+          DEFAULT: "#f6f3e8",
+          dark: "#1b1e1a",
         },
         surface: {
-          DEFAULT: "#ffffff",
-          dark: "#262422",
+          DEFAULT: "#fffdf6",
+          dark: "#242722",
         },
         ink: {
-          DEFAULT: "#2b2a28",
-          dark: "#efece6",
+          DEFAULT: "#242420",
+          dark: "#efece2",
         },
         muted: {
-          DEFAULT: "#75716a",
-          dark: "#9c9890",
+          DEFAULT: "#79765f",
+          dark: "#9c9a87",
         },
         border: {
-          DEFAULT: "#e7e2da",
-          dark: "#39362f",
+          DEFAULT: "#e6e0cc",
+          dark: "#3a3d33",
         },
         accent: {
-          DEFAULT: "#355e3b",
-          dark: "#6fae77",
+          DEFAULT: "#4f7942",
+          dark: "#8bb674",
         },
         board: {
           light: "#eeeed2",
-          dark: "#7a9169",
+          dark: "#769656",
         },
-        success: "#2f8f4e",
-        mistake: "#c08a1e",
+        success: "#4a9b6e",
+        warning: "#c98a2e",
+        mistake: "#d2691e",
         blunder: "#c0392b",
       },
       borderRadius: {
-        DEFAULT: "6px",
+        DEFAULT: "10px",
+        lg: "14px",
+        xl: "18px",
       },
       boxShadow: {
-        card: "0 1px 2px rgba(0,0,0,.04), 0 1px 8px rgba(0,0,0,.03)",
+        card: "0 1px 2px rgba(20,20,20,.03), 0 2px 12px rgba(20,20,20,.04)",
+        board: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08)",
+        panel: "0 8px 40px rgba(20,20,20,.08)",
       },
     },
   },

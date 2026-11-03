@@ -9,5 +9,9 @@
   body {
     @apply bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark antialiased;
     font-feature-settings: "tnum";
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  * {
+    @apply border-border dark:border-border-dark;
   }
 }

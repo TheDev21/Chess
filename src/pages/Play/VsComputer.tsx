@@ -136,20 +136,20 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
   if (!started) {
     return (
       <div className="mx-auto max-w-md">
-        <h1 className="mb-6 text-[20px] font-medium text-ink dark:text-ink-dark">Play Computer</h1>
+        <h1 className="mb-8 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Play Computer</h1>
 
-        <div className="mb-5">
-          <div className="mb-2 text-[13px] font-medium text-ink dark:text-ink-dark">Difficulty</div>
+        <div className="mb-6">
+          <div className="mb-2.5 text-[13px] font-medium text-muted dark:text-muted-dark">Difficulty</div>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map((d) => (
               <button
                 key={d}
                 onClick={() => setDifficulty(d)}
                 className={clsx(
-                  "rounded border px-3 py-1.5 text-[13px]",
+                  "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
                   difficulty === d
-                    ? "border-accent bg-accent/10 font-medium text-accent dark:border-accent-dark dark:text-accent-dark"
-                    : "border-border text-ink dark:border-border-dark dark:text-ink-dark"
+                    ? "border-accent bg-accent/10 text-accent dark:border-accent-dark dark:text-accent-dark"
+                    : "border-border text-ink hover:border-ink/20 dark:border-border-dark dark:text-ink-dark"
                 )}
               >
                 {DIFFICULTY_CONFIG[d].label}
@@ -158,18 +158,18 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
           </div>
         </div>
 
-        <div className="mb-5">
-          <div className="mb-2 text-[13px] font-medium text-ink dark:text-ink-dark">Color</div>
+        <div className="mb-6">
+          <div className="mb-2.5 text-[13px] font-medium text-muted dark:text-muted-dark">Color</div>
           <div className="flex gap-2">
             {(["white", "black", "random"] as const).map((c) => (
               <button
                 key={c}
                 onClick={() => setColorChoice(c)}
                 className={clsx(
-                  "flex-1 rounded border px-3 py-1.5 text-[13px] capitalize",
+                  "flex-1 rounded-full border px-3.5 py-1.5 text-[13px] font-medium capitalize transition-colors",
                   colorChoice === c
-                    ? "border-accent bg-accent/10 font-medium text-accent dark:border-accent-dark dark:text-accent-dark"
-                    : "border-border text-ink dark:border-border-dark dark:text-ink-dark"
+                    ? "border-accent bg-accent/10 text-accent dark:border-accent-dark dark:text-accent-dark"
+                    : "border-border text-ink hover:border-ink/20 dark:border-border-dark dark:text-ink-dark"
                 )}
               >
                 {c}
@@ -178,18 +178,18 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
           </div>
         </div>
 
-        <div className="mb-6">
-          <div className="mb-2 text-[13px] font-medium text-ink dark:text-ink-dark">Time control</div>
+        <div className="mb-8">
+          <div className="mb-2.5 text-[13px] font-medium text-muted dark:text-muted-dark">Time control</div>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(TIME_CONTROLS) as TimeControlId[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setTimeControl(t)}
                 className={clsx(
-                  "rounded border px-3 py-1.5 text-[13px]",
+                  "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
                   timeControl === t
-                    ? "border-accent bg-accent/10 font-medium text-accent dark:border-accent-dark dark:text-accent-dark"
-                    : "border-border text-ink dark:border-border-dark dark:text-ink-dark"
+                    ? "border-accent bg-accent/10 text-accent dark:border-accent-dark dark:text-accent-dark"
+                    : "border-border text-ink hover:border-ink/20 dark:border-border-dark dark:text-ink-dark"
                 )}
               >
                 {TIME_CONTROLS[t].label}
@@ -200,7 +200,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
         <button
           onClick={handleStart}
-          className="w-full rounded bg-accent px-4 py-2.5 text-[14px] font-medium text-white dark:bg-accent-dark"
+          className="w-full rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-white transition-colors hover:bg-accent/90 dark:bg-accent-dark dark:text-ink dark:hover:bg-accent-dark/90"
         >
           Start Game
         </button>
@@ -234,9 +234,9 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
         {!viewer.isLive && (
           <button
             onClick={viewer.goLive}
-            className="rounded border border-accent px-3 py-1 text-[13px] font-medium text-accent dark:border-accent-dark dark:text-accent-dark"
+            className="rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10 dark:border-accent-dark/40 dark:bg-accent-dark/10 dark:text-accent-dark"
           >
-            Viewing move {viewer.displayIndex + 1} of {g.moves.length} - back to current position
+            Viewing move {viewer.displayIndex + 1} of {g.moves.length} · back to current position
           </button>
         )}
 

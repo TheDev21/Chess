@@ -11,8 +11,8 @@ export function OnlineLobby() {
   if (!HAS_BACKEND) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <h1 className="mb-3 text-[20px] font-medium text-ink dark:text-ink-dark">Play Online</h1>
-        <p className="text-[13px] leading-relaxed text-muted dark:text-muted-dark">
+        <h1 className="mb-3 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Play Online</h1>
+        <p className="text-[14px] leading-relaxed text-muted dark:text-muted-dark">
           Play Online is not configured on this build (missing Supabase project settings).
         </p>
       </div>
@@ -40,12 +40,12 @@ export function OnlineLobby() {
 
   return (
     <div className="mx-auto max-w-md text-center">
-      <h1 className="mb-2 text-[20px] font-medium text-ink dark:text-ink-dark">Play Online</h1>
-      <p className="mb-6 text-[13px] text-muted dark:text-muted-dark">Create a game and send the link to a friend, or join one with a code.</p>
+      <h1 className="mb-2.5 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Play Online</h1>
+      <p className="mb-8 text-[14px] text-muted dark:text-muted-dark">Create a game and send the link to a friend, or join one with a code.</p>
       <button
         onClick={handleCreate}
         disabled={creating}
-        className="w-full rounded bg-accent px-4 py-2.5 text-[14px] font-medium text-white disabled:opacity-60 dark:bg-accent-dark"
+        className="w-full rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-white transition-colors hover:bg-accent/90 disabled:opacity-60 dark:bg-accent-dark dark:text-ink dark:hover:bg-accent-dark/90"
       >
         {creating ? "Creating…" : "Create Game"}
       </button>
@@ -54,9 +54,9 @@ export function OnlineLobby() {
           value={joinCode}
           onChange={(e) => setJoinCode(e.target.value)}
           placeholder="Enter game code"
-          className="flex-1 rounded border border-border bg-surface px-3 py-2 text-[13px] dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark"
+          className="flex-1 rounded-full border border-border bg-surface px-4 py-2.5 text-[13px] dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark"
         />
-        <button type="submit" className="rounded border border-border px-4 py-2 text-[13px] text-ink dark:border-border-dark dark:text-ink-dark">
+        <button type="submit" className="rounded-full border border-border px-5 py-2.5 text-[13px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">
           Join
         </button>
       </form>
