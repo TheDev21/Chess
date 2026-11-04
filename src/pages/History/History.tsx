@@ -4,7 +4,8 @@ import { Download, Trash2, Upload } from "lucide-react";
 import { deleteGame, listGames, saveGame } from "../../services/storage/gameHistory";
 import { Chess } from "chess.js";
 
-export function History() {
+/** The saved-games list + PGN import/export, reused inside the Progress page. */
+export function GameHistoryList({ showHeading = true }: { showHeading?: boolean }) {
   const navigate = useNavigate();
   const [games, setGames] = useState(() => listGames());
   const [importError, setImportError] = useState<string | null>(null);
@@ -53,10 +54,10 @@ export function History() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Game History</h1>
-        <label className="flex cursor-pointer items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">
+    <div>
+      <div className="mb-4 flex items-center justify-between">
+        {showHeading ? <h2 className="text-[16px] font-semibold text-ink">Recent games</h2> : <span />}
+        <label className="flex cursor-pointer items-center gap-1.5 rounded-full border border-ink/15 bg-[#f6f3e8]/50 px-3.5 py-1.5 text-[12px] font-medium text-ink backdrop-blur-[2px] transition-colors hover:bg-ink/[0.06]">
           <Upload className="h-3.5 w-3.5" /> Import PGN
           <input type="file" accept=".pgn,text/plain" className="hidden" onChange={handleImport} />
         </label>
@@ -64,30 +65,38 @@ export function History() {
       {importError && <p className="mb-3 text-[13px] text-blunder">{importError}</p>}
 
       {games.length === 0 ? (
-        <p className="text-[14px] text-muted dark:text-muted-dark">No games saved yet. Finish a game or import a PGN to see it here.</p>
+        <p className="text-[14px] text-[#4a3728]">No games saved yet. Finish a game or import a PGN to see it here.</p>
       ) : (
-        <div className="divide-y divide-border rounded-xl border border-border dark:divide-border-dark dark:border-border-dark">
+        <div className="divide-y divide-ink/15 rounded-xl border border-ink/15 bg-[#f6f3e8]/50 backdrop-blur-[2px]">
           {games.map((g) => (
             <div key={g.id} className="flex items-center justify-between gap-3 p-4">
               <div>
-                <div className="text-[14px] font-medium text-ink dark:text-ink-dark">
+                <div className="text-[14px] font-medium text-ink">
                   {g.opponent} · {g.result}
                 </div>
-                <div className="mt-0.5 text-[12px] text-muted dark:text-muted-dark">
+                <div className="mt-0.5 text-[12px] text-[#4a3728]">
                   {new Date(g.playedAt).toLocaleString()} · {g.playerColor} · {g.mode} · {g.moveCount} moves
                 </div>
               </div>
               <div className="flex shrink-0 gap-1.5">
                 <button
                   onClick={() => navigate("/analysis", { state: { pgn: g.pgn } })}
-                  className="rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark"
+                  className="rounded-full border border-ink/15 px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:bg-ink/[0.06]"
                 >
                   Review
                 </button>
-                <button onClick={() => handleExport(g.pgn, g.id)} aria-label="Export PGN" className="rounded-full border border-border p-2 text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">
+                <button
+                  onClick={() => handleExport(g.pgn, g.id)}
+                  aria-label="Export PGN"
+                  className="rounded-full border border-ink/15 p-2 text-ink transition-colors hover:bg-ink/[0.06]"
+                >
                   <Download className="h-3.5 w-3.5" />
                 </button>
-                <button onClick={() => handleDelete(g.id)} aria-label="Delete game" className="rounded-full border border-border p-2 text-blunder transition-colors hover:border-blunder/40 dark:border-border-dark">
+                <button
+                  onClick={() => handleDelete(g.id)}
+                  aria-label="Delete game"
+                  className="rounded-full border border-ink/15 p-2 text-blunder transition-colors hover:border-blunder/40"
+                >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
               </div>

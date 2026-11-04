@@ -31,22 +31,25 @@ export function useChessGame() {
         ? { result: "1/2-1/2", reason: "Draw agreed" }
         : null;
 
-  const makeMove = useCallback((from: string, to: string, promotion: string = "q"): Move | null => {
-    if (isOver) return null;
-    const fenBefore = gameRef.current.fen();
-    const color = colorToMove(gameRef.current);
-    let move: Move | null;
-    try {
-      move = gameRef.current.move({ from, to, promotion: promotion as "q" | "r" | "b" | "n" });
-    } catch {
-      move = null;
-    }
-    if (!move) return null;
-    const fenAfter = gameRef.current.fen();
-    setFen(fenAfter);
-    setMoves((prev) => [...prev, { san: move!.san, uci: from + to + (move!.promotion ?? ""), fenBefore, fenAfter, color }]);
-    return move;
-  }, [isOver]);
+  const makeMove = useCallback(
+    (from: string, to: string, promotion: string = "q"): Move | null => {
+      if (isOver) return null;
+      const fenBefore = gameRef.current.fen();
+      const color = colorToMove(gameRef.current);
+      let move: Move | null;
+      try {
+        move = gameRef.current.move({ from, to, promotion: promotion as "q" | "r" | "b" | "n" });
+      } catch {
+        move = null;
+      }
+      if (!move) return null;
+      const fenAfter = gameRef.current.fen();
+      setFen(fenAfter);
+      setMoves((prev) => [...prev, { san: move!.san, uci: from + to + (move!.promotion ?? ""), fenBefore, fenAfter, color }]);
+      return move;
+    },
+    [isOver],
+  );
 
   const undo = useCallback(() => {
     gameRef.current.undo();

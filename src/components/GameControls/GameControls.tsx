@@ -12,7 +12,7 @@ function Btn({ onClick, children, disabled }: { onClick?: () => void; children: 
     <button
       onClick={onClick}
       disabled={disabled}
-      className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 disabled:cursor-not-allowed disabled:opacity-40 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:hover:border-accent-dark"
+      className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 disabled:cursor-not-allowed disabled:opacity-40"
     >
       {children}
     </button>
@@ -21,10 +21,7 @@ function Btn({ onClick, children, disabled }: { onClick?: () => void; children: 
 
 function PrimaryBtn({ onClick, children }: { onClick?: () => void; children: React.ReactNode }) {
   return (
-    <button
-      onClick={onClick}
-      className="rounded-full bg-accent px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-accent/90 dark:bg-accent-dark dark:text-ink dark:hover:bg-accent-dark/90"
-    >
+    <button onClick={onClick} className="rounded-full bg-accent px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-accent/90">
       {children}
     </button>
   );

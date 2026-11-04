@@ -20,8 +20,16 @@ export function getCapturedPieces(game: Chess): CapturedPieces {
     }
   }
   const starting: Record<string, number> = {
-    wp: 8, wn: 2, wb: 2, wr: 2, wq: 1,
-    bp: 8, bn: 2, bb: 2, br: 2, bq: 1,
+    wp: 8,
+    wn: 2,
+    wb: 2,
+    wr: 2,
+    wq: 1,
+    bp: 8,
+    bn: 2,
+    bb: 2,
+    br: 2,
+    bq: 1,
   };
 
   const white: string[] = []; // Black pieces White has captured

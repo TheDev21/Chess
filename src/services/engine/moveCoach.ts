@@ -28,7 +28,7 @@ export function classifyMove(
   moverColor: PlayerColor,
   playedUci: string,
   evalBeforeBest: EngineEvaluation,
-  evalAfterPlayed: EngineEvaluation
+  evalAfterPlayed: EngineEvaluation,
 ): { classification: MoveClassification; centipawnLoss: number } {
   const bestForMover = fromPerspective(toComparable(evalBeforeBest), moverColor);
   // evaluation.cp/mate are always normalized to White's perspective (see
@@ -109,7 +109,7 @@ function buildExplanation(
   playedMove: Move,
   bestAlternativeSan: string | null,
   moverColor: PlayerColor,
-  fenBeforeForDevelopment: string
+  fenBeforeForDevelopment: string,
 ): { summary: string; whatWentWell: string[]; bestAlternativeReason: string | null } {
   const facts = describeMoveFacts(playedMove);
 
@@ -134,10 +134,7 @@ function buildExplanation(
       summary = `A very strong move, essentially as good as the engine's top choice.${factsClause}`;
       break;
     case "good":
-      summary =
-        facts.length > 0
-          ? `Good move. You ${facts.join(" and ")}.`
-          : "A solid, reasonable move that keeps your position healthy.";
+      summary = facts.length > 0 ? `Good move. You ${facts.join(" and ")}.` : "A solid, reasonable move that keeps your position healthy.";
       break;
     case "inaccuracy":
       summary = `This move is slightly less precise than the best continuation available.${factsClause}`;

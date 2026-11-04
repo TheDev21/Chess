@@ -6,6 +6,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        serif: ["\"Playfair Display\"", "Georgia", "serif"],
       },
       colors: {
         // A warm, faintly green-tinted parchment, not a neutral gray-white -
@@ -35,14 +36,28 @@ export default {
           DEFAULT: "#4f7942",
           dark: "#8bb674",
         },
+        accentDeep: "#355e3b",
+        gold: {
+          DEFAULT: "#b68a45",
+          dark: "#c9a368",
+        },
+        sage: {
+          DEFAULT: "#a8bba7",
+          bg: "#e8eee5",
+        },
         board: {
           light: "#eeeed2",
           dark: "#769656",
+          selected: "#f6d365",
+          lastMove: "#f3e6a5",
+          check: "#d97770",
+          legalMove: "#315c46",
         },
-        success: "#4a9b6e",
+        success: "#4f7942",
         warning: "#c98a2e",
         mistake: "#d2691e",
-        blunder: "#c0392b",
+        blunder: "#bd625b",
+        error: "#bd625b",
       },
       borderRadius: {
         DEFAULT: "10px",

@@ -41,10 +41,7 @@ export function useStockfish() {
    * "cancel outdated analysis" means in practice for a single-worker client.
    */
   const evaluate = useCallback(
-    async (
-      fen: string,
-      config: { depth: number; skillLevel: number; limitStrength: boolean; elo?: number }
-    ): Promise<EngineEvaluation | null> => {
+    async (fen: string, config: { depth: number; skillLevel: number; limitStrength: boolean; elo?: number }): Promise<EngineEvaluation | null> => {
       const client = clientRef.current;
       if (!client) return null;
       const myId = ++requestIdRef.current;
@@ -68,7 +65,7 @@ export function useStockfish() {
       if (myId !== requestIdRef.current) return null; // superseded while we awaited
       return result;
     },
-    []
+    [],
   );
 
   return { status, error, evaluate };

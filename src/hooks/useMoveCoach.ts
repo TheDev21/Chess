@@ -36,7 +36,7 @@ export function useMoveCoach() {
         setAnalyzing(false);
       }
     },
-    [engine]
+    [engine],
   );
 
   const reset = useCallback(() => setLastCoached(null), []);
@@ -48,7 +48,7 @@ export function useMoveCoach() {
 export async function reviewGame(
   pgn: string,
   evaluate: (fen: string, config: { depth: number; skillLevel: number; limitStrength: boolean }) => Promise<import("../types/chess").EngineEvaluation | null>,
-  onProgress?: (done: number, total: number) => void
+  onProgress?: (done: number, total: number) => void,
 ): Promise<CoachedMove[]> {
   const replay = new Chess();
   replay.loadPgn(pgn);

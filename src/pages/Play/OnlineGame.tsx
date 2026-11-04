@@ -66,10 +66,8 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
 
     const channel = client
       .channel(`room:${roomId}`)
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${roomId}` },
-        (payload) => setState(toRoomState(payload.new as RoomRow))
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "rooms", filter: `id=eq.${roomId}` }, (payload) =>
+        setState(toRoomState(payload.new as RoomRow)),
       )
       .on("presence", { event: "sync" }, () => {
         const presenceState = channel.presenceState<{ color: PlayerColor }>();
@@ -95,7 +93,10 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
         setState(roomState);
         if (color && channelRef.current) void channelRef.current.track({ color });
       })
-      .catch((err) => !cancelled && setError(err instanceof Error ? err.message : "Failed to join room."));
+      .catch((err) => {
+        console.error("Failed to join online room:", err);
+        if (!cancelled) setError("Couldn't join this game. Check the link and your connection, then try again.");
+      });
 
     return () => {
       cancelled = true;
@@ -122,7 +123,10 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
 
     void makeOnlineMove(roomId, playerId.current, from, to, promotion)
       .then(({ move: _move, ...roomState }) => applyRoomState(roomState))
-      .catch((err) => setError(err instanceof Error ? err.message : "Move failed."));
+      .catch((err) => {
+        console.error("Online move failed:", err);
+        setError("That move didn't go through. Check your connection and try again.");
+      });
     return true;
   };
 
@@ -134,17 +138,25 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
   };
 
   const resign = () =>
-    void resignOnlineGame(roomId, playerId.current).then(applyRoomState).catch((err) => setError(err instanceof Error ? err.message : "Failed to resign."));
+    void resignOnlineGame(roomId, playerId.current)
+      .then(applyRoomState)
+      .catch((err) => {
+        console.error("Failed to resign online game:", err);
+        setError("Couldn't send your resignation. Check your connection and try again.");
+      });
   const offerDraw = () =>
-    void offerOnlineDraw(roomId, playerId.current).then(applyRoomState).catch((err) => setError(err instanceof Error ? err.message : "Failed to offer draw."));
+    void offerOnlineDraw(roomId, playerId.current)
+      .then(applyRoomState)
+      .catch((err) => {
+        console.error("Failed to offer online draw:", err);
+        setError("Couldn't send your draw offer. Check your connection and try again.");
+      });
 
   if (!HAS_BACKEND) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <h1 className="mb-3 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Play Online</h1>
-        <p className="text-[14px] leading-relaxed text-muted dark:text-muted-dark">
-          Play Online is not configured on this build (missing Supabase project settings).
-        </p>
+        <h1 className="mb-3 text-[26px] font-semibold tracking-tight text-ink">Play Online</h1>
+        <p className="text-[14px] leading-relaxed text-muted">Play Online is not configured on this build (missing Supabase project settings).</p>
       </div>
     );
   }
@@ -152,14 +164,14 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
   if (error && !state) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <h1 className="mb-3 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Play Online</h1>
+        <h1 className="mb-3 text-[26px] font-semibold tracking-tight text-ink">Play Online</h1>
         <p className="text-[14px] text-blunder">{error}</p>
       </div>
     );
   }
 
   if (!state) {
-    return <p className="text-[13px] text-muted dark:text-muted-dark">Connecting…</p>;
+    return <p className="text-[13px] text-muted">Connecting…</p>;
   }
 
   const history = state.moveHistory;
@@ -180,24 +192,27 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
   const drawOfferedByOpponent = state.drawOfferedBy && state.drawOfferedBy !== "agreed" && state.drawOfferedBy !== seat;
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
-      <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
+    <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row">
+      <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
         <div className="flex shrink-0 items-center gap-2 text-[13px]">
-          <span className="text-muted dark:text-muted-dark">
-            Code: <span className="font-medium text-ink dark:text-ink-dark">{roomId}</span>
+          <span className="text-muted">
+            Code: <span className="font-medium text-ink">{roomId}</span>
           </span>
-          <button onClick={copyLink} className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">
+          <button
+            onClick={copyLink}
+            className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20"
+          >
             <Copy className="h-3 w-3" /> {copied ? "Copied" : "Copy link"}
           </button>
         </div>
 
         {waiting && (
-          <div className="shrink-0 rounded-xl border border-border bg-surface px-4 py-3 text-center text-[13px] text-muted dark:border-border-dark dark:bg-surface-dark dark:text-muted-dark">
+          <div className="shrink-0 rounded-xl border border-border bg-surface px-4 py-3 text-center text-[13px] text-muted">
             Waiting for the second player to join…
           </div>
         )}
 
-        <div className="max-h-full w-full min-h-0 max-w-[560px] flex-1">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1">
           <ChessBoard
             fen={state.fen}
             onMove={handleMove}
@@ -209,23 +224,27 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
           />
         </div>
 
-        <div className="shrink-0 text-[13px] text-ink dark:text-ink-dark">
+        <div className="shrink-0 text-[13px] text-ink">
           {seat ? `You are playing ${seat}.` : "Spectating."} White {presence.white ? "connected" : "disconnected"} · Black{" "}
           {presence.black ? "connected" : "disconnected"}
         </div>
 
         {state.isGameOver && <GameResult result="1/2-1/2" reason={state.resultText ?? "Game over"} playerColor={seat ?? undefined} />}
 
-        {drawOfferedByOpponent && (
-          <div className="shrink-0 text-[12px] text-mistake">Your opponent offered a draw. Offer one back to accept.</div>
-        )}
+        {drawOfferedByOpponent && <div className="shrink-0 text-[12px] text-mistake">Your opponent offered a draw. Offer one back to accept.</div>}
 
         {seat && !state.isGameOver && (
           <div className="flex shrink-0 gap-2">
-            <button onClick={offerDraw} className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:hover:border-accent-dark">
+            <button
+              onClick={offerDraw}
+              className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5"
+            >
               Offer Draw
             </button>
-            <button onClick={resign} className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark dark:hover:border-accent-dark">
+            <button
+              onClick={resign}
+              className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5"
+            >
               Resign
             </button>
           </div>

@@ -38,7 +38,7 @@ export async function makeOnlineMove(
   playerId: string,
   from: string,
   to: string,
-  promotion?: string
+  promotion?: string,
 ): Promise<RoomState & { move: { san: string; from: string; to: string } }> {
   return callFunction("rooms-move", { roomId, playerId, from, to, promotion });
 }

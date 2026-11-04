@@ -33,10 +33,7 @@ export type GameMode = "friend" | "computer" | "online";
 
 export type MoveClassification = "best" | "excellent" | "good" | "inaccuracy" | "mistake" | "blunder";
 
-export const CLASSIFICATION_META: Record<
-  MoveClassification,
-  { label: string; tone: "accent" | "success" | "warning" | "mistake" | "blunder" }
-> = {
+export const CLASSIFICATION_META: Record<MoveClassification, { label: string; tone: "accent" | "success" | "warning" | "mistake" | "blunder" }> = {
   best: { label: "Best Move", tone: "success" },
   excellent: { label: "Excellent", tone: "success" },
   good: { label: "Good Move", tone: "accent" },

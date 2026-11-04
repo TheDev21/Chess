@@ -1,17 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Chess } from "chess.js";
+import { Trophy, Flame, Calendar, LayoutGrid, Tags, ChevronLeft, CheckCircle2 } from "lucide-react";
 import { ChessBoard } from "../../components/ChessBoard/ChessBoard";
-import {
-  dailyPuzzle,
-  getStreak,
-  incrementStreak,
-  loadPuzzles,
-  randomPuzzle,
-  resetStreak,
-  type Puzzle,
-} from "../../services/puzzles/puzzleService";
+import { dailyPuzzle, getStreak, incrementStreak, loadPuzzles, randomPuzzle, resetStreak, type Puzzle } from "../../services/puzzles/puzzleService";
+import { markPuzzleSolved, markDailyPuzzleSolved, isPuzzleSolved } from "../../services/storage/puzzleProgress";
 
 type PuzzleStatus = "playing" | "solved" | "failed" | "revealed";
+type BrowseTab = "daily" | "all" | "theme";
 
 export function Puzzles() {
   const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
@@ -23,6 +18,9 @@ export function Puzzles() {
   const [streak, setStreak] = useState(getStreak());
   const [showHint, setShowHint] = useState(false);
 
+  const [tab, setTab] = useState<BrowseTab>("daily");
+  const [browsing, setBrowsing] = useState(false); // true while showing the All/By Theme list instead of a board
+
   useEffect(() => {
     void loadPuzzles().then((loaded) => {
       setPuzzles(loaded);
@@ -31,6 +29,16 @@ export function Puzzles() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const byTheme = useMemo(() => {
+    const groups = new Map<string, Puzzle[]>();
+    for (const p of puzzles) {
+      const list = groups.get(p.theme) ?? [];
+      list.push(p);
+      groups.set(p.theme, list);
+    }
+    return groups;
+  }, [puzzles]);
+
   function startPuzzle(puzzle: Puzzle) {
     setCurrent(puzzle);
     setFen(puzzle.fen);
@@ -38,6 +46,21 @@ export function Puzzles() {
     setMoveIndex(0);
     setStatus("playing");
     setShowHint(false);
+    setBrowsing(false);
+  }
+
+  function selectTab(next: BrowseTab) {
+    setTab(next);
+    if (next === "daily") {
+      startPuzzle(dailyPuzzle(puzzles));
+    } else {
+      setBrowsing(true);
+    }
+  }
+
+  function recordSolve(puzzle: Puzzle) {
+    markPuzzleSolved(puzzle.id);
+    if (puzzle.id === dailyPuzzle(puzzles).id) markDailyPuzzleSolved(puzzle.id);
   }
 
   function handleMove(from: string, to: string, promotion?: string): boolean {
@@ -70,6 +93,7 @@ export function Puzzles() {
     if (nextIndex >= current.solution.length) {
       setStatus("solved");
       setStreak(incrementStreak());
+      recordSolve(current);
       return true;
     }
 
@@ -89,6 +113,7 @@ export function Puzzles() {
           if (nextIndex + 1 >= current.solution.length) {
             setStatus("solved");
             setStreak(incrementStreak());
+            recordSolve(current);
           }
         } catch {
           /* no scripted reply at this ply */
@@ -123,55 +148,159 @@ export function Puzzles() {
     setStreak(0);
   }
 
-  if (!current) {
-    return <p className="text-[13px] text-muted dark:text-muted-dark">Loading puzzles…</p>;
-  }
+  const TABS: { id: BrowseTab; label: string; icon: typeof Calendar }[] = [
+    { id: "daily", label: "Daily Puzzle", icon: Calendar },
+    { id: "all", label: "All Puzzles", icon: LayoutGrid },
+    { id: "theme", label: "By Theme", icon: Tags },
+  ];
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
-      <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
-        <div className="max-h-full w-full min-h-0 max-w-[480px] flex-1">
-          <ChessBoard fen={fen} onMove={handleMove} orientation="white" draggable={status === "playing"} lastMove={lastMove} />
-        </div>
-
-        {status === "solved" && <div className="shrink-0 text-[14px] font-medium text-success">Solved!</div>}
-        {status === "failed" && <div className="shrink-0 text-[14px] font-medium text-blunder">Not quite — try again.</div>}
-        {status === "revealed" && <div className="shrink-0 text-[14px] font-medium text-ink dark:text-ink-dark">Solution: {current.solution.join(" → ")}</div>}
-        {status === "playing" && (
-          <div className="shrink-0 text-[13px] text-ink dark:text-ink-dark">
-            {current.fen.includes(" w ") === (moveIndex % 2 === 0) ? "White" : "Black"} to move · find the best move
-          </div>
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <div className="flex shrink-0 items-center justify-between">
+        <h1 className="flex items-center gap-2 text-[22px] font-semibold tracking-tight text-ink">
+          <Trophy className="h-5 w-5 text-accent" strokeWidth={1.75} />
+          Puzzles
+        </h1>
+        {streak > 0 && (
+          <span className="flex items-center gap-1.5 rounded-full bg-warning/10 px-3 py-1.5 text-[12px] font-medium text-warning">
+            <Flame className="h-3.5 w-3.5" />
+            {streak} day{streak === 1 ? "" : "s"} streak
+          </span>
         )}
-
-        <div className="flex shrink-0 flex-wrap justify-center gap-2">
-          <button onClick={() => setShowHint((v) => !v)} className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark">
-            {showHint ? `Hint: ${current.solution[moveIndex]?.slice(0, 2)}` : "Hint"}
-          </button>
-          <button onClick={revealSolution} className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark">
-            Reveal Solution
-          </button>
-          <button onClick={() => startPuzzle(current)} className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark">
-            Reset
-          </button>
-          <button
-            onClick={() => startPuzzle(randomPuzzle(puzzles, current.id))}
-            className="rounded-full bg-accent px-3.5 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-accent/90 dark:bg-accent-dark dark:text-ink dark:hover:bg-accent-dark/90"
-          >
-            Next Puzzle
-          </button>
-        </div>
       </div>
 
-      <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto lg:max-h-none lg:w-72">
-        <div className="rounded-xl border border-border bg-surface p-5 dark:border-border-dark dark:bg-surface-dark">
-          <h3 className="mb-3 text-[14px] font-semibold text-ink dark:text-ink-dark">Puzzle</h3>
-          <div className="space-y-1.5 text-[13px] text-muted dark:text-muted-dark">
-            <div>Theme: {current.theme}</div>
-            <div>Rating: {current.rating}</div>
-            <div>Streak: {streak}</div>
+      <div className="flex max-w-full shrink-0 gap-1 overflow-x-auto rounded-full border border-ink/15 bg-[#f6f3e8]/50 p-1 backdrop-blur-[2px]">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => selectTab(t.id)}
+            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors sm:px-3.5 ${
+              tab === t.id ? "bg-accent/10 text-accent" : "text-[#4a3728] hover:text-ink"
+            }`}
+          >
+            <t.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {browsing ? (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {tab === "all" && (
+            <>
+              {puzzles.length > 0 && puzzles.every((p) => isPuzzleSolved(p.id)) && (
+                <div className="mb-4 rounded-xl border border-success/30 bg-success/5 p-4 text-[13px] text-ink">
+                  You've solved every puzzle in this set. Replay any of them below, or try sorting by theme to focus on one idea.
+                </div>
+              )}
+              <PuzzleList puzzles={puzzles} onSelect={startPuzzle} />
+            </>
+          )}
+          {tab === "theme" && (
+            <div className="flex flex-col gap-5">
+              {[...byTheme.entries()].map(([theme, list]) => (
+                <div key={theme}>
+                  <h3 className="mb-2 text-[13px] font-semibold text-ink">{theme}</h3>
+                  <PuzzleList puzzles={list} onSelect={startPuzzle} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : current ? (
+        <div className="flex flex-1 flex-col gap-4 lg:min-h-0 lg:flex-row">
+          <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
+            {tab !== "daily" && (
+              <button onClick={() => setBrowsing(true)} className="flex shrink-0 items-center gap-1 self-start text-[13px] text-[#4a3728] hover:text-ink">
+                <ChevronLeft className="h-4 w-4" /> Back to list
+              </button>
+            )}
+            <div className="max-h-full w-full min-h-[240px] max-w-[480px] flex-1">
+              <ChessBoard fen={fen} onMove={handleMove} orientation="white" draggable={status === "playing"} lastMove={lastMove} />
+            </div>
+
+            {status === "solved" && <div className="shrink-0 text-[14px] font-medium text-success">Solved!</div>}
+            {status === "failed" && <div className="shrink-0 text-[14px] font-medium text-blunder">Not quite, try again.</div>}
+            {status === "revealed" && <div className="shrink-0 text-[14px] font-medium text-ink">Solution: {current.solution.join("→")}</div>}
+            {status === "playing" && (
+              <div className="shrink-0 text-[13px] text-ink">
+                {current.fen.includes("w") === (moveIndex % 2 === 0) ? "White" : "Black"} to move · find the best move
+              </div>
+            )}
+
+            <div className="flex shrink-0 flex-wrap justify-center gap-2">
+              <button
+                onClick={() => startPuzzle(current)}
+                className="rounded-full border border-ink/15 bg-[#f6f3e8]/50 px-3.5 py-1.5 text-[12px] font-medium text-ink backdrop-blur-[2px] transition-colors hover:bg-ink/[0.06]"
+              >
+                Reset
+              </button>
+              <button
+                onClick={() => startPuzzle(randomPuzzle(puzzles, current.id))}
+                className="rounded-full bg-accent px-3.5 py-1.5 text-[12px] font-medium text-white transition-colors hover:bg-accent/90"
+              >
+                Next Puzzle
+              </button>
+            </div>
+          </div>
+
+          <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto lg:max-h-none lg:w-80">
+            <div className="rounded-xl border border-ink/15 bg-[#f6f3e8]/50 p-5 backdrop-blur-[2px]">
+              <h3 className="text-[18px] font-semibold text-ink">{current.theme}</h3>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-[#4a3728]">
+                Find the move that gives {current.fen.includes("w") ? "White" : "Black"} the advantage. Rated {current.rating}.
+              </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <button
+                  onClick={() => setShowHint((v) => !v)}
+                  className="flex items-center justify-center gap-1.5 rounded-full bg-accent px-3.5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-accent/90"
+                >
+                  {showHint ? `Hint: ${current.solution[moveIndex]?.slice(0, 2)}` : "Show Hint"}
+                </button>
+                <button
+                  onClick={revealSolution}
+                  className="flex items-center justify-center gap-1.5 rounded-full border border-ink/15 bg-[#f6f3e8]/50 px-3.5 py-2.5 text-[13px] font-medium text-ink backdrop-blur-[2px] transition-colors hover:bg-ink/[0.06]"
+                >
+                  Show Solution
+                </button>
+              </div>
+              <div className="mt-4 space-y-1.5 border-t border-ink/15 pt-4 text-[12px] text-[#4a3728]">
+                <div>Theme: {current.theme}</div>
+                <div>Rating: {current.rating}</div>
+                <div>Streak: {streak}</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <p className="text-[13px] text-[#4a3728]">Loading puzzles…</p>
+      )}
+    </div>
+  );
+}
+
+function PuzzleList({ puzzles, onSelect }: { puzzles: Puzzle[]; onSelect: (p: Puzzle) => void }) {
+  return (
+    <div className="flex flex-col divide-y divide-ink/15 rounded-xl border border-ink/15 bg-[#f6f3e8]/50 backdrop-blur-[2px]">
+      {puzzles.map((p) => {
+        const solved = isPuzzleSolved(p.id);
+        return (
+          <button
+            key={p.id}
+            onClick={() => onSelect(p)}
+            className="flex items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-ink/[0.06]"
+          >
+            <span className="flex items-center gap-2.5">
+              {solved && <CheckCircle2 className="h-4 w-4 shrink-0 text-success" strokeWidth={1.75} />}
+              <span>
+                <span className="block text-[14px] font-medium text-ink">{p.theme}</span>
+                <span className="block text-[12px] text-[#4a3728]">Rating {p.rating}</span>
+              </span>
+            </span>
+            <span className="rounded-full border border-ink/15 px-3 py-1 text-[12px] font-medium text-ink">{solved ? "Replay" : "Solve"}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

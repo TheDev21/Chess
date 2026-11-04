@@ -34,14 +34,20 @@ export function randomPuzzle(puzzles: Puzzle[], excludeId?: string): Puzzle {
 }
 
 const STREAK_KEY = "chess:puzzleStreak";
+const SOLVED_KEY = "chess:puzzlesSolved";
 
 export function getStreak(): number {
   return Number(localStorage.getItem(STREAK_KEY) ?? "0");
 }
 
+export function getSolvedCount(): number {
+  return Number(localStorage.getItem(SOLVED_KEY) ?? "0");
+}
+
 export function incrementStreak(): number {
   const next = getStreak() + 1;
   localStorage.setItem(STREAK_KEY, String(next));
+  localStorage.setItem(SOLVED_KEY, String(getSolvedCount() + 1));
   return next;
 }
 

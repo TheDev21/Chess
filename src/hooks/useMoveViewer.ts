@@ -28,10 +28,7 @@ export function useMoveViewer(movesLength: number) {
       return next >= movesLength - 1 ? null : next; // reaching the latest move resumes live tracking
     });
   }, [movesLength]);
-  const selectIndex = useCallback(
-    (index: number) => setViewIndex(index >= movesLength - 1 ? null : index),
-    [movesLength]
-  );
+  const selectIndex = useCallback((index: number) => setViewIndex(index >= movesLength - 1 ? null : index), [movesLength]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

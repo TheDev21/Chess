@@ -65,19 +65,21 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
-      <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
+    <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row">
+      <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
         <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
-          <span className="text-muted dark:text-muted-dark">
-            {captured.white.map((p, i) => <span key={i}>{PIECE_GLYPH[p]}</span>)}
+          <span className="text-muted">
+            {captured.white.map((p, i) => (
+              <span key={i}>{PIECE_GLYPH[p]}</span>
+            ))}
             {captured.materialDiff > 0 && <span className="ml-1">+{captured.materialDiff}</span>}
           </span>
-          <button onClick={() => setFlipBoard((v) => !v)} className="text-muted underline-offset-2 hover:underline dark:text-muted-dark">
+          <button onClick={() => setFlipBoard((v) => !v)} className="text-muted underline-offset-2 hover:underline">
             Auto-flip: {flipBoard ? "On" : "Off"}
           </button>
         </div>
 
-        <div className="max-h-full w-full min-h-0 max-w-[560px] flex-1">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1">
           <ChessBoard
             fen={displayFen}
             onMove={handleMove}
@@ -92,20 +94,20 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
         {!viewer.isLive && (
           <button
             onClick={viewer.goLive}
-            className="shrink-0 rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10 dark:border-accent-dark/40 dark:bg-accent-dark/10 dark:text-accent-dark"
+            className="shrink-0 rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10"
           >
             Viewing move {viewer.displayIndex + 1} of {g.moves.length} · back to current position
           </button>
         )}
 
         <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
-          <span className="text-muted dark:text-muted-dark">
-            {captured.black.map((p, i) => <span key={i}>{PIECE_GLYPH[p]}</span>)}
+          <span className="text-muted">
+            {captured.black.map((p, i) => (
+              <span key={i}>{PIECE_GLYPH[p]}</span>
+            ))}
             {captured.materialDiff < 0 && <span className="ml-1">+{-captured.materialDiff}</span>}
           </span>
-          <span className="font-medium text-ink dark:text-ink-dark">
-            {g.isOver ? "Game over" : `${colorToMove(g.game) === "white" ? "White" : "Black"} to move`}
-          </span>
+          <span className="font-medium text-ink">{g.isOver ? "Game over" : `${colorToMove(g.game) === "white" ? "White" : "Black"} to move`}</span>
         </div>
 
         {g.isOver && g.result && <GameResult result={g.result.result} reason={g.result.reason} />}
@@ -124,13 +126,7 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
 
       <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto lg:max-h-none lg:w-72">
         <MoveHistory sanMoves={g.moves.map((m) => m.san)} activeIndex={viewer.displayIndex} onSelectMove={viewer.selectIndex} />
-        <MoveCoachPanel
-          enabled={coachEnabled}
-          onToggle={setCoachEnabled}
-          analyzing={coach.analyzing}
-          move={coach.lastCoached}
-          detail={settings.coachDetail}
-        />
+        <MoveCoachPanel enabled={coachEnabled} onToggle={setCoachEnabled} analyzing={coach.analyzing} move={coach.lastCoached} detail={settings.coachDetail} />
       </div>
     </div>
   );

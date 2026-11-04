@@ -11,6 +11,12 @@ interface ChessBoardProps {
   showLegalMoves?: boolean;
   showCoordinates?: boolean;
   lastMove?: { from: string; to: string } | null;
+  /** Lesson-teaching highlight (e.g."these squares the knight can reach"), independent of last-move/selection. */
+  highlightSquares?: string[];
+  /** When set, only this square may be picked up - used by lesson"Try It"steps so the user can't wander off-topic. */
+  restrictToSquare?: string;
+  /** Called on any square tap/click, in addition to normal move handling - used by the coordinates lesson. */
+  onSquareTap?: (square: string) => void;
 }
 
 export function ChessBoard({
@@ -21,6 +27,9 @@ export function ChessBoard({
   showLegalMoves = true,
   showCoordinates = true,
   lastMove = null,
+  highlightSquares,
+  restrictToSquare,
+  onSquareTap,
 }: ChessBoardProps) {
   const { ref, width, height } = useContainerSize<HTMLDivElement>();
   const boardWidth = Math.max(220, Math.min(width, height, 640));
@@ -42,7 +51,7 @@ export function ChessBoard({
   function attemptMove(from: string, to: string): boolean {
     if (isPromotion(from, to)) {
       setPendingPromotion({ from, to });
-      return true; // tentatively "handled" - board shouldn't snap back while the picker is open
+      return true; // tentatively"handled"- board shouldn't snap back while the picker is open
     }
     return onMove(from, to);
   }
@@ -80,8 +89,10 @@ export function ChessBoard({
   }, [fen]);
 
   const handleSquareClick = (square: string) => {
+    onSquareTap?.(square);
     if (!draggable) return;
     if (!selected) {
+      if (restrictToSquare && square !== restrictToSquare) return;
       setSelected(square);
       return;
     }
@@ -94,57 +105,70 @@ export function ChessBoard({
   };
 
   const handlePieceDrop = (source: string, target: string) => {
+    if (restrictToSquare && source !== restrictToSquare) return false;
     setSelected(null);
     return attemptMove(source, target);
   };
 
   // A soft, warm highlight for the last move played - visible on both board
-  // squares without reading as a bright "selection" color.
+  // squares without reading as a bright"selection"color.
   const squareStyles: Record<string, React.CSSProperties> = {};
+  if (highlightSquares) {
+    for (const sq of highlightSquares) {
+      squareStyles[sq] = { ...squareStyles[sq], boxShadow: "inset 0 0 0 3px rgba(201,138,46,0.7)", backgroundColor: "rgba(201,138,46,0.22)" };
+    }
+  }
   if (lastMove) {
-    squareStyles[lastMove.from] = { backgroundColor: "rgba(210,169,55,0.35)" };
-    squareStyles[lastMove.to] = { backgroundColor: "rgba(210,169,55,0.45)" };
+    squareStyles[lastMove.from] = { backgroundColor: "#f3e6a5" };
+    squareStyles[lastMove.to] = { backgroundColor: "#f3e6a5" };
   }
   if (selected) {
-    squareStyles[selected] = { ...squareStyles[selected], boxShadow: "inset 0 0 0 3px rgba(82,122,99,0.65)" };
+    squareStyles[selected] = { ...squareStyles[selected], backgroundColor: "#f6d365" };
   }
   for (const target of legalTargets) {
     squareStyles[target] = {
       ...squareStyles[target],
-      backgroundImage: "radial-gradient(circle, rgba(36,36,36,0.14) 20%, transparent 22%)",
+      backgroundImage: "radial-gradient(circle, rgba(49,92,70,0.45) 22%, transparent 24%)",
     };
   }
   if (isCheckSquare) {
     squareStyles[isCheckSquare] = {
       ...squareStyles[isCheckSquare],
-      boxShadow: "inset 0 0 0 3px rgba(192,57,43,0.75)",
-      backgroundColor: "rgba(192,57,43,0.18)",
+      boxShadow: "inset 0 0 0 3px rgba(217,119,112,0.85)",
+      backgroundColor: "rgba(217,119,112,0.35)",
     };
   }
 
+  const innerWidth = Math.max(0, boardWidth - 2);
+
   return (
     <div className="relative flex h-full w-full items-center justify-center" ref={ref}>
-      <Chessboard
-        position={fen}
-        onPieceDrop={handlePieceDrop}
-        onSquareClick={(square) => handleSquareClick(square)}
-        boardOrientation={orientation}
-        boardWidth={boardWidth}
-        arePiecesDraggable={draggable}
-        showBoardNotation={showCoordinates}
-        customSquareStyles={squareStyles}
-        customBoardStyle={{ borderRadius: "10px", boxShadow: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08)" }}
-        customDarkSquareStyle={{ backgroundColor: "#769656" }}
-        customLightSquareStyle={{ backgroundColor: "#eeeed2" }}
-      />
+      <div
+        className="overflow-hidden rounded-[10px] border border-border"
+        style={{ width: boardWidth, height: boardWidth, boxShadow: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08)" }}
+      >
+        <Chessboard
+          position={fen}
+          onPieceDrop={handlePieceDrop}
+          onSquareClick={(square) => handleSquareClick(square)}
+          boardOrientation={orientation}
+          boardWidth={innerWidth}
+          arePiecesDraggable={draggable}
+          showBoardNotation={showCoordinates}
+          customSquareStyles={squareStyles}
+          customBoardStyle={{ borderRadius: "9px" }}
+          customDarkSquareStyle={{ backgroundColor: "#769656" }}
+          customLightSquareStyle={{ backgroundColor: "#eeeed2" }}
+        />
+      </div>
       {pendingPromotion && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-[10px] bg-ink/20 backdrop-blur-[2px] dark:bg-black/40">
-          <div className="flex gap-1.5 rounded-xl bg-surface p-2.5 shadow-panel dark:bg-surface-dark">
+        <div className="absolute inset-0 flex items-center justify-center rounded-[10px] bg-ink/20 backdrop-blur-[2px]">
+          <div className="flex gap-1.5 rounded-xl bg-surface p-2.5 shadow-panel">
             {(["q", "r", "b", "n"] as const).map((p) => (
               <button
                 key={p}
                 onClick={() => choosePromotion(p)}
-                className="flex h-11 w-11 items-center justify-center rounded-lg border border-border text-[13px] font-medium uppercase text-ink transition-colors hover:border-accent hover:bg-accent/5 dark:border-border-dark dark:text-ink-dark dark:hover:border-accent-dark"
+                className="flex h-11 w-11 items-center justify-center rounded-lg border border-border text-[13px] font-medium uppercase text-ink transition-colors hover:border-accent hover:bg-accent/5"
                 aria-label={`Promote to ${p}`}
               >
                 {p}

@@ -5,15 +5,27 @@ import { GameControls } from "../../components/GameControls/GameControls";
 import { MoveHistory } from "../../components/MoveHistory/MoveHistory";
 import { MoveCoachPanel } from "../../components/MoveCoach/MoveCoachPanel";
 import { GameResult } from "../../components/GameResult/GameResult";
+import { CapturedPiecesPanel } from "../../components/CapturedPieces/CapturedPiecesPanel";
+import { Spotlight, type SpotlightStep } from "../../components/Tutorial/Spotlight";
 import { useChessGame } from "../../hooks/useChessGame";
 import { useMoveCoach } from "../../hooks/useMoveCoach";
 import { useMoveViewer } from "../../hooks/useMoveViewer";
 import { useStockfish } from "../../hooks/useStockfish";
 import { colorToMove } from "../../services/chess/gameEngine";
+import { capturedPieces } from "../../services/chess/capturedPieces";
 import { saveGame } from "../../services/storage/gameHistory";
+import { isTutorialSeen } from "../../services/storage/tutorialProgress";
 import { DIFFICULTY_CONFIG, TIME_CONTROLS, type Difficulty, type PlayerColor, type TimeControlId } from "../../types/chess";
 import type { AppSettings } from "../../services/storage/settings";
 import clsx from "clsx";
+
+export const CHESSBOARD_TUTORIAL_ID = "chessboard-basics";
+const CHESSBOARD_TUTORIAL_STEPS: SpotlightStep[] = [
+  { targetId: "board", title: "Your chessboard", body: "This is where every chess game happens. It contains 64 squares." },
+  { targetId: "board", title: "Select a piece", body: "Select any piece to see where it can move." },
+  { targetId: "board", title: "Legal moves", body: "Small dots show the squares your selected piece can legally move to." },
+  { targetId: "coach", title: "Your Move Coach", body: "Your coach can explain your moves and help you understand the game." },
+];
 
 const START_FEN = new Chess().fen();
 
@@ -38,6 +50,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
   const [thinking, setThinking] = useState(false);
   const [flagFall, setFlagFall] = useState<PlayerColor | null>(null);
   const savedRef = useRef(false);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   const seconds = TIME_CONTROLS[timeControl].seconds;
   const [clocks, setClocks] = useState({ white: seconds ?? 0, black: seconds ?? 0 });
@@ -68,6 +81,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
     savedRef.current = false;
     viewer.goLive();
     setStarted(true);
+    if (!isTutorialSeen(CHESSBOARD_TUTORIAL_ID)) setShowTutorial(true);
   };
 
   const playOpponentMove = async (fen: string) => {
@@ -103,7 +117,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
   useEffect(() => {
     if (gameOver && started && !savedRef.current) {
       savedRef.current = true;
-      const result = flagFall ? (flagFall === "white" ? "0-1" : "1-0") : g.result?.result ?? "*";
+      const result = flagFall ? (flagFall === "white" ? "0-1" : "1-0") : (g.result?.result ?? "*");
       saveGame({
         id: crypto.randomUUID(),
         playedAt: new Date().toISOString(),
@@ -136,10 +150,10 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
   if (!started) {
     return (
       <div className="mx-auto max-w-md">
-        <h1 className="mb-8 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Play Computer</h1>
+        <h1 className="mb-8 text-[26px] font-semibold tracking-tight text-ink">Play Computer</h1>
 
         <div className="mb-6">
-          <div className="mb-2.5 text-[13px] font-medium text-muted dark:text-muted-dark">Difficulty</div>
+          <div className="mb-2.5 text-[13px] font-medium text-muted">Difficulty</div>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map((d) => (
               <button
@@ -147,9 +161,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
                 onClick={() => setDifficulty(d)}
                 className={clsx(
                   "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
-                  difficulty === d
-                    ? "border-accent bg-accent/10 text-accent dark:border-accent-dark dark:text-accent-dark"
-                    : "border-border text-ink hover:border-ink/20 dark:border-border-dark dark:text-ink-dark"
+                  difficulty === d ? "border-accent bg-accent/10 text-accent" : "border-border text-ink hover:border-ink/20",
                 )}
               >
                 {DIFFICULTY_CONFIG[d].label}
@@ -159,7 +171,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
         </div>
 
         <div className="mb-6">
-          <div className="mb-2.5 text-[13px] font-medium text-muted dark:text-muted-dark">Color</div>
+          <div className="mb-2.5 text-[13px] font-medium text-muted">Color</div>
           <div className="flex gap-2">
             {(["white", "black", "random"] as const).map((c) => (
               <button
@@ -167,9 +179,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
                 onClick={() => setColorChoice(c)}
                 className={clsx(
                   "flex-1 rounded-full border px-3.5 py-1.5 text-[13px] font-medium capitalize transition-colors",
-                  colorChoice === c
-                    ? "border-accent bg-accent/10 text-accent dark:border-accent-dark dark:text-accent-dark"
-                    : "border-border text-ink hover:border-ink/20 dark:border-border-dark dark:text-ink-dark"
+                  colorChoice === c ? "border-accent bg-accent/10 text-accent" : "border-border text-ink hover:border-ink/20",
                 )}
               >
                 {c}
@@ -179,7 +189,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
         </div>
 
         <div className="mb-8">
-          <div className="mb-2.5 text-[13px] font-medium text-muted dark:text-muted-dark">Time control</div>
+          <div className="mb-2.5 text-[13px] font-medium text-muted">Time control</div>
           <div className="flex flex-wrap gap-2">
             {(Object.keys(TIME_CONTROLS) as TimeControlId[]).map((t) => (
               <button
@@ -187,9 +197,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
                 onClick={() => setTimeControl(t)}
                 className={clsx(
                   "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
-                  timeControl === t
-                    ? "border-accent bg-accent/10 text-accent dark:border-accent-dark dark:text-accent-dark"
-                    : "border-border text-ink hover:border-ink/20 dark:border-border-dark dark:text-ink-dark"
+                  timeControl === t ? "border-accent bg-accent/10 text-accent" : "border-border text-ink hover:border-ink/20",
                 )}
               >
                 {TIME_CONTROLS[t].label}
@@ -200,7 +208,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
         <button
           onClick={handleStart}
-          className="w-full rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-white transition-colors hover:bg-accent/90 dark:bg-accent-dark dark:text-ink dark:hover:bg-accent-dark/90"
+          className="w-full rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-white transition-colors hover:bg-accent/90"
         >
           Start Game
         </button>
@@ -210,16 +218,30 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
   const orientation = playerColor;
   const topColor = orientation === "white" ? "black" : "white";
+  const captured = capturedPieces(g.fen);
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
-      <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
+    <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row">
+      <div className="flex w-full shrink-0 flex-row gap-3 lg:w-48 lg:flex-col">
+        <CapturedPiecesPanel
+          label={topColor === "white" ? "White" : "Black"}
+          pieces={topColor === "white" ? captured.capturedByBlack : captured.capturedByWhite}
+          materialEdge={topColor === "white" ? Math.max(0, -captured.materialDiff) : Math.max(0, captured.materialDiff)}
+        />
+        <CapturedPiecesPanel
+          label={orientation === "white" ? "White (you)" : "Black (you)"}
+          pieces={orientation === "white" ? captured.capturedByWhite : captured.capturedByBlack}
+          materialEdge={orientation === "white" ? Math.max(0, captured.materialDiff) : Math.max(0, -captured.materialDiff)}
+        />
+      </div>
+
+      <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
         <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
-          <span className="text-ink dark:text-ink-dark">Stockfish ({DIFFICULTY_CONFIG[difficulty].label})</span>
-          {seconds !== null && <span className="tabular-nums font-medium text-ink dark:text-ink-dark">{formatClock(clocks[topColor])}</span>}
+          <span className="text-ink">Stockfish ({DIFFICULTY_CONFIG[difficulty].label})</span>
+          {seconds !== null && <span className="tabular-nums font-medium text-ink">{formatClock(clocks[topColor])}</span>}
         </div>
 
-        <div className="max-h-full w-full min-h-0 max-w-[560px] flex-1">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1" data-tutorial="board">
           <ChessBoard
             fen={displayFen}
             onMove={handleMove}
@@ -234,18 +256,18 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
         {!viewer.isLive && (
           <button
             onClick={viewer.goLive}
-            className="shrink-0 rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10 dark:border-accent-dark/40 dark:bg-accent-dark/10 dark:text-accent-dark"
+            className="shrink-0 rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10"
           >
             Viewing move {viewer.displayIndex + 1} of {g.moves.length} · back to current position
           </button>
         )}
 
         <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
-          <span className="text-ink dark:text-ink-dark">You</span>
-          {seconds !== null && <span className="tabular-nums font-medium text-ink dark:text-ink-dark">{formatClock(clocks[orientation])}</span>}
+          <span className="text-ink">You</span>
+          {seconds !== null && <span className="tabular-nums font-medium text-ink">{formatClock(clocks[orientation])}</span>}
         </div>
 
-        <div className="shrink-0 text-[13px] font-medium text-ink dark:text-ink-dark">
+        <div className="shrink-0 text-[13px] font-medium text-ink">
           {gameOver ? "Game over" : thinking ? "Stockfish is thinking…" : colorToMove(g.game) === playerColor ? "Your move" : "Waiting…"}
         </div>
 
@@ -262,14 +284,18 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
       <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto lg:max-h-none lg:w-72">
         <MoveHistory sanMoves={g.moves.map((m) => m.san)} activeIndex={viewer.displayIndex} onSelectMove={viewer.selectIndex} />
-        <MoveCoachPanel
-          enabled={coachEnabled}
-          onToggle={setCoachEnabled}
-          analyzing={coach.analyzing}
-          move={coach.lastCoached}
-          detail={settings.coachDetail}
-        />
+        <div data-tutorial="coach">
+          <MoveCoachPanel
+            enabled={coachEnabled}
+            onToggle={setCoachEnabled}
+            analyzing={coach.analyzing}
+            move={coach.lastCoached}
+            detail={settings.coachDetail}
+          />
+        </div>
       </div>
+
+      {showTutorial && <Spotlight tutorialId={CHESSBOARD_TUTORIAL_ID} steps={CHESSBOARD_TUTORIAL_STEPS} onDone={() => setShowTutorial(false)} />}
     </div>
   );
 }

@@ -1,5 +1,7 @@
-import { X } from "lucide-react";
+import { useState } from "react";
+import { X, RotateCcw } from "lucide-react";
 import type { AppSettings } from "../../services/storage/settings";
+import { resetAllTutorials } from "../../services/storage/tutorialProgress";
 
 interface SettingsPanelProps {
   open: boolean;
@@ -11,7 +13,7 @@ interface SettingsPanelProps {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between py-3.5">
-      <span className="text-[14px] text-ink dark:text-ink-dark">{label}</span>
+      <span className="text-[14px] text-ink">{label}</span>
       {children}
     </div>
   );
@@ -24,7 +26,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
-      className={`relative h-6 w-10 rounded-full transition-colors duration-200 ${checked ? "bg-accent dark:bg-accent-dark" : "bg-ink/10 dark:bg-white/10"}`}
+      className={`relative h-6 w-10 rounded-full transition-colors duration-200 ${checked ? "bg-accent" : "bg-ink/10"}`}
     >
       <span
         className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${checked ? "translate-x-[18px]" : "translate-x-0"}`}
@@ -34,34 +36,20 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 }
 
 export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPanelProps) {
+  const [tutorialsReset, setTutorialsReset] = useState(false);
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        aria-label="Close settings"
-        className="absolute inset-0 bg-ink/10 backdrop-blur-[2px] dark:bg-black/40"
-        onClick={onClose}
-      />
-      <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto bg-surface p-6 shadow-panel dark:bg-surface-dark">
+      <button aria-label="Close settings" className="absolute inset-0 bg-ink/10 backdrop-blur-[2px]" onClick={onClose} />
+      <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto border-l border-ink/15 bg-[#f6f3e8]/50 p-6 shadow-panel backdrop-blur-[2px]">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-[17px] font-semibold text-ink dark:text-ink-dark">Settings</h2>
-          <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 text-muted transition-colors hover:bg-ink/5 hover:text-ink dark:text-muted-dark dark:hover:bg-white/5 dark:hover:text-ink-dark">
+          <h2 className="text-[17px] font-semibold text-ink">Settings</h2>
+          <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 text-[#4a3728] transition-colors hover:bg-ink/5 hover:text-ink">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="divide-y divide-border dark:divide-border-dark">
-          <Row label="Theme">
-            <select
-              value={settings.theme}
-              onChange={(e) => onChange({ theme: e.target.value as AppSettings["theme"] })}
-              className="rounded-lg border border-border bg-bg px-2.5 py-1.5 text-[13px] dark:border-border-dark dark:bg-bg-dark"
-            >
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="system">System</option>
-            </select>
-          </Row>
+        <div className="divide-y divide-ink/15">
           <Row label="Show legal moves">
             <Toggle checked={settings.showLegalMoves} onChange={(v) => onChange({ showLegalMoves: v })} />
           </Row>
@@ -78,7 +66,7 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
             <select
               value={settings.coachDetail}
               onChange={(e) => onChange({ coachDetail: e.target.value as AppSettings["coachDetail"] })}
-              className="rounded-lg border border-border bg-bg px-2.5 py-1.5 text-[13px] dark:border-border-dark dark:bg-bg-dark"
+              className="rounded-lg border border-ink/15 bg-[#f6f3e8] px-2.5 py-1.5 text-[13px]"
             >
               <option value="basic">Basic</option>
               <option value="detailed">Detailed</option>
@@ -90,11 +78,23 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
           <Row label="Confirm draw offer">
             <Toggle checked={settings.confirmDrawOffer} onChange={(v) => onChange({ confirmDrawOffer: v })} />
           </Row>
+          <Row label="Guided tutorials">
+            <button
+              onClick={() => {
+                resetAllTutorials();
+                setTutorialsReset(true);
+              }}
+              className="flex items-center gap-1.5 rounded-full border border-ink/15 px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:bg-ink/[0.06]"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              {tutorialsReset ? "They'll replay" : "Replay"}
+            </button>
+          </Row>
         </div>
 
-        <p className="mt-6 text-[12px] leading-relaxed text-muted dark:text-muted-dark">
-          Preferences are saved on this device only. Engine assistance such as Move Coach is for learning and
-          practice. This is not an official rated chess platform.
+        <p className="mt-6 text-[12px] leading-relaxed text-[#4a3728]">
+          Preferences are saved on this device only. Engine assistance such as Move Coach is for learning and practice. This is not an official rated chess
+          platform.
         </p>
       </div>
     </div>

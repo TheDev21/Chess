@@ -74,7 +74,7 @@ export function Analysis() {
     return () => window.removeEventListener("keydown", onKey);
   }, [coached]);
 
-  const displayFen = currentIndex < 0 ? START_FEN : coached?.[currentIndex]?.fenAfter ?? START_FEN;
+  const displayFen = currentIndex < 0 ? START_FEN : (coached?.[currentIndex]?.fenAfter ?? START_FEN);
   const current = currentIndex >= 0 ? coached?.[currentIndex] : null;
 
   const summary = useMemo(() => {
@@ -96,15 +96,15 @@ export function Analysis() {
     <div className="flex h-full min-h-0 flex-col gap-4">
       {!coached && (
         <div className="mx-auto w-full max-w-xl">
-          <h1 className="mb-6 text-[26px] font-semibold tracking-tight text-ink dark:text-ink-dark">Analysis</h1>
+          <h1 className="mb-6 text-[26px] font-semibold tracking-tight text-ink">Analysis</h1>
 
           {games.length > 0 && (
             <div className="mb-4">
-              <label className="mb-1.5 block text-[13px] font-medium text-muted dark:text-muted-dark">Review a saved game</label>
+              <label className="mb-1.5 block text-[13px] font-medium text-muted">Review a saved game</label>
               <select
                 value={selectedGameId}
                 onChange={(e) => setSelectedGameId(e.target.value)}
-                className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-[13px] dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark"
+                className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-[13px]"
               >
                 <option value="">Select a game…</option>
                 {games.map((g) => (
@@ -116,18 +116,18 @@ export function Analysis() {
             </div>
           )}
 
-          <label className="mb-1.5 block text-[13px] font-medium text-muted dark:text-muted-dark">Or paste a PGN</label>
+          <label className="mb-1.5 block text-[13px] font-medium text-muted">Or paste a PGN</label>
           <textarea
             value={pgnInput}
             onChange={(e) => setPgnInput(e.target.value)}
             rows={6}
             placeholder="1. e4 e5 2. Nf3 Nc6 ..."
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-[13px] dark:border-border-dark dark:bg-surface-dark dark:text-ink-dark"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-[13px]"
           />
           <button
             onClick={() => runAnalysis(pgnInput)}
             disabled={reviewing || !pgnInput.trim() || engine.status !== "ready"}
-            className="mt-3 w-full rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-white transition-colors hover:bg-accent/90 disabled:opacity-50 dark:bg-accent-dark dark:text-ink dark:hover:bg-accent-dark/90"
+            className="mt-3 w-full rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-white transition-colors hover:bg-accent/90 disabled:opacity-50"
           >
             {reviewing ? `Analyzing ${progress.done}/${progress.total}…` : engine.status !== "ready" ? "Loading engine…" : "Analyze Game"}
           </button>
@@ -136,13 +136,13 @@ export function Analysis() {
       )}
 
       {coached && summary && (
-        <div className="flex h-full min-h-0 flex-col gap-4 lg:flex-row">
-          <div className="flex min-h-0 flex-1 flex-col items-center gap-2">
-            <div className="flex w-full min-h-0 max-w-[560px] flex-1 items-stretch gap-2">
+        <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row">
+          <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
+            <div className="flex w-full min-h-[240px] max-w-[560px] flex-1 items-stretch gap-2">
               <div className="h-full">
                 <EvaluationBar cp={current?.evalAfter.cp ?? null} mate={current?.evalAfter.mate ?? null} />
               </div>
-              <div className="h-full min-h-0 max-h-full flex-1">
+              <div className="h-full max-h-full flex-1">
                 <ChessBoard
                   fen={displayFen}
                   onMove={() => false}
@@ -154,17 +154,42 @@ export function Analysis() {
             </div>
 
             <div className="flex shrink-0 items-center gap-1.5">
-              <button onClick={() => setCurrentIndex(-1)} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">⏮</button>
-              <button onClick={() => setCurrentIndex((i) => Math.max(-1, i - 1))} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">◀</button>
-              <button onClick={() => setCurrentIndex((i) => Math.min(coached.length - 1, i + 1))} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">▶</button>
-              <button onClick={() => setCurrentIndex(coached.length - 1)} className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">⏭</button>
-              <button onClick={() => setCoached(null)} className="ml-3 rounded-full border border-border px-3.5 py-1.5 text-[12px] font-medium transition-colors hover:border-ink/20 dark:border-border-dark dark:text-ink-dark">New analysis</button>
+              <button
+                onClick={() => setCurrentIndex(-1)}
+                className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
+              >
+                ⏮
+              </button>
+              <button
+                onClick={() => setCurrentIndex((i) => Math.max(-1, i - 1))}
+                className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
+              >
+                ◀
+              </button>
+              <button
+                onClick={() => setCurrentIndex((i) => Math.min(coached.length - 1, i + 1))}
+                className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
+              >
+                ▶
+              </button>
+              <button
+                onClick={() => setCurrentIndex(coached.length - 1)}
+                className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
+              >
+                ⏭
+              </button>
+              <button
+                onClick={() => setCoached(null)}
+                className="ml-3 rounded-full border border-border px-3.5 py-1.5 text-[12px] font-medium transition-colors hover:border-ink/20"
+              >
+                New analysis
+              </button>
             </div>
 
             {current && (
-              <div className="w-full max-w-[560px] shrink-0 rounded-xl border border-border bg-surface p-4 dark:border-border-dark dark:bg-surface-dark">
+              <div className="w-full max-w-[560px] shrink-0 rounded-xl border border-border bg-surface p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[14px] font-medium text-ink dark:text-ink-dark">{current.san}</span>
+                  <span className="text-[14px] font-medium text-ink">{current.san}</span>
                   <span
                     className={clsx(
                       "rounded-full px-2.5 py-1 text-[11px] font-medium",
@@ -172,34 +197,32 @@ export function Analysis() {
                       current.classification === "mistake" && "bg-mistake/10 text-mistake",
                       current.classification === "inaccuracy" && "bg-warning/10 text-warning",
                       (current.classification === "best" || current.classification === "excellent") && "bg-success/10 text-success",
-                      current.classification === "good" && "bg-accent/10 text-accent dark:text-accent-dark"
+                      current.classification === "good" && "bg-accent/10 text-accent",
                     )}
                   >
                     {CLASSIFICATION_META[current.classification].label}
                   </span>
                 </div>
-                <p className="mt-1.5 text-[13px] text-muted dark:text-muted-dark">{current.summary}</p>
-                {current.bestAlternativeSan && (
-                  <p className="mt-1 text-[13px] text-muted dark:text-muted-dark">Engine preferred: {current.bestAlternativeSan}</p>
-                )}
+                <p className="mt-1.5 text-[13px] text-muted">{current.summary}</p>
+                {current.bestAlternativeSan && <p className="mt-1 text-[13px] text-muted">Engine preferred: {current.bestAlternativeSan}</p>}
               </div>
             )}
           </div>
 
           <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-4 overflow-y-auto lg:max-h-none lg:w-80">
-            <div className="rounded-xl border border-border bg-surface p-5 dark:border-border-dark dark:bg-surface-dark">
-              <h3 className="mb-3 text-[14px] font-semibold text-ink dark:text-ink-dark">Game Summary</h3>
-              <div className="text-[13px] text-muted dark:text-muted-dark">Estimated accuracy (application estimate): {summary.accuracy.toFixed(0)}%</div>
+            <div className="rounded-xl border border-border bg-surface p-5">
+              <h3 className="mb-3 text-[14px] font-semibold text-ink">Game Summary</h3>
+              <div className="text-[13px] text-muted">Estimated accuracy (application estimate): {summary.accuracy.toFixed(0)}%</div>
               <ul className="mt-3 space-y-1.5 text-[13px]">
                 {(Object.keys(summary.counts) as MoveClassification[]).map((c) => (
-                  <li key={c} className="flex justify-between text-ink dark:text-ink-dark">
+                  <li key={c} className="flex justify-between text-ink">
                     <span>{CLASSIFICATION_META[c].label}</span>
                     <span className="tabular-nums">{summary.counts[c]}</span>
                   </li>
                 ))}
               </ul>
               {summary.worst && (
-                <div className="mt-3 border-t border-border pt-3 text-[13px] text-muted dark:border-border-dark dark:text-muted-dark">
+                <div className="mt-3 border-t border-border pt-3 text-[13px] text-muted">
                   Biggest missed opportunity: move {summary.worst.ply + 1} ({summary.worst.san})
                 </div>
               )}
