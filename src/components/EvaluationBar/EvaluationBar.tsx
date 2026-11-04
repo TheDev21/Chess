@@ -23,7 +23,7 @@ export function EvaluationBar({ cp, mate, orientation = "white" }: EvaluationBar
   return (
     <div className="flex h-full w-5 flex-col overflow-hidden rounded-lg border border-border" aria-label="Evaluation">
       <div
-        className="w-full bg-ink/80 transition-[height] duration-300"
+        className="w-full bg-ink/50 transition-[height] duration-300"
         style={{ height: topIsWhite ? `${(1 - whiteFraction) * 100}%` : `${whiteFraction * 100}%` }}
       />
       <div className="w-full flex-1 bg-surface" />
