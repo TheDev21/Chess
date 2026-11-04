@@ -41,7 +41,7 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <button aria-label="Close settings" className="absolute inset-0 bg-ink/10 backdrop-blur-[2px]" onClick={onClose} />
-      <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto border-l border-ink/15 bg-[#f6f3e8]/10 p-6 shadow-panel backdrop-blur-[2px]">
+      <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto border-l border-ink/15 bg-[#f6f3e8]/50 p-6 shadow-panel backdrop-blur-[2px]">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-[17px] font-semibold text-ink">Settings</h2>
           <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 text-[#4a3728] transition-colors hover:bg-ink/5 hover:text-ink">
