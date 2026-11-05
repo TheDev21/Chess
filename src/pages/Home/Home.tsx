@@ -89,9 +89,9 @@ export function Home() {
         />
         <div className="absolute inset-0 flex flex-col items-start justify-center p-6 sm:p-10">
           <h1 className="text-[24px] font-semibold leading-tight tracking-tight text-ink sm:text-[44px]">Welcome to ChessGuru.</h1>
-          <p className="mt-2 text-[16px] font-medium text-ink sm:text-[18px]">1 move at a time.</p>
+          <p className="mt-2 text-[16px] font-medium text-ink sm:text-[18px]">One move at a time.</p>
           <p className="mt-3 hidden max-w-md text-[14px] leading-relaxed text-muted sm:block sm:text-[15px]">
-            Learn basics, practice slow and steady, become confident chess player.
+            Learn the basics, practice slow and steady, become confident chess player.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
@@ -104,7 +104,7 @@ export function Home() {
               to="/play"
               className="rounded-full border border-border bg-bg px-6 py-3 text-[14px] font-medium text-ink shadow-card transition-all duration-200 hover:border-gold/60 hover:shadow-panel"
             >
-              Play Chess
+              Let's Play!
             </Link>
           </div>
         </div>
