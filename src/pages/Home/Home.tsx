@@ -77,32 +77,36 @@ export function Home() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div
-        className="flex flex-col items-start overflow-hidden rounded-xl border border-border bg-surface bg-cover bg-no-repeat p-6 shadow-card sm:p-10"
-        style={{
-          backgroundImage: `linear-gradient(to right, #23372E 0%, #23372E 52%, rgba(35,55,46,0) 100%), url(${heroKingImg})`,
-          backgroundPosition: "left, center top",
-          backgroundSize: "cover, cover",
-        }}
-      >
-        <h1 className="text-[34px] font-semibold leading-tight tracking-tight text-ink sm:text-[44px]">Welcome to ChessGuru!</h1>
-        <p className="mt-2 text-[16px] font-medium text-ink sm:text-[18px]">Learn chess one move at a time.</p>
-        <p className="mt-3 max-w-md text-[14px] leading-relaxed text-muted sm:text-[15px]">
-          Start with the basics, practice at your own pace, and become confident playing chess.
-        </p>
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Link
-            to="/learn"
-            className="flex items-center gap-1.5 rounded-full bg-accent px-6 py-3 text-[14px] font-medium text-bg shadow-card transition-all duration-200 hover:brightness-110 hover:shadow-panel"
-          >
-            Start Learning <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            to="/play"
-            className="rounded-full border border-border bg-bg px-6 py-3 text-[14px] font-medium text-ink shadow-card transition-all duration-200 hover:border-gold/60 hover:shadow-panel"
-          >
-            Explore Chess
-          </Link>
+      <div className="relative overflow-hidden rounded-xl border border-border shadow-card sm:max-w-3xl">
+        {/* The photo itself is the hero - a plain, full-width <img> at its
+            natural aspect ratio (never cropped, never stretched). Text and
+            buttons sit on top of it as an absolutely positioned overlay;
+            there is no separate box/panel behind them. */}
+        <img src={heroKingImg} alt="" aria-hidden="true" className="block h-auto w-full" />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to right, #23372E 0%, #23372E 52%, rgba(35,55,46,0) 100%)" }}
+        />
+        <div className="absolute inset-0 flex flex-col items-start justify-center p-6 sm:p-10">
+          <h1 className="text-[24px] font-semibold leading-tight tracking-tight text-ink sm:text-[44px]">Welcome to ChessGuru.</h1>
+          <p className="mt-2 text-[16px] font-medium text-ink sm:text-[18px]">1 move at a time.</p>
+          <p className="mt-3 hidden max-w-md text-[14px] leading-relaxed text-muted sm:block sm:text-[15px]">
+            Learn basics, practice slow and steady, become confident chess player.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <Link
+              to="/learn"
+              className="flex items-center gap-1.5 rounded-full bg-accent px-6 py-3 text-[14px] font-medium text-bg shadow-card transition-all duration-200 hover:brightness-110 hover:shadow-panel"
+            >
+              Start Learning <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/play"
+              className="rounded-full border border-border bg-bg px-6 py-3 text-[14px] font-medium text-ink shadow-card transition-all duration-200 hover:border-gold/60 hover:shadow-panel"
+            >
+              Play Chess
+            </Link>
+          </div>
         </div>
       </div>
 
