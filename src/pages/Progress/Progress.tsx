@@ -9,9 +9,17 @@ const TOTAL_LESSONS = CHAPTERS.reduce((n, c) => n + c.lessons.length, 0);
 export function Progress() {
   const progress = loadLessonProgress();
   const games = listGames();
-  const wins = games.filter((g) => (g.playerColor === "white" && g.result === "1-0") || (g.playerColor === "black" && g.result === "0-1")).length;
-  const losses = games.filter((g) => (g.playerColor === "white" && g.result === "0-1") || (g.playerColor === "black" && g.result === "1-0")).length;
-  const draws = games.filter((g) => g.result === "1/2-1/2").length;
+  // Pass-and-Play games are excluded here: both sides are human, so there is
+  // no single "the player" for playerColor to identify, and counting them
+  // would misattribute one local player's result as the device owner's.
+  const personalGames = games.filter((g) => g.mode !== "friend");
+  const wins = personalGames.filter(
+    (g) => (g.playerColor === "white" && g.result === "1-0") || (g.playerColor === "black" && g.result === "0-1"),
+  ).length;
+  const losses = personalGames.filter(
+    (g) => (g.playerColor === "white" && g.result === "0-1") || (g.playerColor === "black" && g.result === "1-0"),
+  ).length;
+  const draws = personalGames.filter((g) => g.result === "1/2-1/2").length;
 
   const lessonsDone = progress.completedLessons.length;
   const puzzlesSolved = getSolvedCount();

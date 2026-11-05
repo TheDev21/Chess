@@ -96,6 +96,27 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
           Preferences are saved on this device only. Engine assistance such as Move Coach is for learning and practice. This is not an official rated chess
           platform.
         </p>
+        <p className="mt-3 text-[12px] leading-relaxed text-muted">
+          Powered by the{" "}
+          <a
+            href="https://github.com/official-stockfish/Stockfish"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold underline-offset-2 hover:underline"
+          >
+            Stockfish
+          </a>{" "}
+          chess engine (GPL-3.0). See{" "}
+          <a
+            href="https://github.com/nmrugg/stockfish.js/tree/v19.0.1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold underline-offset-2 hover:underline"
+          >
+            source
+          </a>{" "}
+          and license details in the project repository.
+        </p>
       </div>
     </div>
   );

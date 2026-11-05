@@ -47,16 +47,21 @@ export function Home() {
   const puzzleCollectionDone = puzzles.length > 0 && puzzles.every((p) => solvedIds.includes(p.id));
   const dailyState = daily ? getDailyPuzzleState(daily.id) : null;
 
-  const record = games.reduce(
-    (acc, g) => {
-      const outcome = gameOutcome(g);
-      if (outcome === "win") acc.wins++;
-      else if (outcome === "loss") acc.losses++;
-      else if (outcome === "draw") acc.draws++;
-      return acc;
-    },
-    { wins: 0, losses: 0, draws: 0 },
-  );
+  // Pass-and-Play games are excluded here: both sides are human, so there is
+  // no single "the player" for playerColor to identify, and counting them
+  // would misattribute one local player's result as the device owner's.
+  const record = games
+    .filter((g) => g.mode !== "friend")
+    .reduce(
+      (acc, g) => {
+        const outcome = gameOutcome(g);
+        if (outcome === "win") acc.wins++;
+        else if (outcome === "loss") acc.losses++;
+        else if (outcome === "draw") acc.draws++;
+        return acc;
+      },
+      { wins: 0, losses: 0, draws: 0 },
+    );
   const recentGames = games.slice(0, 3);
 
   // One honest, data-derived nudge - never a fabricated pattern like "you keep missing forks"
