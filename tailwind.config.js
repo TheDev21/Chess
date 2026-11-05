@@ -9,41 +9,38 @@ export default {
         serif: ["\"Playfair Display\"", "Georgia", "serif"],
       },
       colors: {
-        // A warm, faintly green-tinted parchment, not a neutral gray-white -
-        // the same family as the board's own light squares, just diluted
-        // enough to sit quietly behind everything else.
+        // "Midnight Forest" palette: a deep emerald page background, slightly
+        // lighter emerald surfaces for cards (with a brighter emerald on
+        // hover), warm gold as the primary accent (buttons, active nav
+        // states, progress, highlights). Warm cream ink on the dark
+        // surfaces; the deep emerald background color as text on the
+        // lighter gold buttons.
         bg: {
-          DEFAULT: "#f6f3e8",
-          dark: "#1b1e1a",
+          DEFAULT: "#101C18",
         },
         surface: {
-          DEFAULT: "#fffdf6",
-          dark: "#242722",
+          DEFAULT: "#23372E",
+          elevated: "#2A4035",
         },
         ink: {
-          DEFAULT: "#242420",
-          dark: "#efece2",
+          DEFAULT: "#F3F0E7",
         },
         muted: {
-          DEFAULT: "#79765f",
-          dark: "#9c9a87",
+          DEFAULT: "#A5B2A8",
         },
         border: {
-          DEFAULT: "#e6e0cc",
-          dark: "#3a3d33",
+          DEFAULT: "#35483D",
         },
         accent: {
-          DEFAULT: "#4f7942",
-          dark: "#8bb674",
+          DEFAULT: "#C6A15B",
         },
-        accentDeep: "#355e3b",
+        accentDeep: "#D4B571",
         gold: {
-          DEFAULT: "#b68a45",
-          dark: "#c9a368",
+          DEFAULT: "#E8D6AD",
         },
         sage: {
-          DEFAULT: "#a8bba7",
-          bg: "#e8eee5",
+          DEFAULT: "#A5B2A8",
+          bg: "#23372E",
         },
         board: {
           light: "#eeeed2",
@@ -53,11 +50,11 @@ export default {
           check: "#d97770",
           legalMove: "#315c46",
         },
-        success: "#4f7942",
-        warning: "#c98a2e",
-        mistake: "#d2691e",
-        blunder: "#bd625b",
-        error: "#bd625b",
+        success: "#8bbf72",
+        warning: "#e0a53e",
+        mistake: "#e2824a",
+        blunder: "#e08077",
+        error: "#e08077",
       },
       borderRadius: {
         DEFAULT: "10px",
@@ -65,9 +62,9 @@ export default {
         xl: "18px",
       },
       boxShadow: {
-        card: "0 1px 2px rgba(20,20,20,.03), 0 2px 12px rgba(20,20,20,.04)",
-        board: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08)",
-        panel: "0 8px 40px rgba(20,20,20,.08)",
+        card: "0 1px 2px rgba(0,0,0,.25), 0 2px 12px rgba(0,0,0,.18)",
+        board: "0 2px 4px rgba(0,0,0,.25), 0 12px 32px rgba(0,0,0,.35)",
+        panel: "0 8px 40px rgba(0,0,0,.45)",
       },
     },
   },

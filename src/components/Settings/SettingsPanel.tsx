@@ -40,16 +40,16 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <button aria-label="Close settings" className="absolute inset-0 bg-ink/10 backdrop-blur-[2px]" onClick={onClose} />
-      <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto border-l border-ink/15 bg-[#f6f3e8]/50 p-6 shadow-panel backdrop-blur-[2px]">
+      <button aria-label="Close settings" className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto border-l border-border bg-surface p-6 shadow-panel">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-[17px] font-semibold text-ink">Settings</h2>
-          <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 text-[#4a3728] transition-colors hover:bg-ink/5 hover:text-ink">
+          <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 text-muted transition-colors hover:bg-ink/5 hover:text-ink">
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="divide-y divide-ink/15">
+        <div className="divide-y divide-border">
           <Row label="Show legal moves">
             <Toggle checked={settings.showLegalMoves} onChange={(v) => onChange({ showLegalMoves: v })} />
           </Row>
@@ -66,7 +66,7 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
             <select
               value={settings.coachDetail}
               onChange={(e) => onChange({ coachDetail: e.target.value as AppSettings["coachDetail"] })}
-              className="rounded-lg border border-ink/15 bg-[#f6f3e8] px-2.5 py-1.5 text-[13px]"
+              className="rounded-lg border border-border bg-bg px-2.5 py-1.5 text-[13px] text-ink"
             >
               <option value="basic">Basic</option>
               <option value="detailed">Detailed</option>
@@ -84,7 +84,7 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
                 resetAllTutorials();
                 setTutorialsReset(true);
               }}
-              className="flex items-center gap-1.5 rounded-full border border-ink/15 px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:bg-ink/[0.06]"
+              className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:bg-accent/[0.08]"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               {tutorialsReset ? "They'll replay" : "Replay"}
@@ -92,7 +92,7 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
           </Row>
         </div>
 
-        <p className="mt-6 text-[12px] leading-relaxed text-[#4a3728]">
+        <p className="mt-6 text-[12px] leading-relaxed text-muted">
           Preferences are saved on this device only. Engine assistance such as Move Coach is for learning and practice. This is not an official rated chess
           platform.
         </p>

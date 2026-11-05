@@ -22,7 +22,7 @@ export function Progress() {
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="text-[26px] font-semibold tracking-tight text-ink">Progress</h1>
-      <p className="mt-1.5 text-[14px] text-[#4a3728]">A look at how your chess is coming along.</p>
+      <p className="mt-1.5 text-[14px] text-muted">A look at how your chess is coming along.</p>
 
       <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Stat label="Lessons" value={`${lessonsDone}/${TOTAL_LESSONS}`} />
@@ -39,7 +39,7 @@ export function Progress() {
         </div>
       )}
 
-      {suggestion && <div className="mt-6 rounded-xl border border-accent/25 bg-accent/5 p-4 text-[13px] leading-relaxed text-ink">{suggestion}</div>}
+      {suggestion && <div className="mt-6 rounded-xl border border-gold/25 bg-gold/5 p-4 text-[13px] leading-relaxed text-ink">{suggestion}</div>}
 
       <div className="mt-8">
         <GameHistoryList />
@@ -77,11 +77,11 @@ function buildSuggestion({
 
 function Stat({ label, value, tone }: { label: string; value: string; tone?: "success" | "blunder" }) {
   return (
-    <div className="rounded-xl border border-ink/15 bg-[#f6f3e8]/50 px-4 py-3.5 text-center backdrop-blur-[2px]">
+    <div className="rounded-xl border border-border bg-surface px-4 py-3.5 text-center shadow-card">
       <div className={`text-[20px] font-semibold tabular-nums ${tone === "success" ? "text-success" : tone === "blunder" ? "text-blunder" : "text-ink"}`}>
         {value}
       </div>
-      <div className="text-[12px] text-[#4a3728]">{label}</div>
+      <div className="text-[12px] text-muted">{label}</div>
     </div>
   );
 }

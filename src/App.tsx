@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Navigation } from "./components/Navigation/Navigation";
 import { SettingsPanel } from "./components/Settings/SettingsPanel";
-import { kingBackgroundStyle } from "./lib/panoramaBackground";
 import { Spotlight, type SpotlightStep } from "./components/Tutorial/Spotlight";
 import { isTutorialSeen } from "./services/storage/tutorialProgress";
 import { useSettings } from "./hooks/useSettings";
@@ -37,11 +36,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative isolate flex h-[100dvh] flex-col overflow-hidden bg-bg lg:flex-row">
-      {/* The single king photo, shown everywhere, once, behind the whole app - full-bleed
-          (background-size: cover). */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-bg" style={kingBackgroundStyle()} />
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-ink/20" />
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-bg lg:flex-row">
       <Navigation onOpenSettings={() => setSettingsOpen(true)} />
       <main className="mx-auto w-full flex-1 overflow-y-auto px-5 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] pt-4 sm:px-6 sm:py-6 lg:max-w-6xl lg:pb-6">
         <Routes>

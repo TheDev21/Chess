@@ -7,26 +7,22 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    @apply bg-bg text-ink dark:bg-bg-dark dark:text-ink-dark antialiased;
+    @apply bg-bg text-ink antialiased;
     font-feature-settings: "tnum";
     transition: background-color 0.2s ease, color 0.2s ease;
   }
   * {
-    @apply border-border dark:border-border-dark;
+    @apply border-border;
   }
 
-  /* A slight gold glow on every pill-shaped button when hovered or focused - the same
-     amber the guided tour uses to call out an element, applied site-wide. Covers real
-     <button>/<a> controls as well as <span> pills styled as buttons (card CTAs). */
+  /* A slight gold glow on every pill-shaped button when hovered or focused, applied
+     site-wide. Covers real <button>/<a> controls as well as <span> pills styled as
+     buttons (card CTAs). */
   :is(button, a, span)[class*="rounded-full"]:not(:disabled) {
     transition: box-shadow 0.15s ease;
   }
   :is(button, a, span)[class*="rounded-full"]:not(:disabled):hover,
   :is(button, a, span)[class*="rounded-full"]:not(:disabled):focus-visible {
-    box-shadow: 0 0 0 1px rgba(201, 138, 46, 0.4), 0 0 10px 2px rgba(201, 138, 46, 0.3);
-  }
-  .dark :is(button, a, span)[class*="rounded-full"]:not(:disabled):hover,
-  .dark :is(button, a, span)[class*="rounded-full"]:not(:disabled):focus-visible {
-    box-shadow: 0 0 0 1px rgba(232, 201, 116, 0.45), 0 0 10px 2px rgba(232, 201, 116, 0.35);
+    box-shadow: 0 0 0 1px rgba(201, 162, 75, 0.4), 0 0 10px 2px rgba(201, 162, 75, 0.3);
   }
 }
