@@ -3,6 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import { Navigation } from "./components/Navigation/Navigation";
 import { SettingsPanel } from "./components/Settings/SettingsPanel";
 import { Spotlight, type SpotlightStep } from "./components/Tutorial/Spotlight";
+import { UpdatePrompt } from "./components/UpdatePrompt/UpdatePrompt";
+import { ConnectionStatus } from "./components/ConnectionStatus/ConnectionStatus";
 import { isTutorialSeen } from "./services/storage/tutorialProgress";
 import { useSettings } from "./hooks/useSettings";
 import { Home } from "./pages/Home/Home";
@@ -55,6 +57,8 @@ export default function App() {
       </main>
       <SettingsPanel open={settingsOpen} settings={settings} onChange={update} onClose={() => setSettingsOpen(false)} />
       {showSiteTour && <Spotlight tutorialId={SITE_TOUR_ID} steps={SITE_TOUR_STEPS} onDone={() => setShowSiteTour(false)} />}
+      <ConnectionStatus />
+      <UpdatePrompt />
     </div>
   );
 }

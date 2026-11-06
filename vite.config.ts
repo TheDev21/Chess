@@ -7,8 +7,15 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["icons/icon-192.png", "icons/icon-512.png"],
+      // "prompt" (not "autoUpdate"): a new service worker installs and waits
+      // rather than taking over immediately. The app is told via
+      // onNeedRefresh (see UpdatePrompt.tsx) and only calls
+      // updateServiceWorker() - which lets the waiting worker skip waiting -
+      // when the user explicitly clicks "Update". This is what keeps a
+      // deployment from silently swapping the app out from under an active
+      // game.
+      registerType: "prompt",
+      includeAssets: ["icons/icon-192.png", "icons/icon-512.png", "favicon.ico"],
       manifest: {
         name: "ChessGuru: Learn Chess, Understand Every Move.",
         short_name: "ChessGuru",
@@ -18,8 +25,12 @@ export default defineConfig({
         display: "standalone",
         start_url: ".",
         icons: [
-          { src: "icons/icon-192.png", sizes: "192x192", type: "image/png" },
-          { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" },
+          // The existing artwork already has generous, centered padding
+          // (confirmed by visual inspection), so it's safe within the
+          // maskable safe zone without needing new art - "any maskable"
+          // lets platforms that support adaptive icons use it either way.
+          { src: "icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+          { src: "icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
         ],
       },
       workbox: {
