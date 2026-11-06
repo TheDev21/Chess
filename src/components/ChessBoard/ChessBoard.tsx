@@ -183,13 +183,12 @@ export function ChessBoard({
     squareRefs.current[square]?.focus();
   };
 
-  // Premium "Midnight Forest + Antique Gold" board palette (Phase 9). The
-  // teaching highlight and the selected-square tint both use the board's
-  // shiny gold accent (#D4AF37); the last-move highlight deliberately uses
-  // a softer, more muted gold (the sitewide #C6A15B accent) so it reads as
-  // a quieter history marker next to the brighter, more attention-grabbing
-  // current selection - the same visual hierarchy the original design had,
-  // just with a shinier gold for the "pay attention to this" cases.
+  // Premium "Midnight Forest + Antique Gold" board palette (Phase 9). Every
+  // gold accent on the board - teaching highlight, selection, last-move -
+  // now uses the same shiny gold (#D4AF37), matching the sitewide accent
+  // color (also #D4AF37 as of this update). Last-move stays visually
+  // distinct from the brighter current selection through lower opacity
+  // alone, not a separate, more muted hue.
   const squareStyles: Record<string, React.CSSProperties> = {};
   if (highlightSquares) {
     for (const sq of highlightSquares) {
@@ -197,8 +196,8 @@ export function ChessBoard({
     }
   }
   if (lastMove) {
-    squareStyles[lastMove.from] = { backgroundColor: "rgba(198,161,91,0.35)" };
-    squareStyles[lastMove.to] = { backgroundColor: "rgba(198,161,91,0.35)" };
+    squareStyles[lastMove.from] = { backgroundColor: "rgba(212,175,55,0.2)" };
+    squareStyles[lastMove.to] = { backgroundColor: "rgba(212,175,55,0.2)" };
   }
   if (selected) {
     squareStyles[selected] = { ...squareStyles[selected], backgroundColor: "rgba(212,175,55,0.35)" };
@@ -287,8 +286,12 @@ export function ChessBoard({
   return (
     <div className="relative flex h-full w-full items-center justify-center" ref={ref}>
       <div
-        className="overflow-hidden rounded-[10px] border border-[#D4AF37]"
-        style={{ width: boardWidth, height: boardWidth, boxShadow: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08)" }}
+        className="overflow-hidden rounded-[10px] border-[3px] border-[#D4AF37]"
+        style={{
+          width: boardWidth,
+          height: boardWidth,
+          boxShadow: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08), 0 0 0 1px rgba(212,175,55,0.35), 0 0 16px 1px rgba(212,175,55,0.25)",
+        }}
         role="grid"
         aria-label={`Chess board, ${orientation === "white" ? "White" : "Black"} at the bottom`}
       >

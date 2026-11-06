@@ -15,12 +15,18 @@ export default {
         // states, progress, highlights). Warm cream ink on the dark
         // surfaces; the deep emerald background color as text on the
         // lighter gold buttons.
+        // Phase 9 atmosphere correction: bg/surface values re-measured by
+        // sampling actual pixels from the user's reference image. The real
+        // reference is a more pure, less-blue emerald-black, and its cards
+        // sit much closer in tone to the page background than our original
+        // values did - separation there comes mainly from the card shadow
+        // (see boxShadow.card below), not a big background color jump.
         bg: {
-          DEFAULT: "#101C18",
+          DEFAULT: "#0A1710",
         },
         surface: {
-          DEFAULT: "#23372E",
-          elevated: "#2A4035",
+          DEFAULT: "#0F1F15",
+          elevated: "#15271B",
         },
         ink: {
           DEFAULT: "#F3F0E7",
@@ -32,7 +38,7 @@ export default {
           DEFAULT: "#35483D",
         },
         accent: {
-          DEFAULT: "#C6A15B",
+          DEFAULT: "#D4AF37",
         },
         accentDeep: "#D4B571",
         gold: {
@@ -52,7 +58,7 @@ export default {
           dark: "#32462B",
           border: "#D4AF37",
           selected: "#D4AF37",
-          lastMove: "#C6A15B",
+          lastMove: "#D4AF37",
           check: "#d97770",
           legalMove: "#32462B",
         },
@@ -68,9 +74,28 @@ export default {
         xl: "18px",
       },
       boxShadow: {
-        card: "0 1px 2px rgba(0,0,0,.25), 0 2px 12px rgba(0,0,0,.18)",
+        // Phase 9 atmosphere: the same depth as before, plus a hairline
+        // gold inset top-edge (barely visible, not a border) so cards read
+        // as gently gold-lit rather than flat - restrained on purpose.
+        card: "0 1px 2px rgba(0,0,0,.28), 0 2px 14px rgba(0,0,0,.2), inset 0 1px 0 rgba(212,175,55,0.08)",
         board: "0 2px 4px rgba(0,0,0,.25), 0 12px 32px rgba(0,0,0,.35)",
-        panel: "0 8px 40px rgba(0,0,0,.45)",
+        panel: "0 8px 40px rgba(0,0,0,.48), inset 0 1px 0 rgba(212,175,55,0.07)",
+      },
+      backgroundImage: {
+        // A very subtle emerald depth gradient for large background areas
+        // (the app's root background) - lighter "Deep Emerald" easing into
+        // the base "Midnight Forest" moving down the page, not a visible
+        // band or a second color.
+        // A visible diagonal light sweep (not a barely-there tint) across
+        // the upper portion of the page, easing back to the plain dark base
+        // everywhere else - matched directly against the reference image
+        // rather than kept deliberately faint.
+        // A restrained ambient glow, not a replica of any reference photo:
+        // a soft radial lift above the content, like overhead light in a
+        // quiet room, easing into the plain dark base everywhere else.
+        // Deliberately gentler than a visible "beam" - this is its own
+        // design call toward "premium and calm" rather than "dramatic."
+        "midnight-emerald": "radial-gradient(ellipse 90% 60% at 50% 0%, #17301F 0%, #0A1710 70%)",
       },
     },
   },

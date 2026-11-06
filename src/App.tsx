@@ -38,7 +38,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden bg-bg lg:flex-row">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-bg bg-midnight-emerald lg:flex-row">
       <Navigation onOpenSettings={() => setSettingsOpen(true)} />
       <main className="mx-auto w-full flex-1 overflow-y-auto px-5 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] pt-4 sm:px-6 sm:py-6 lg:max-w-6xl lg:pb-6">
         <Routes>

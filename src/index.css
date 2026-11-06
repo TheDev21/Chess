@@ -23,6 +23,15 @@
   }
   :is(button, a, span)[class*="rounded-full"]:not(:disabled):hover,
   :is(button, a, span)[class*="rounded-full"]:not(:disabled):focus-visible {
-    box-shadow: 0 0 0 1px rgba(201, 162, 75, 0.4), 0 0 10px 2px rgba(201, 162, 75, 0.3);
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.45), 0 0 10px 2px rgba(212, 175, 55, 0.35);
+  }
+
+  /* A restrained satin sheen on solid-gold CTA buttons (New Game, Start Game,
+     Create Game, etc. - anything using the bg-accent utility): a soft lighter
+     band near the top easing to the plain accent color, not a hard gloss
+     stripe or a metallic reflection. Layered on top of whatever bg-accent
+     already paints, so no component needs its own styling for this. */
+  :is(button, a)[class*="bg-accent"]:not(:disabled) {
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12) 100%);
   }
 }
