@@ -20,8 +20,8 @@ export default defineConfig({
         name: "ChessGuru: Learn Chess, Understand Every Move.",
         short_name: "ChessGuru",
         description: "Interactive chess lessons, puzzles, a Stockfish opponent, and a Move Coach that explains every move in plain English.",
-        theme_color: "#f6f3e8",
-        background_color: "#f6f3e8",
+        theme_color: "#0A1710",
+        background_color: "#0A1710",
         display: "standalone",
         start_url: ".",
         icons: [
