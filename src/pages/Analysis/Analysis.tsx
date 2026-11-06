@@ -181,24 +181,28 @@ export function Analysis() {
             <div className="flex shrink-0 items-center gap-1.5">
               <button
                 onClick={() => setCurrentIndex(-1)}
+                aria-label="Go to start"
                 className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
               >
                 ⏮
               </button>
               <button
                 onClick={() => setCurrentIndex((i) => Math.max(-1, i - 1))}
+                aria-label="Previous move"
                 className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
               >
                 ◀
               </button>
               <button
                 onClick={() => setCurrentIndex((i) => Math.min(coached.length - 1, i + 1))}
+                aria-label="Next move"
                 className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
               >
                 ▶
               </button>
               <button
                 onClick={() => setCurrentIndex(coached.length - 1)}
+                aria-label="Go to end"
                 className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
               >
                 ⏭
