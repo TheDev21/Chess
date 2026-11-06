@@ -85,7 +85,7 @@ export function Home() {
         <img src={heroKingImg} alt="" aria-hidden="true" className="block h-auto w-full" />
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to right, #23372E 0%, #23372E 52%, rgba(35,55,46,0) 100%)" }}
+          style={{ background: "linear-gradient(to right, rgba(35,55,46,0.6) 0%, rgba(35,55,46,0.2) 60%, rgba(35,55,46,0) 100%)" }}
         />
         <div className="absolute inset-0 flex flex-col items-start justify-center p-6 sm:p-10">
           <h1 className="text-[24px] font-semibold leading-tight tracking-tight text-ink sm:text-[44px]">Welcome to ChessGuru.</h1>

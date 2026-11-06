@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Settings as SettingsIcon, Home, BookOpen, Swords, Puzzle, LineChart } from "lucide-react";
 import clsx from "clsx";
-import logoKingImg from "../../assets/logo-king.png";
+import logoKingImg from "../../assets/logo-king-grad.png";
 
 interface NavigationProps {
   onOpenSettings: () => void;
@@ -18,8 +18,8 @@ const links = [
 function Logo() {
   return (
     <NavLink to="/" className="flex items-center gap-2 text-ink" end>
-      <img src={logoKingImg} alt="" className="h-6 w-auto" />
-      <span className="text-[15px] font-semibold tracking-tight">ChessGuru</span>
+      <img src={logoKingImg} alt="" className="h-8 w-auto" />
+      <span className="text-[18px] font-semibold tracking-tight">ChessGuru</span>
     </NavLink>
   );
 }

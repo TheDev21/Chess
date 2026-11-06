@@ -161,7 +161,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
                 onClick={() => setDifficulty(d)}
                 className={clsx(
                   "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
-                  difficulty === d ? "border-accent bg-accent/10 text-accent" : "border-border text-ink hover:border-ink/20",
+                  difficulty === d ? "border-accent bg-accent text-bg shadow-card" : "border-border text-ink hover:border-ink/20",
                 )}
               >
                 {DIFFICULTY_CONFIG[d].label}
@@ -179,7 +179,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
                 onClick={() => setColorChoice(c)}
                 className={clsx(
                   "flex-1 rounded-full border px-3.5 py-1.5 text-[13px] font-medium capitalize transition-colors",
-                  colorChoice === c ? "border-accent bg-accent/10 text-accent" : "border-border text-ink hover:border-ink/20",
+                  colorChoice === c ? "border-accent bg-accent text-bg shadow-card" : "border-border text-ink hover:border-ink/20",
                 )}
               >
                 {c}
@@ -197,7 +197,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
                 onClick={() => setTimeControl(t)}
                 className={clsx(
                   "rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-colors",
-                  timeControl === t ? "border-accent bg-accent/10 text-accent" : "border-border text-ink hover:border-ink/20",
+                  timeControl === t ? "border-accent bg-accent text-bg shadow-card" : "border-border text-ink hover:border-ink/20",
                 )}
               >
                 {TIME_CONTROLS[t].label}

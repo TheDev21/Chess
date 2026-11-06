@@ -38,7 +38,15 @@ export default function App() {
   }, []);
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden bg-bg bg-midnight-emerald lg:flex-row">
+    <div
+      className="flex h-[100dvh] flex-col overflow-hidden bg-bg lg:flex-row"
+      style={{
+        backgroundImage: "linear-gradient(rgba(10,23,16,0.78), rgba(10,23,16,0.88)), url(/src/assets/bg-premium-texture.webp)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <Navigation onOpenSettings={() => setSettingsOpen(true)} />
       <main className="mx-auto w-full flex-1 overflow-y-auto px-5 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] pt-4 sm:px-6 sm:py-6 lg:max-w-6xl lg:pb-6">
         <Routes>
