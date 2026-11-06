@@ -57,7 +57,7 @@ export function Learn() {
         })}
 
         <div className="rounded-xl border border-dashed border-border p-4 text-center text-[13px] text-muted">
-          More chapters are on the way: special moves, and how to play a full game.
+          That's the full rule set! Head to Puzzles or Play to put it into practice.
         </div>
       </div>
     </div>

@@ -145,6 +145,313 @@ export const CHAPTERS: Chapter[] = [
           hint: "Follow the diagonal from c4 as far as it can go.",
         },
       },
+      {
+        id: "rook",
+        chapterId: "pieces",
+        title: "The Rook",
+        summary: "Glides in straight lines, any distance.",
+        watch: [
+          {
+            caption: "A rook moves in straight lines - up, down, left, or right - any number of squares.",
+            fen: "4k3/8/8/8/3R4/8/8/4K3 w - - 0 1",
+            highlightSquares: ["d1", "d8", "a4", "h4"],
+          },
+          {
+            caption: "Unlike the bishop, a rook can reach every square on its own file and rank.",
+            fen: "4k3/8/8/8/3R4/8/8/4K3 w - - 0 1",
+            highlightSquares: ["d2", "d3", "d5", "d6", "d7", "a4", "b4", "c4", "e4", "f4", "g4", "h4"],
+          },
+        ],
+        tryIt: {
+          instructions: "Move the rook on d4 anywhere it can legally go.",
+          fen: "4k3/8/8/8/3R4/8/8/4K3 w - - 0 1",
+          kind: "move",
+          pieceSquare: "d4",
+          successMessage: "A clean straight-line move. That's how rooks travel.",
+        },
+        challenge: {
+          instructions: "White to move. Capture the undefended black rook.",
+          fen: "4k3/8/8/8/3r4/8/3R4/4K3 w - - 0 1",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.from === "d2" && move.to === "d4",
+          successMessage: "Rxd4. The file was wide open, so the rook marched straight up it.",
+          hint: "Look straight up the d-file from your rook.",
+        },
+      },
+      {
+        id: "queen",
+        chapterId: "pieces",
+        title: "The Queen",
+        summary: "Combines the rook and bishop - the most powerful piece.",
+        watch: [
+          {
+            caption: "The queen moves like a rook and a bishop combined: straight lines and diagonals, any distance.",
+            fen: "4k3/8/8/8/3Q4/8/8/4K3 w - - 0 1",
+            highlightSquares: ["d1", "d8", "a4", "h4", "a1", "h8", "a7", "g1"],
+          },
+          { caption: "She's the most powerful piece on the board - use her carefully.", fen: "4k3/8/8/8/3Q4/8/8/4K3 w - - 0 1" },
+        ],
+        tryIt: {
+          instructions: "Move the queen on d4 anywhere it can legally go.",
+          fen: "4k3/8/8/8/3Q4/8/8/4K3 w - - 0 1",
+          kind: "move",
+          pieceSquare: "d4",
+          successMessage: "Straight line or diagonal - the queen can do both.",
+        },
+        challenge: {
+          instructions: "White to move. Capture the undefended black queen.",
+          fen: "4k3/6q1/8/8/3Q4/8/8/4K3 w - - 0 1",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.from === "d4" && move.to === "g7",
+          successMessage: "Qxg7. The diagonal from d4 ran straight through to the undefended queen.",
+          hint: "Follow the diagonal from d4 - where does it end up?",
+        },
+      },
+      {
+        id: "king",
+        chapterId: "pieces",
+        title: "The King & Check",
+        summary: "One square at a time - and must always stay safe.",
+        watch: [
+          { caption: "The king moves one square in any direction.", fen: "7k/8/8/8/3K4/8/8/8 w - - 0 1" },
+          {
+            caption: "If the king is attacked, it's in check. Leaving your own king in check is illegal - you must respond to it with your very next move.",
+            fen: "7k/8/8/8/8/8/8/r3K3 w - - 0 1",
+            highlightSquares: ["a1", "e1"],
+          },
+        ],
+        tryIt: {
+          instructions: "Move the king one square in any direction.",
+          fen: "7k/8/8/8/3K4/8/8/8 w - - 0 1",
+          kind: "move",
+          pieceSquare: "d4",
+          successMessage: "One square, any direction. The king is slow, but it's the piece you must protect above all.",
+        },
+        challenge: {
+          instructions: "White to move. Your king is in check - move it to safety.",
+          fen: "7k/8/8/8/8/8/8/r3K3 w - - 0 1",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.piece === "k",
+          successMessage: "You moved out of check. That's the first rule when you're attacked: get safe.",
+          hint: "Look for a square next to your king that the rook doesn't attack.",
+        },
+      },
+    ],
+  },
+  {
+    id: "special-moves",
+    title: "Special Moves",
+    description: "Castling, en passant, and pawn promotion.",
+    lessons: [
+      {
+        id: "castling",
+        chapterId: "special-moves",
+        title: "Castling",
+        summary: "Move your king and rook together, for safety.",
+        watch: [
+          {
+            caption: "Castling lets the king and rook move together in a single move - for safety and speed.",
+            fen: "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+            highlightSquares: ["e1", "h1"],
+          },
+          {
+            caption: "The king moves two squares toward the rook, and the rook hops to the square right beside it.",
+            fen: "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+            highlightSquares: ["e1", "f1", "g1", "h1"],
+          },
+          {
+            caption: "A king can't castle out of check, through a square an enemy piece attacks, or into check on its landing square.",
+            fen: "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+            highlightSquares: ["e1", "f1", "g1"],
+          },
+          {
+            caption: "Two more requirements: neither the king nor that rook can have moved earlier in the game, and every square between them must be empty.",
+            fen: "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+            highlightSquares: ["e1", "f1", "g1", "h1"],
+          },
+        ],
+        tryIt: {
+          instructions: "Castle kingside: move the king from e1 two squares toward the h1 rook.",
+          fen: "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+          kind: "move",
+          pieceSquare: "e1",
+          successMessage: "That's castling - your king and rook moved together in one turn.",
+        },
+        challenge: {
+          instructions: "White to move. Castle kingside.",
+          fen: "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.san === "O-O",
+          successMessage: "O-O! Your king is tucked away safely, and your rook joined the game.",
+          hint: "The king and rook on the h-file (your right) can castle together.",
+        },
+      },
+      {
+        id: "en-passant",
+        chapterId: "special-moves",
+        title: "En Passant",
+        summary: "A special pawn capture most beginners miss.",
+        watch: [
+          { caption: "A pawn on its first move can advance two squares at once.", fen: "4k3/3p4/8/4P3/8/8/8/4K3 b - - 0 1" },
+          {
+            caption: "If that two-square advance lands it right beside an enemy pawn, something special can happen.",
+            fen: "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2",
+            highlightSquares: ["d5", "e5"],
+          },
+          {
+            caption: "White can capture en passant: exd6, as if the black pawn had only moved one square.",
+            fen: "4k3/8/3P4/8/8/8/8/4K3 b - - 0 2",
+            highlightSquares: ["d6"],
+          },
+          {
+            caption: "Timing matters: en passant is only legal on the very next move after that two-square advance. Wait one turn, and the chance is gone for good.",
+            fen: "4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 2",
+            highlightSquares: ["d5", "e5"],
+          },
+        ],
+        tryIt: {
+          instructions: "Capture the black pawn en passant - it just moved two squares right beside yours.",
+          fen: "4k3/8/4p3/3pP3/8/8/8/4K3 w - d6 1 2",
+          kind: "move",
+          pieceSquare: "e5",
+          successMessage: "That's en passant: capturing a pawn that just passed yours, as though it had only moved one square.",
+        },
+        challenge: {
+          instructions: "White to move. There are two ways to move this pawn - but only one captures the black pawn beside it.",
+          fen: "4k3/8/8/3pP3/8/8/8/4K3 w - d6 1 2",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.flags.includes("e"),
+          successMessage: "Exd6 en passant! You spotted the one capture most beginners miss.",
+          hint: "Look for a diagonal capture, even though no piece is sitting there yet.",
+        },
+      },
+      {
+        id: "promotion",
+        chapterId: "special-moves",
+        title: "Pawn Promotion",
+        summary: "A pawn that reaches the far end becomes a new piece.",
+        watch: [
+          {
+            caption:
+              "When a pawn reaches the far end of the board, it must promote - becoming a queen, rook, bishop, or knight of its own color. It can never stay a pawn, and it can never become a king.",
+            fen: "k7/4P3/8/8/8/8/8/4K3 w - - 0 1",
+          },
+          { caption: "Almost always, you'll choose a queen - the most powerful piece.", fen: "k3Q3/8/8/8/8/8/8/4K3 b - - 0 1" },
+          {
+            caption:
+              "But you don't have to. Underpromoting to a rook, bishop, or knight is sometimes the better choice - for example, a knight's unique jumping move can deliver a check a queen couldn't, or a queen might accidentally stalemate your opponent when a different piece wouldn't.",
+            fen: "k3Q3/8/8/8/8/8/8/4K3 b - - 0 1",
+          },
+        ],
+        tryIt: {
+          instructions: "Push the pawn on e7 all the way to the end of the board.",
+          fen: "k7/4P3/8/8/8/8/8/4K3 w - - 0 1",
+          kind: "move",
+          pieceSquare: "e7",
+          successMessage: "Queened! Pawns almost always promote to a queen, since she's the strongest piece.",
+        },
+        challenge: {
+          instructions: "White to move. Promote your pawn - don't let it become anything less than a queen.",
+          fen: "4k3/P7/8/8/8/8/8/4K3 w - - 0 1",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.promotion === "q",
+          successMessage: "A new queen is born! Promotion is one of the most powerful ideas in chess.",
+          hint: "Push the pawn all the way - what does it become when it arrives?",
+        },
+      },
+    ],
+  },
+  {
+    id: "game-over",
+    title: "Checkmate and Draws",
+    description: "How games end: checkmate, stalemate, and the basic draw rules.",
+    lessons: [
+      {
+        id: "checkmate",
+        chapterId: "game-over",
+        title: "Checkmate",
+        summary: "The king is in check, with no way to escape.",
+        watch: [
+          {
+            caption:
+              "Checkmate ends the game: the king is in check, and there's no legal way to escape it - by moving the king, capturing the attacking piece, or blocking the attack.",
+            fen: "R5k1/5ppp/8/8/8/8/8/4K3 b - - 0 1",
+            highlightSquares: ["a8", "g8"],
+          },
+          {
+            caption: "Here, none of those three escapes work: the king can't move, nothing can capture the rook, and nothing can block it.",
+            fen: "R5k1/5ppp/8/8/8/8/8/4K3 b - - 0 1",
+          },
+        ],
+        tryIt: {
+          instructions: "Tap the black king. It's checkmated here - see why it has no escape.",
+          fen: "R5k1/5ppp/8/8/8/8/8/4K3 b - - 0 1",
+          kind: "find",
+          targetSquare: "g8",
+          successMessage: "Exactly - the king on g8 is checkmated. No legal move can save it.",
+        },
+        challenge: {
+          instructions: "White to move. Find the move that checkmates the black king.",
+          fen: "6k1/R4ppp/8/8/8/8/8/4K3 w - - 0 1",
+          kind: "move",
+          isGoalMove: (chess) => chess.isCheckmate(),
+          successMessage: "Checkmate! Ra8# - the king had nowhere to go, nothing to block with, and nothing to capture.",
+          hint: "The king is stuck in the corner by its own pawns - what move traps it completely?",
+        },
+      },
+      {
+        id: "stalemate-and-draws",
+        chapterId: "game-over",
+        title: "Stalemate & Other Draws",
+        summary: "Sometimes nobody wins: stalemate, repetition, and more.",
+        watch: [
+          {
+            caption:
+              "Stalemate: the side to move has no legal move, but isn't in check. This is an automatic draw - not a loss, no matter how far ahead the other side is.",
+            fen: "k7/8/1Q6/8/8/8/8/6K1 b - - 0 1",
+          },
+          {
+            caption:
+              "Threefold repetition is a draw you can claim: if the same position occurs three times, with the same player to move and the same legal possibilities, either player can claim a draw.",
+            fen: "4k3/8/8/8/8/8/8/4K3 w - - 0 1",
+          },
+          {
+            caption: "The 50-move rule is also claimable: either player can claim a draw after 50 moves by each side without a pawn move or capture.",
+            fen: "4k3/8/8/8/8/8/8/4K3 w - - 0 1",
+          },
+          {
+            caption:
+              "Fivefold repetition is automatic, not claimable: if the same position occurs five times, the game automatically ends in a draw.",
+            fen: "4k3/8/8/8/8/8/8/4K3 w - - 0 1",
+          },
+          {
+            caption:
+              "The 75-move rule is automatic too: if 75 moves by each side pass without a pawn move or capture, the game automatically ends in a draw, unless the final move checkmates.",
+            fen: "4k3/8/8/8/8/8/8/4K3 w - - 0 1",
+          },
+          {
+            caption:
+              "One more automatic draw: a dead position - when no sequence of legal moves could ever lead to checkmate for either side. Insufficient material (like king and bishop vs. king alone) is the most common example, but any position where checkmate has become truly impossible counts.",
+            fen: "4k3/8/8/8/8/8/8/4K3 w - - 0 1",
+          },
+        ],
+        tryIt: {
+          instructions: "Tap the black king - it has no legal moves here, but it's not in check. That's stalemate.",
+          fen: "k7/8/1Q6/8/8/8/8/6K1 b - - 0 1",
+          kind: "find",
+          targetSquare: "a8",
+          successMessage: "Right - no legal moves and not in check. That's a draw, not a loss.",
+        },
+        challenge: {
+          instructions:
+            "White to move, with a huge material lead. Trap the black king completely - no checks, no legal moves - for a draw by stalemate.",
+          fen: "k7/8/8/1Q6/8/8/8/6K1 w - - 0 1",
+          kind: "move",
+          isGoalMove: (chess) => chess.isStalemate(),
+          successMessage: "Careful play! Boxing in a lone king without ever checking it is a classic stalemate trap - always watch for this with a big material lead.",
+          hint: "Think about where the queen can go that traps the king without giving check.",
+        },
+      },
     ],
   },
 ];
