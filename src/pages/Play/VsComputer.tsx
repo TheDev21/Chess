@@ -241,7 +241,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
           {seconds !== null && <span className="tabular-nums font-medium text-ink">{formatClock(clocks[topColor])}</span>}
         </div>
 
-        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1" data-tutorial="board">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1">
           <ChessBoard
             fen={displayFen}
             onMove={handleMove}

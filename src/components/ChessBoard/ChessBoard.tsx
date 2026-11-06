@@ -286,6 +286,7 @@ export function ChessBoard({
   return (
     <div className="relative flex h-full w-full items-center justify-center" ref={ref}>
       <div
+        data-tutorial="board"
         className="overflow-hidden rounded-[10px] border-[3px] border-[#D4AF37]"
         style={{
           width: boardWidth,
