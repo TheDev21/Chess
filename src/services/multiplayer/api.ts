@@ -9,9 +9,14 @@ export interface RoomState {
   moveHistory: { san: string; fen: string }[];
   isGameOver: boolean;
   resultText: string | null;
+  result: "1-0" | "0-1" | "1/2-1/2" | null;
+  isAbandoned: boolean;
+  abandonedBy: "white" | "black" | null;
   drawOfferedBy: "white" | "black" | "agreed" | null;
   hasWhite: boolean;
   hasBlack: boolean;
+  whiteLastSeen: string | null;
+  blackLastSeen: string | null;
 }
 
 async function callFunction<T>(name: string, body: Record<string, unknown>): Promise<T> {
@@ -29,8 +34,17 @@ export async function createOnlineRoom(): Promise<{ roomId: string }> {
   return callFunction("rooms-create", {});
 }
 
-export async function joinRoom(roomId: string, playerId: string): Promise<RoomState & { color: "white" | "black" | null }> {
-  return callFunction("rooms-join", { roomId, playerId });
+export async function joinRoom(
+  roomId: string,
+  playerId: string,
+  options?: { allowSeatClaim?: boolean },
+): Promise<RoomState & { color: "white" | "black" | null }> {
+  // allowSeatClaim omitted (undefined) preserves the server's existing
+  // default of true - an initial join can still claim an open seat exactly
+  // as before. A background resync passes { allowSeatClaim: false }
+  // explicitly - see useRealtimeRoom.ts - so it can never silently turn a
+  // spectator into a seated player.
+  return callFunction("rooms-join", { roomId, playerId, allowSeatClaim: options?.allowSeatClaim });
 }
 
 export async function makeOnlineMove(
@@ -49,6 +63,14 @@ export async function resignOnlineGame(roomId: string, playerId: string): Promis
 
 export async function offerOnlineDraw(roomId: string, playerId: string): Promise<RoomState> {
   return callFunction("rooms-draw", { roomId, playerId });
+}
+
+export async function sendHeartbeat(roomId: string, playerId: string): Promise<RoomState> {
+  return callFunction("rooms-heartbeat", { roomId, playerId });
+}
+
+export async function abandonOnlineGame(roomId: string, playerId: string): Promise<RoomState> {
+  return callFunction("rooms-abandon", { roomId, playerId });
 }
 
 export function getOrCreatePlayerId(): string {

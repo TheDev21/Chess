@@ -19,13 +19,14 @@ Deno.serve(async (req: Request) => {
 
   const color = seatFor(room, playerId);
   if (!color) return json({ error: "You are not seated in this game" }, 403);
+  if (room.abandoned_at) return json({ error: "Game is over" }, 409);
 
   const nextOffer = room.draw_offered_by && room.draw_offered_by !== color ? "agreed" : color;
 
   // Check-and-set on the draw_offered_by we read, same idea as rooms-move's
   // FEN guard. .eq() with a JS null wouldn't translate to "IS NULL" in
   // PostgREST, so branch on .is() vs .eq() explicitly.
-  let query = supabase.from("rooms").update({ draw_offered_by: nextOffer }).eq("id", roomId);
+  let query = supabase.from("rooms").update({ draw_offered_by: nextOffer }).eq("id", roomId).is("abandoned_at", null);
   query = room.draw_offered_by === null ? query.is("draw_offered_by", null) : query.eq("draw_offered_by", room.draw_offered_by);
   const { data: updated } = await query.select("*").maybeSingle<Room>();
 

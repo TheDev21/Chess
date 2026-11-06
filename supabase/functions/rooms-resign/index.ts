@@ -20,12 +20,14 @@ Deno.serve(async (req: Request) => {
   const color = seatFor(room, playerId);
   if (!color) return json({ error: "You are not seated in this game" }, 403);
   if (room.resigned_by) return json(publicState(room));
+  if (room.abandoned_at) return json({ error: "Game is over" }, 409);
 
   const { data: updated } = await supabase
     .from("rooms")
     .update({ resigned_by: color })
     .eq("id", roomId)
     .is("resigned_by", null)
+    .is("abandoned_at", null)
     .select("*")
     .maybeSingle<Room>();
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Chess } from "chess.js";
 import { ChessBoard } from "../../components/ChessBoard/ChessBoard";
@@ -23,6 +23,8 @@ export function Analysis() {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [currentIndex, setCurrentIndex] = useState(-1); // -1 = starting position
   const [error, setError] = useState<string | null>(null);
+  const [cancelled, setCancelled] = useState(false);
+  const continueRef = useRef(true);
 
   const runAnalysis = async (pgn: string) => {
     setError(null);
@@ -37,13 +39,25 @@ export function Analysis() {
     setReviewing(true);
     setCoached(null);
     setCurrentIndex(-1);
+    setCancelled(false);
+    continueRef.current = true;
     try {
-      const result = await reviewGame(pgn, engine.evaluate, (done, total) => setProgress({ done, total }));
+      const result = await reviewGame(
+        pgn,
+        engine.evaluate,
+        (done, total) => setProgress({ done, total }),
+        () => continueRef.current,
+      );
       setCoached(result);
       setCurrentIndex(result.length - 1);
     } finally {
       setReviewing(false);
     }
+  };
+
+  const cancelAnalysis = () => {
+    continueRef.current = false;
+    setCancelled(true);
   };
 
   useEffect(() => {
@@ -124,13 +138,24 @@ export function Analysis() {
             placeholder="1. e4 e5 2. Nf3 Nc6 ..."
             className="w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-[13px]"
           />
-          <button
-            onClick={() => runAnalysis(pgnInput)}
-            disabled={reviewing || !pgnInput.trim() || engine.status !== "ready"}
-            className="mt-3 w-full rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-white transition-colors hover:bg-accent/90 disabled:opacity-50"
-          >
-            {reviewing ? `Analyzing ${progress.done}/${progress.total}…` : engine.status !== "ready" ? "Loading engine…" : "Analyze Game"}
-          </button>
+          <div className="mt-3 flex gap-2">
+            <button
+              onClick={() => runAnalysis(pgnInput)}
+              disabled={reviewing || !pgnInput.trim() || engine.status !== "ready"}
+              className="flex-1 rounded-full bg-accent px-4 py-3 text-[14px] font-medium text-bg transition-colors hover:bg-accent/90 disabled:opacity-50"
+            >
+              {reviewing ? `Analyzing ${progress.done}/${progress.total}…` : engine.status !== "ready" ? "Loading engine…" : "Analyze Game"}
+            </button>
+            {reviewing && (
+              <button
+                onClick={cancelAnalysis}
+                disabled={cancelled}
+                className="rounded-full border border-border px-4 py-3 text-[14px] font-medium text-ink transition-colors hover:border-ink/20 disabled:opacity-50"
+              >
+                {cancelled ? "Stopping…" : "Cancel"}
+              </button>
+            )}
+          </div>
           {error && <p className="mt-2 text-[13px] text-blunder">{error}</p>}
         </div>
       )}
@@ -225,6 +250,14 @@ export function Analysis() {
                 <div className="mt-3 border-t border-border pt-3 text-[13px] text-muted">
                   Biggest missed opportunity: move {summary.worst.ply + 1} ({summary.worst.san})
                 </div>
+              )}
+              {summary.bestOfGame && (
+                <div className="mt-2 text-[13px] text-muted">
+                  Best move: move {summary.bestOfGame.ply + 1} ({summary.bestOfGame.san})
+                </div>
+              )}
+              {cancelled && (
+                <div className="mt-3 border-t border-border pt-3 text-[13px] text-warning">Analysis stopped early - showing partial results.</div>
               )}
             </div>
             <MoveHistory sanMoves={coached.map((m) => m.san)} activeIndex={currentIndex} onSelectMove={setCurrentIndex} />

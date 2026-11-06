@@ -44,11 +44,23 @@ export function useMoveCoach() {
   return { status: engine.status, analyzing, lastCoached, analyzeMove, reset };
 }
 
-/** Full game review for the Analysis page: classifies every move in a PGN using the same engine + logic as live coaching. */
+/**
+ * Full game review for the Analysis page: classifies every move in a PGN
+ * using the same engine + logic as live coaching.
+ *
+ * `shouldContinue`, if given, is checked before starting each move's
+ * evaluation - a Cancel button can flip it to false to stop queuing
+ * further work. This is cooperative, not an abort of an evaluation already
+ * in flight: the current move's search (typically sub-second to a few
+ * seconds at this depth) still finishes, but no further moves are
+ * evaluated after that, and whatever was coached so far is returned rather
+ * than thrown away.
+ */
 export async function reviewGame(
   pgn: string,
   evaluate: (fen: string, config: { depth: number; skillLevel: number; limitStrength: boolean }) => Promise<import("../types/chess").EngineEvaluation | null>,
   onProgress?: (done: number, total: number) => void,
+  shouldContinue?: () => boolean,
 ): Promise<CoachedMove[]> {
   const replay = new Chess();
   replay.loadPgn(pgn);
@@ -58,6 +70,8 @@ export async function reviewGame(
   const coached: CoachedMove[] = [];
 
   for (let i = 0; i < sanMoves.length; i++) {
+    if (shouldContinue && !shouldContinue()) break;
+
     const fenBefore = game.fen();
     const moverColor: PlayerColor = game.turn() === "w" ? "white" : "black";
     const move = game.move(sanMoves[i]);

@@ -17,7 +17,7 @@ Deno.serve(async (req: Request) => {
   const { data: room, error } = await supabase.from("rooms").select("*").eq("id", roomId).maybeSingle<Room>();
   if (error) return json({ error: error.message }, 500);
   if (!room) return json({ error: "Room not found" }, 404);
-  if (room.resigned_by || room.draw_offered_by === "agreed") return json({ error: "Game is over" }, 409);
+  if (room.resigned_by || room.draw_offered_by === "agreed" || room.abandoned_at) return json({ error: "Game is over" }, 409);
 
   const color = seatFor(room, playerId);
   if (!color) return json({ error: "You are not seated in this game" }, 403);
@@ -44,6 +44,7 @@ Deno.serve(async (req: Request) => {
     .update({ fen: newFen, move_history: newHistory, draw_offered_by: null })
     .eq("id", roomId)
     .eq("fen", room.fen)
+    .is("abandoned_at", null)
     .select("*")
     .maybeSingle<Room>();
 
