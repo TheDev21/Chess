@@ -203,9 +203,15 @@ export function ChessBoard({
     squareStyles[selected] = { ...squareStyles[selected], backgroundColor: "rgba(212,175,55,0.35)" };
   }
   for (const target of legalTargets) {
+    // The dot needs to read against its own square, not just one fixed
+    // color - a dark dot vanishes on a dark square exactly like a light
+    // dot vanishes on a light one. So it's cream on dark squares and dark
+    // green on light squares, the inverse of the square underneath it.
+    const isLightSquare = (target.charCodeAt(0) - 97 + Number(target[1])) % 2 === 0;
+    const dotColor = isLightSquare ? "rgba(50,70,43,0.55)" : "rgba(235,208,160,0.75)";
     squareStyles[target] = {
       ...squareStyles[target],
-      backgroundImage: "radial-gradient(circle, rgba(50,70,43,0.55) 22%, transparent 24%)",
+      backgroundImage: `radial-gradient(circle, ${dotColor} 22%, transparent 24%)`,
     };
   }
   if (isCheckSquare) {
