@@ -3,6 +3,32 @@ import { Chess, type Square } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { useContainerSize } from "../../hooks/useContainerSize";
 import { adjacentSquare, buildMoveAnnouncement, buildSquareAriaLabel, gridPosition, legalMovesFrom, promotionAnnouncement } from "./keyboardNav";
+import wP from "../../assets/pieces/cburnett/wP.svg";
+import wN from "../../assets/pieces/cburnett/wN.svg";
+import wB from "../../assets/pieces/cburnett/wB.svg";
+import wR from "../../assets/pieces/cburnett/wR.svg";
+import wQ from "../../assets/pieces/cburnett/wQ.svg";
+import wK from "../../assets/pieces/cburnett/wK.svg";
+import bP from "../../assets/pieces/cburnett/bP.svg";
+import bN from "../../assets/pieces/cburnett/bN.svg";
+import bB from "../../assets/pieces/cburnett/bB.svg";
+import bR from "../../assets/pieces/cburnett/bR.svg";
+import bQ from "../../assets/pieces/cburnett/bQ.svg";
+import bK from "../../assets/pieces/cburnett/bK.svg";
+
+// "Cburnett" Staunton piece set by Colin M.L. Burnett (GPLv2+), the same
+// artwork Lichess uses by default - see THIRD-PARTY-LICENSES.md. Rendered
+// as plain <img> (no SVGR/inline-JSX tooling needed) since react-chessboard's
+// customPieces just needs a React element per piece code.
+const PIECE_IMAGES: Record<string, string> = { wP, wN, wB, wR, wQ, wK, bP, bN, bB, bR, bQ, bK };
+const customPieces = Object.fromEntries(
+  Object.entries(PIECE_IMAGES).map(([code, src]) => [
+    code,
+    ({ squareWidth }: { squareWidth: number }) => (
+      <img src={src} alt="" draggable={false} style={{ width: squareWidth, height: squareWidth, pointerEvents: "none" }} />
+    ),
+  ]),
+);
 
 interface ChessBoardProps {
   fen: string;
@@ -157,25 +183,30 @@ export function ChessBoard({
     squareRefs.current[square]?.focus();
   };
 
-  // A soft, warm highlight for the last move played - visible on both board
-  // squares without reading as a bright"selection"color.
+  // Premium "Midnight Forest + Antique Gold" board palette (Phase 9). The
+  // teaching highlight and the selected-square tint both use the board's
+  // shiny gold accent (#D4AF37); the last-move highlight deliberately uses
+  // a softer, more muted gold (the sitewide #C6A15B accent) so it reads as
+  // a quieter history marker next to the brighter, more attention-grabbing
+  // current selection - the same visual hierarchy the original design had,
+  // just with a shinier gold for the "pay attention to this" cases.
   const squareStyles: Record<string, React.CSSProperties> = {};
   if (highlightSquares) {
     for (const sq of highlightSquares) {
-      squareStyles[sq] = { ...squareStyles[sq], boxShadow: "inset 0 0 0 3px rgba(201,138,46,0.7)", backgroundColor: "rgba(201,138,46,0.22)" };
+      squareStyles[sq] = { ...squareStyles[sq], boxShadow: "inset 0 0 0 3px rgba(212,175,55,0.7)", backgroundColor: "rgba(212,175,55,0.22)" };
     }
   }
   if (lastMove) {
-    squareStyles[lastMove.from] = { backgroundColor: "#f3e6a5" };
-    squareStyles[lastMove.to] = { backgroundColor: "#f3e6a5" };
+    squareStyles[lastMove.from] = { backgroundColor: "rgba(198,161,91,0.35)" };
+    squareStyles[lastMove.to] = { backgroundColor: "rgba(198,161,91,0.35)" };
   }
   if (selected) {
-    squareStyles[selected] = { ...squareStyles[selected], backgroundColor: "#f6d365" };
+    squareStyles[selected] = { ...squareStyles[selected], backgroundColor: "rgba(212,175,55,0.35)" };
   }
   for (const target of legalTargets) {
     squareStyles[target] = {
       ...squareStyles[target],
-      backgroundImage: "radial-gradient(circle, rgba(49,92,70,0.45) 22%, transparent 24%)",
+      backgroundImage: "radial-gradient(circle, rgba(50,70,43,0.55) 22%, transparent 24%)",
     };
   }
   if (isCheckSquare) {
@@ -256,7 +287,7 @@ export function ChessBoard({
   return (
     <div className="relative flex h-full w-full items-center justify-center" ref={ref}>
       <div
-        className="overflow-hidden rounded-[10px] border border-border"
+        className="overflow-hidden rounded-[10px] border border-[#D4AF37]"
         style={{ width: boardWidth, height: boardWidth, boxShadow: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08)" }}
         role="grid"
         aria-label={`Chess board, ${orientation === "white" ? "White" : "Black"} at the bottom`}
@@ -270,10 +301,38 @@ export function ChessBoard({
           arePiecesDraggable={draggable}
           showBoardNotation={showCoordinates}
           customSquareStyles={squareStyles}
+          customPieces={customPieces}
           customSquare={customSquareRef.current as unknown as React.FC<{ children: React.ReactNode; square: Square; squareColor: "white" | "black"; style: Record<string, string | number> }>}
           customBoardStyle={{ borderRadius: "9px" }}
-          customDarkSquareStyle={{ backgroundColor: "#769656" }}
-          customLightSquareStyle={{ backgroundColor: "#eeeed2" }}
+          // A restrained satin finish, not a texture: a faint inset shadow
+          // along the top edge and an equally faint highlight along the
+          // bottom - the same subtle bevel on every square of that color,
+          // board-wide, since this sets the base style react-chessboard
+          // applies before any selection/last-move/legal-move overlay.
+          customDarkSquareStyle={{ backgroundColor: "#32462B", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.18), inset 0 -1px 0 rgba(235,208,160,0.06)" }}
+          customLightSquareStyle={{ backgroundColor: "#EBD0A0", boxShadow: "inset 0 1px 2px rgba(50,70,43,0.08), inset 0 -1px 0 rgba(255,255,255,0.4)" }}
+        />
+        {/*
+          A non-interactive lighting/grain layer, sampled from the reference
+          photo rather than guessed: measuring actual pixel brightness across
+          all 64 squares showed a soft overhead-light gradient (brighter near
+          the top of the board, darker toward the bottom) plus a small amount
+          of fine per-square variation consistent with a subtle wood grain.
+          Both are reproduced here as CSS only - no texture image, no new
+          dependency - and kept far too faint, and far too inert
+          (pointer-events: none, it is never a drag/click/keyboard target),
+          to interfere with square identification, piece visibility, or move
+          indicators underneath it.
+        */}
+        <div
+          className="pointer-events-none absolute inset-0 rounded-[9px]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to bottom, rgba(255,255,255,0.07), rgba(0,0,0,0.1)), url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            backgroundSize: "cover, 160px 160px",
+            mixBlendMode: "overlay",
+            opacity: 0.5,
+          }}
         />
       </div>
       <div aria-live="polite" role="status" className="sr-only">

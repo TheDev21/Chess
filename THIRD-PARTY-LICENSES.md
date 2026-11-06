@@ -82,6 +82,31 @@ has been followed for the distribution method ChessGuru itself uses
 (serving the compiled engine to browsers over the web). If you need a
 legal compliance determination, consult counsel.
 
+## Cburnett chess piece artwork (GPLv2+)
+
+**What is bundled:** The 12 Staunton chess-piece SVGs ChessGuru renders on
+every chessboard (`src/assets/pieces/cburnett/*.svg`).
+
+**Origin:** Created by [Colin M.L. Burnett](https://en.wikipedia.org/wiki/User:Cburnett),
+originally published on Wikimedia Commons as the "Standard Staunton"
+piece set (the same artwork Lichess ships as its default "cburnett" piece
+set). Downloaded unmodified from Lichess's open-source repository:
+https://github.com/lichess-org/lila/tree/master/public/piece/cburnett
+(per that repository's own `COPYING.md`, which licenses this specific
+directory as GPLv2+).
+
+**License:** GPL-2.0-or-later. The full, unmodified license text is
+included in this repository at
+[`licenses/cburnett-GPL-2.0.txt`](licenses/cburnett-GPL-2.0.txt).
+
+**Corresponding Source:** SVG is itself a plain-text, directly-editable
+source format - the files ChessGuru bundles *are* the preferred form for
+modification, so no separate source disclosure is needed beyond the files
+already present at `src/assets/pieces/cburnett/`. The origin project
+(linked above) remains available as the canonical upstream.
+
+**Modifications:** None. The 12 SVG files are used exactly as downloaded.
+
 ## Everything else
 
 All other third-party dependencies in this project (React, chess.js,

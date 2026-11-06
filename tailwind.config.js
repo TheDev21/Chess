@@ -42,13 +42,19 @@ export default {
           DEFAULT: "#A5B2A8",
           bg: "#23372E",
         },
+        // Phase 9: "Premium Midnight Forest + Antique Gold" board palette.
+        // These values must match the inline styles ChessBoard.tsx actually
+        // renders with (react-chessboard needs JS style objects, not
+        // Tailwind classes, for square colors - these tokens document the
+        // same colors rather than being consumed as classes).
         board: {
-          light: "#eeeed2",
-          dark: "#769656",
-          selected: "#f6d365",
-          lastMove: "#f3e6a5",
+          light: "#EBD0A0",
+          dark: "#32462B",
+          border: "#D4AF37",
+          selected: "#D4AF37",
+          lastMove: "#C6A15B",
           check: "#d97770",
-          legalMove: "#315c46",
+          legalMove: "#32462B",
         },
         success: "#8bbf72",
         warning: "#e0a53e",
