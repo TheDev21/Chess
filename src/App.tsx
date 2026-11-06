@@ -18,6 +18,7 @@ import { OnlineGame } from "./pages/Play/OnlineGame";
 import { Puzzles } from "./pages/Puzzles/Puzzles";
 import { Analysis } from "./pages/Analysis/Analysis";
 import { Progress } from "./pages/Progress/Progress";
+import bgPremiumTexture from "./assets/bg-premium-texture.webp";
 
 export const SITE_TOUR_ID = "site-tour";
 const SITE_TOUR_STEPS: SpotlightStep[] = [
@@ -41,7 +42,7 @@ export default function App() {
     <div
       className="flex h-[100dvh] flex-col overflow-hidden bg-bg lg:flex-row"
       style={{
-        backgroundImage: "linear-gradient(rgba(10,23,16,0.78), rgba(10,23,16,0.88)), url(/src/assets/bg-premium-texture.webp)",
+        backgroundImage: `linear-gradient(rgba(10,23,16,0.78), rgba(10,23,16,0.88)), url(${bgPremiumTexture})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
