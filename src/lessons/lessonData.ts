@@ -454,6 +454,116 @@ export const CHAPTERS: Chapter[] = [
       },
     ],
   },
+  {
+    id: "basic-tactics",
+    title: "Basic Tactics",
+    description: "Fork, pin, and skewer: your first tactical weapons.",
+    lessons: [
+      {
+        id: "fork",
+        chapterId: "basic-tactics",
+        title: "Fork",
+        summary: "One piece attacks two enemies at once - and only one can be saved.",
+        watch: [
+          {
+            caption: "A fork is when one piece attacks two enemy pieces at the same time - the opponent can only save one.",
+            fen: "2r1k3/8/3N4/8/8/8/8/4K3 b - - 0 1",
+            highlightSquares: ["d6", "e8", "c8"],
+          },
+          {
+            caption: "Here, the knight attacks both the black king (check!) and the rook on c8. Black can only deal with one.",
+            fen: "2r1k3/8/3N4/8/8/8/8/4K3 b - - 0 1",
+          },
+        ],
+        tryIt: {
+          instructions: "Move the knight to fork the black king and rook.",
+          fen: "2r1k3/8/8/8/4N3/8/8/4K3 w - - 0 1",
+          kind: "move",
+          pieceSquare: "e4",
+          successMessage: "That's a fork - one piece, two targets.",
+        },
+        challenge: {
+          instructions: "White to move. Fork the king and rook with your knight.",
+          fen: "2r1k3/8/8/8/4N3/8/8/4K3 w - - 0 1",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.from === "e4" && move.to === "d6",
+          successMessage: "Nd6+! That fork hits the king (check) and the rook - black can't save both.",
+          hint: "Look for a square where your knight attacks both pieces at once.",
+        },
+      },
+      {
+        id: "pin",
+        chapterId: "basic-tactics",
+        title: "Pin",
+        summary: "A piece lined up in front of something more valuable.",
+        watch: [
+          {
+            caption:
+              "A pin happens when a piece is lined up with a more valuable enemy piece behind it. Moving that piece can expose the more valuable piece to attack.",
+            fen: "4k3/8/2n5/1B6/8/8/8/4K3 b - - 0 1",
+            highlightSquares: ["b5", "c6", "e8"],
+          },
+          {
+            caption: "If the knight moves, the king behind it is exposed to check - so for now, that knight can't move at all.",
+            fen: "4k3/8/2n5/1B6/8/8/8/4K3 b - - 0 1",
+          },
+          {
+            caption:
+              "That's an absolute pin - moving the knight is illegal, because it would leave the king in check. But pins come in another form too: a relative pin, where the piece can legally move, but doing so loses something else valuable, like the queen.",
+            fen: "4k3/8/2n5/1B6/8/8/8/4K3 b - - 0 1",
+          },
+        ],
+        tryIt: {
+          instructions: "Tap the piece that's pinned - it can't move without exposing its king.",
+          fen: "4k3/8/2n5/1B6/8/8/8/4K3 b - - 0 1",
+          kind: "find",
+          targetSquare: "c6",
+          successMessage: "Right - the knight on c6 is pinned to the king by the bishop on b5.",
+        },
+        challenge: {
+          instructions: "White to move. The knight is pinned and undefended - win it.",
+          fen: "4k3/8/2n5/1B6/3N4/8/8/4K3 w - - 0 1",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.from === "d4" && move.to === "c6",
+          successMessage: "Nxc6! The pin meant that knight could never escape or be defended by moving.",
+          hint: "The black knight can't move without exposing its own king - it's defenseless.",
+        },
+      },
+      {
+        id: "skewer",
+        chapterId: "basic-tactics",
+        title: "Skewer",
+        summary: "Attack the front piece, win the one lined up behind it.",
+        watch: [
+          {
+            caption:
+              "A skewer lines up two enemy pieces on the same line - attack the front one, and when it moves, you win the piece behind it.",
+            fen: "q7/8/8/8/k7/7K/8/R7 b - - 0 1",
+            highlightSquares: ["a1", "a4", "a8"],
+          },
+          {
+            caption: "The king must move out of check - and once it does, the rook will capture the queen behind it.",
+            fen: "q7/8/8/8/k7/7K/8/R7 b - - 0 1",
+          },
+        ],
+        tryIt: {
+          instructions: "Move the rook to skewer the king and queen on the a-file.",
+          fen: "q7/8/8/8/k7/7K/8/5R2 w - - 0 1",
+          kind: "move",
+          pieceSquare: "f1",
+          successMessage: "That lines up the king and queen on the same file - a skewer.",
+        },
+        challenge: {
+          instructions: "White to move. Skewer the king and queen on the a-file.",
+          fen: "q7/8/8/8/k7/7K/8/5R2 w - - 0 1",
+          kind: "move",
+          isGoalMove: (_chess, move) => move.from === "f1" && move.to === "a1",
+          successMessage: "Ra1+! The king must move, and then your rook captures the queen behind it.",
+          hint: "Line your rook up with both the king and queen on the same file.",
+        },
+      },
+    ],
+  },
 ];
 
 export function findLesson(chapterId: string, lessonId: string) {

@@ -26,5 +26,89 @@
     "solution": ["c4f7"],
     "theme": "Hanging Pieces",
     "rating": 1000
+  },
+  {
+    "id": "t-fork-1",
+    "fen": "6k1/3q4/8/8/4N3/8/8/K7 w - - 0 1",
+    "solution": ["e4f6"],
+    "theme": "Fork",
+    "rating": 800
+  },
+  {
+    "id": "t-fork-2",
+    "fen": "r3r3/8/6k1/1N6/8/8/8/7K w - - 0 1",
+    "solution": ["b5c7"],
+    "theme": "Fork",
+    "rating": 850
+  },
+  {
+    "id": "t-fork-3",
+    "fen": "1n6/8/8/k7/8/8/4Q3/7K w - - 0 1",
+    "solution": ["e2e5"],
+    "theme": "Fork",
+    "rating": 900
+  },
+  {
+    "id": "t-fork-4",
+    "fen": "k7/8/2n1n3/8/3P4/8/8/7K w - - 0 1",
+    "solution": ["d4d5"],
+    "theme": "Fork",
+    "rating": 750
+  },
+  {
+    "id": "t-pin-1",
+    "fen": "k7/8/8/8/4n3/2N5/6B1/7K w - - 0 1",
+    "solution": ["c3e4"],
+    "theme": "Pin",
+    "rating": 800
+  },
+  {
+    "id": "t-pin-2",
+    "fen": "8/8/8/8/R2n3k/8/1Q6/7K w - - 0 1",
+    "solution": ["b2d4"],
+    "theme": "Pin",
+    "rating": 850
+  },
+  {
+    "id": "t-pin-3",
+    "fen": "8/6k1/8/8/3r4/8/8/B2Q3K w - - 0 1",
+    "solution": ["d1d4"],
+    "theme": "Pin",
+    "rating": 900
+  },
+  {
+    "id": "t-pin-4",
+    "fen": "k7/8/8/1q6/8/3n4/1N5K/5B2 w - - 0 1",
+    "solution": ["b2d3"],
+    "theme": "Relative Pin",
+    "rating": 950
+  },
+  {
+    "id": "t-skewer-1",
+    "fen": "4q3/8/8/4k3/8/8/8/K6R w - - 0 1",
+    "solution": ["h1e1"],
+    "theme": "Skewer",
+    "rating": 850
+  },
+  {
+    "id": "t-skewer-2",
+    "fen": "8/3k2r1/8/8/8/R7/8/7K w - - 0 1",
+    "solution": ["a3a7"],
+    "theme": "Skewer",
+    "rating": 900
+  },
+  {
+    "id": "t-skewer-3",
+    "fen": "8/6r1/8/4k3/8/8/8/2B4K w - - 0 1",
+    "solution": ["c1b2"],
+    "theme": "Skewer",
+    "rating": 950
+  },
+  {
+    "id": "t-skewer-4",
+    "fen": "3b4/8/8/3k4/8/8/8/1Q5K w - - 0 1",
+    "solution": ["b1d1"],
+    "theme": "Skewer",
+    "rating": 1000
   }
 ]
