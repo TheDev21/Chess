@@ -19,7 +19,7 @@ function Logo() {
   return (
     <NavLink to="/" className="flex items-center gap-2 text-ink" end>
       <img src={logoKingImg} alt="" className="h-8 w-auto" />
-      <span className="text-[18px] font-semibold tracking-tight">ChessGuru</span>
+      <span className="text-[18px] font-semibold tracking-tight text-accent">ChessGuru</span>
     </NavLink>
   );
 }
