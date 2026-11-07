@@ -252,15 +252,15 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
   const drawOfferedByOpponent = state.drawOfferedBy && state.drawOfferedBy !== "agreed" && state.drawOfferedBy !== seat;
 
   return (
-    <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row">
-      <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
-        <div className="flex shrink-0 items-center gap-2 text-[13px]">
+    <div className="flex h-full flex-col gap-4 short:min-h-0 short:flex-row lg:min-h-0 lg:flex-row">
+      <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-0 lg:min-h-0">
+        <div className="flex shrink-0 items-center gap-2 text-[13px] short:text-[12px]">
           <span className="text-muted">
             Code: <span className="font-medium text-ink">{roomId}</span>
           </span>
           <button
             onClick={copyLink}
-            className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20"
+            className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20 short:py-0.5"
           >
             <Copy className="h-3 w-3" /> {copied ? "Copied" : "Copy link"}
           </button>
@@ -292,7 +292,7 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
           </div>
         )}
 
-        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-[220px] short:max-h-[220px]">
           <ChessBoard
             fen={state.fen}
             onMove={handleMove}
@@ -304,27 +304,31 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
           />
         </div>
 
-        <div className="shrink-0 text-[13px] text-ink">
+        <div className="shrink-0 text-[13px] text-ink short:hidden">
           {seat ? `You are playing ${seat}.` : "Spectating."} White {presence.white ? "connected" : "disconnected"} · Black{" "}
           {presence.black ? "connected" : "disconnected"}
           {connectionStatus !== "connected" && <span className="text-muted"> · Reconnecting…</span>}
         </div>
 
         {state.isGameOver && !state.isAbandoned && (
-          <GameResult result={state.result ?? "1/2-1/2"} reason={state.resultText ?? "Game over"} playerColor={seat ?? undefined} />
+          <div className="short:hidden">
+            <GameResult result={state.result ?? "1/2-1/2"} reason={state.resultText ?? "Game over"} playerColor={seat ?? undefined} />
+          </div>
         )}
 
         {state.isAbandoned && (
-          <div className="shrink-0 rounded-xl border border-border bg-surface px-5 py-4 text-center">
+          <div className="shrink-0 rounded-xl border border-border bg-surface px-5 py-4 text-center short:hidden">
             <div className="text-[16px] font-semibold text-ink">Game abandoned</div>
             <div className="mt-0.5 text-[13px] text-muted">{state.resultText ?? "Your opponent didn't reconnect in time."}</div>
           </div>
         )}
 
-        {drawOfferedByOpponent && <div className="shrink-0 text-[12px] text-mistake">Your opponent offered a draw. Offer one back to accept.</div>}
+        {drawOfferedByOpponent && (
+          <div className="shrink-0 text-[12px] text-mistake short:hidden">Your opponent offered a draw. Offer one back to accept.</div>
+        )}
 
         {seat && !state.isGameOver && (
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 gap-2 short:hidden">
             <button
               onClick={offerDraw}
               className="rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5"
@@ -340,10 +344,46 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
           </div>
         )}
 
-        {actionError && <p className="shrink-0 text-[12px] text-blunder">{actionError}</p>}
+        {actionError && <p className="shrink-0 text-[12px] text-blunder short:hidden">{actionError}</p>}
       </div>
 
-      <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto lg:max-h-none lg:w-72">
+      <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto short:max-h-none short:w-72 lg:max-h-none lg:w-72">
+        <div className="hidden shrink-0 flex-col gap-2 short:sticky short:top-0 short:z-10 short:flex short:bg-bg short:pb-2">
+          <div className="shrink-0 text-[13px] text-ink">
+            {seat ? `You are playing ${seat}.` : "Spectating."} White {presence.white ? "connected" : "disconnected"} · Black{" "}
+            {presence.black ? "connected" : "disconnected"}
+            {connectionStatus !== "connected" && <span className="text-muted"> · Reconnecting…</span>}
+          </div>
+          {state.isGameOver && !state.isAbandoned && (
+            <GameResult result={state.result ?? "1/2-1/2"} reason={state.resultText ?? "Game over"} playerColor={seat ?? undefined} />
+          )}
+          {state.isAbandoned && (
+            <div className="shrink-0 rounded-xl border border-border bg-surface px-5 py-4 text-center">
+              <div className="text-[16px] font-semibold text-ink">Game abandoned</div>
+              <div className="mt-0.5 text-[13px] text-muted">{state.resultText ?? "Your opponent didn't reconnect in time."}</div>
+            </div>
+          )}
+          {drawOfferedByOpponent && (
+            <div className="shrink-0 text-[12px] text-mistake">Your opponent offered a draw. Offer one back to accept.</div>
+          )}
+          {seat && !state.isGameOver && (
+            <div className="flex shrink-0 gap-2">
+              <button
+                onClick={offerDraw}
+                className="flex-1 rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5"
+              >
+                Offer Draw
+              </button>
+              <button
+                onClick={resign}
+                className="flex-1 rounded-full border border-border bg-surface px-4 py-2 text-[13px] font-medium text-ink transition-colors hover:border-accent hover:bg-accent/5"
+              >
+                Resign
+              </button>
+            </div>
+          )}
+          {actionError && <p className="shrink-0 text-[12px] text-blunder">{actionError}</p>}
+        </div>
         <MoveHistory sanMoves={history.map((h) => h.san)} />
       </div>
     </div>
