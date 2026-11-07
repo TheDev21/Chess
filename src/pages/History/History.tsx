@@ -9,11 +9,13 @@ export function GameHistoryList({ showHeading = true }: { showHeading?: boolean 
   const navigate = useNavigate();
   const [games, setGames] = useState(() => listGames());
   const [importError, setImportError] = useState<string | null>(null);
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null);
 
   const refresh = () => setGames(listGames());
 
   const handleDelete = (id: string) => {
     deleteGame(id);
+    setConfirmingDeleteId(null);
     refresh();
   };
 
@@ -92,13 +94,30 @@ export function GameHistoryList({ showHeading = true }: { showHeading?: boolean 
                 >
                   <Download className="h-3.5 w-3.5" />
                 </button>
-                <button
-                  onClick={() => handleDelete(g.id)}
-                  aria-label="Delete game"
-                  className="rounded-full border border-border p-2 text-blunder transition-colors duration-200 hover:border-blunder/40"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                {confirmingDeleteId === g.id ? (
+                  <div role="group" aria-label={`Delete game vs ${g.opponent}, ${g.result}?`} className="flex gap-1.5">
+                    <button
+                      onClick={() => handleDelete(g.id)}
+                      className="rounded-full border border-blunder/40 px-3 py-1.5 text-[12px] font-medium text-blunder transition-colors duration-200 hover:bg-blunder/5"
+                    >
+                      Confirm delete
+                    </button>
+                    <button
+                      onClick={() => setConfirmingDeleteId(null)}
+                      className="rounded-full border border-border px-3 py-1.5 text-[12px] font-medium text-ink transition-colors duration-200 hover:bg-accent/[0.05]"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmingDeleteId(g.id)}
+                    aria-label="Delete game"
+                    className="rounded-full border border-border p-2 text-blunder transition-colors duration-200 hover:border-blunder/40"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           ))}
