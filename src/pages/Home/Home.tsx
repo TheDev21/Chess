@@ -130,6 +130,7 @@ export function Home() {
                   draggable={false}
                   showCoordinates={false}
                   showLegalMoves={false}
+                  decorative
                 />
               </div>
               <div className="flex min-w-0 flex-1 flex-col">
@@ -175,7 +176,15 @@ export function Home() {
               className="group flex h-full gap-2 rounded-xl border border-border bg-surface p-3 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:bg-surface-elevated hover:shadow-panel sm:gap-4 sm:p-4"
             >
               <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg sm:h-20 sm:w-20">
-                <ChessBoard fen={daily.fen} onMove={() => false} orientation="white" draggable={false} showCoordinates={false} showLegalMoves={false} />
+                <ChessBoard
+                  fen={daily.fen}
+                  onMove={() => false}
+                  orientation="white"
+                  draggable={false}
+                  showCoordinates={false}
+                  showLegalMoves={false}
+                  decorative
+                />
               </div>
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted sm:text-[12px]">

@@ -44,6 +44,16 @@ interface ChessBoardProps {
   restrictToSquare?: string;
   /** Called on any square tap/click, in addition to normal move handling - used by the coordinates lesson. */
   onSquareTap?: (square: string) => void;
+  /**
+   * For non-interactive thumbnail/preview uses (e.g. the Home page's "Continue
+   * Lesson" and "Daily Puzzle" cards): hides the board from the accessibility
+   * tree entirely (aria-hidden), drops the grid/gridcell roles and the one
+   * Tab-focusable square, and skips the move-announcer live region. Visuals
+   * are unchanged - this only affects what assistive tech sees. Only use this
+   * when the surrounding content already names/describes what the board is
+   * showing in text, so nothing is lost by hiding it.
+   */
+  decorative?: boolean;
 }
 
 // Square props react-chessboard actually passes to a `customSquare` renderer
@@ -64,6 +74,7 @@ interface SquareCallbacks {
   legalTargets: Set<string>;
   onActivate: (square: string) => void;
   onFocusSquare: (square: string) => void;
+  decorative: boolean;
 }
 
 export function ChessBoard({
@@ -77,6 +88,7 @@ export function ChessBoard({
   highlightSquares,
   restrictToSquare,
   onSquareTap,
+  decorative = false,
 }: ChessBoardProps) {
   const { ref, width, height } = useContainerSize<HTMLDivElement>();
   const boardWidth = Math.max(220, Math.min(width, height, 640));
@@ -238,8 +250,18 @@ export function ChessBoard({
     legalTargets,
     onActivate: handleSquareClick,
     onFocusSquare: handleFocusSquare,
+    decorative,
   });
-  callbacksRef.current = { fen, orientation, selected, focusedSquare, legalTargets, onActivate: handleSquareClick, onFocusSquare: handleFocusSquare };
+  callbacksRef.current = {
+    fen,
+    orientation,
+    selected,
+    focusedSquare,
+    legalTargets,
+    onActivate: handleSquareClick,
+    onFocusSquare: handleFocusSquare,
+    decorative,
+  };
 
   const customSquareRef = useRef<ReturnType<typeof forwardRef<HTMLDivElement, SquareRendererProps>> | null>(null);
   if (!customSquareRef.current) {
@@ -256,12 +278,12 @@ export function ChessBoard({
             else if (forwardedRef) (forwardedRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
           }}
           style={style}
-          role="gridcell"
-          aria-rowindex={pos.row}
-          aria-colindex={pos.col}
-          aria-selected={isSelected}
-          aria-label={buildSquareAriaLabel(cb.fen, square, { selected: isSelected, legalMove: isLegalMove })}
-          tabIndex={cb.focusedSquare === square ? 0 : -1}
+          role={cb.decorative ? undefined : "gridcell"}
+          aria-rowindex={cb.decorative ? undefined : pos.row}
+          aria-colindex={cb.decorative ? undefined : pos.col}
+          aria-selected={cb.decorative ? undefined : isSelected}
+          aria-label={cb.decorative ? undefined : buildSquareAriaLabel(cb.fen, square, { selected: isSelected, legalMove: isLegalMove })}
+          tabIndex={cb.decorative ? -1 : cb.focusedSquare === square ? 0 : -1}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
@@ -299,8 +321,9 @@ export function ChessBoard({
           height: boardWidth,
           boxShadow: "0 2px 4px rgba(20,20,20,.04), 0 12px 32px rgba(20,20,20,.08), 0 0 0 1px rgba(212,175,55,0.35), 0 0 16px 1px rgba(212,175,55,0.25)",
         }}
-        role="grid"
-        aria-label={`Chess board, ${orientation === "white" ? "White" : "Black"} at the bottom`}
+        role={decorative ? undefined : "grid"}
+        aria-hidden={decorative ? "true" : undefined}
+        aria-label={decorative ? undefined : `Chess board, ${orientation === "white" ? "White" : "Black"} at the bottom`}
       >
         <Chessboard
           position={fen}
@@ -345,9 +368,11 @@ export function ChessBoard({
           }}
         />
       </div>
-      <div aria-live="polite" role="status" className="sr-only">
-        {liveMessage}
-      </div>
+      {!decorative && (
+        <div aria-live="polite" role="status" className="sr-only">
+          {liveMessage}
+        </div>
+      )}
       {pendingPromotion && (
         <div className="absolute inset-0 flex items-center justify-center rounded-[10px] bg-ink/20 backdrop-blur-[2px]">
           <div className="flex gap-1.5 rounded-xl bg-surface p-2.5 shadow-panel">
