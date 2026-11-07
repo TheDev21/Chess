@@ -66,6 +66,7 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
 
   return (
     <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row">
+      <h1 className="sr-only">Pass and Play</h1>
       <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
         <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
           <span className="text-muted">

@@ -200,7 +200,7 @@ export function Puzzles() {
             <div className="flex flex-col gap-5">
               {[...byTheme.entries()].map(([theme, list]) => (
                 <div key={theme}>
-                  <h3 className="mb-2 text-[13px] font-semibold text-ink">{theme}</h3>
+                  <h2 className="mb-2 text-[13px] font-semibold text-ink">{theme}</h2>
                   <PuzzleList puzzles={list} onSelect={startPuzzle} />
                 </div>
               ))}

@@ -127,7 +127,7 @@ export function MoveCoachPanel({ enabled, onToggle, analyzing, move, detail, onP
         </div>
       )}
 
-      <p className="mt-5 text-[11px] leading-relaxed text-muted/70">
+      <p className="mt-5 text-[11px] leading-relaxed text-muted">
         Engine assistance for learning only. Disable Move Coach for fair-play or competitive play.
       </p>
     </div>

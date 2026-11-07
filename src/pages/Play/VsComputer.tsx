@@ -222,6 +222,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
   return (
     <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row">
+      <h1 className="sr-only">Playing vs. Stockfish ({DIFFICULTY_CONFIG[difficulty].label})</h1>
       <div className="flex w-full shrink-0 flex-row gap-3 lg:w-48 lg:flex-col">
         <CapturedPiecesPanel
           label={topColor === "white" ? "White" : "Black"}

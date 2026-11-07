@@ -165,7 +165,7 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
             href="https://github.com/official-stockfish/Stockfish"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gold underline-offset-2 hover:underline"
+            className="text-gold underline underline-offset-2"
           >
             Stockfish
           </a>{" "}
@@ -174,7 +174,7 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
             href="https://github.com/nmrugg/stockfish.js/tree/v19.0.1"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gold underline-offset-2 hover:underline"
+            className="text-gold underline underline-offset-2"
           >
             source
           </a>{" "}
