@@ -62,6 +62,12 @@ export const CHAPTERS: Chapter[] = [
             fen: "rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1",
           },
           { caption: "Pawns capture diagonally. Never straight ahead.", fen: "4k3/8/8/3p1p2/4P3/8/8/4K3 w - - 0 1", highlightSquares: ["d5", "f5"] },
+          {
+            caption:
+              "Why it matters: pawns help control space and protect your other pieces. When they capture or move forward, they can open lines for stronger pieces - and a pawn that reaches the far side can promote, usually into a queen.",
+            fen: "4k3/8/8/3p1p2/4P3/8/8/4K3 w - - 0 1",
+            highlightSquares: ["d5", "f5"],
+          },
         ],
         tryIt: {
           instructions: "Move the pawn on e2 forward. One or two squares, your choice.",
@@ -99,6 +105,12 @@ export const CHAPTERS: Chapter[] = [
             fen: "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1",
             highlightSquares: ["d4", "e5", "g5", "h4", "g1"],
           },
+          {
+            caption:
+              "Why it matters: because a knight jumps over other pieces, it can stay dangerous even in crowded positions - and its unusual movement makes it especially good at attacking two targets at once with a fork.",
+            fen: "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1",
+            highlightSquares: ["d4", "e5", "g5", "h4", "g1"],
+          },
         ],
         tryIt: {
           instructions: "Move the knight on g1 to any square it can legally reach.",
@@ -125,6 +137,12 @@ export const CHAPTERS: Chapter[] = [
           { caption: "A bishop moves diagonally, any number of squares.", fen: "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2" },
           {
             caption: "Each bishop stays on the same color square for its entire game.",
+            fen: "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
+            highlightSquares: ["b5", "a6", "d5", "e6", "f7", "d3", "e2", "f1"],
+          },
+          {
+            caption:
+              "Why it matters: bishops are strongest when they have open diagonals and clear lines across the board. Each bishop stays on one square color, so blocked diagonals can limit how useful it becomes.",
             fen: "rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 1 2",
             highlightSquares: ["b5", "a6", "d5", "e6", "f7", "d3", "e2", "f1"],
           },
@@ -161,6 +179,12 @@ export const CHAPTERS: Chapter[] = [
             fen: "4k3/8/8/8/3R4/8/8/4K3 w - - 0 1",
             highlightSquares: ["d2", "d3", "d5", "d6", "d7", "a4", "b4", "c4", "e4", "f4", "g4", "h4"],
           },
+          {
+            caption:
+              "Why it matters: rooks are especially powerful on open files and ranks, where nothing blocks their path. They often become more active as pieces are exchanged and the board opens up.",
+            fen: "4k3/8/8/8/3R4/8/8/4K3 w - - 0 1",
+            highlightSquares: ["d2", "d3", "d5", "d6", "d7", "a4", "b4", "c4", "e4", "f4", "g4", "h4"],
+          },
         ],
         tryIt: {
           instructions: "Move the rook on d4 anywhere it can legally go.",
@@ -190,6 +214,11 @@ export const CHAPTERS: Chapter[] = [
             highlightSquares: ["d1", "d8", "a4", "h4", "a1", "h8", "a7", "g1"],
           },
           { caption: "She's the most powerful piece on the board - use her carefully.", fen: "4k3/8/8/8/3Q4/8/8/4K3 w - - 0 1" },
+          {
+            caption:
+              "Why it matters: the queen is your most powerful piece, so keeping her safe is important. Bringing her out too early can make her an easy target, forcing you to waste time moving her away from attacks.",
+            fen: "4k3/8/8/8/3Q4/8/8/4K3 w - - 0 1",
+          },
         ],
         tryIt: {
           instructions: "Move the queen on d4 anywhere it can legally go.",
@@ -216,6 +245,12 @@ export const CHAPTERS: Chapter[] = [
           { caption: "The king moves one square in any direction.", fen: "7k/8/8/8/3K4/8/8/8 w - - 0 1" },
           {
             caption: "If the king is attacked, it's in check. Leaving your own king in check is illegal - you must respond to it with your very next move.",
+            fen: "7k/8/8/8/8/8/8/r3K3 w - - 0 1",
+            highlightSquares: ["a1", "e1"],
+          },
+          {
+            caption:
+              "Why it matters: during the opening and middlegame, keeping your king safe is a priority - castling helps protect it. In the endgame, when fewer pieces remain, your king can become an active fighting piece.",
             fen: "7k/8/8/8/8/8/8/r3K3 w - - 0 1",
             highlightSquares: ["a1", "e1"],
           },
