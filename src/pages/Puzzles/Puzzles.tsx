@@ -83,7 +83,11 @@ export function Puzzles() {
       setLastMove({ from, to });
       resetStreak();
       setStreak(0);
-      return true; // the illegal-for-the-puzzle move still visually happens; status banner explains it
+      // `fen` deliberately isn't updated here: ChessBoard's position is controlled by it, so
+      // the wrong move never visually lands - the board stays on the puzzle's original
+      // position and the status banner below explains why, rather than leaving the learner
+      // looking at an incorrect position they'd have to manually reset.
+      return true;
     }
 
     setFen(game.fen());
