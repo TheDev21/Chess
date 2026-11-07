@@ -161,9 +161,9 @@ export function Analysis() {
       )}
 
       {coached && summary && (
-        <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row">
-          <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
-            <div className="flex w-full min-h-[240px] max-w-[560px] flex-1 items-stretch gap-2">
+        <div className="flex h-full flex-col gap-4 short:min-h-0 short:flex-row lg:min-h-0 lg:flex-row">
+          <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 lg:min-h-0">
+            <div className="flex w-full min-h-[240px] max-w-[560px] flex-1 items-stretch gap-2 short:min-h-[220px] short:max-h-[220px]">
               <div className="h-full">
                 <EvaluationBar cp={current?.evalAfter.cp ?? null} mate={current?.evalAfter.mate ?? null} />
               </div>
@@ -178,7 +178,7 @@ export function Analysis() {
               </div>
             </div>
 
-            <div className="flex shrink-0 items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-1.5 short:hidden">
               <button
                 onClick={() => setCurrentIndex(-1)}
                 aria-label="Go to start"
@@ -216,7 +216,7 @@ export function Analysis() {
             </div>
 
             {current && (
-              <div className="w-full max-w-[560px] shrink-0 rounded-xl border border-border bg-surface p-4" role="status" aria-live="polite">
+              <div className="w-full max-w-[560px] shrink-0 rounded-xl border border-border bg-surface p-4 short:hidden" role="status" aria-live="polite">
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-medium text-ink">{current.san}</span>
                   <span
@@ -238,7 +238,66 @@ export function Analysis() {
             )}
           </div>
 
-          <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-4 overflow-y-auto lg:max-h-none lg:w-80">
+          <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-4 overflow-y-auto short:max-h-none short:w-80 lg:max-h-none lg:w-80">
+            <div className="hidden shrink-0 flex-col gap-2 short:sticky short:top-0 short:z-10 short:flex short:bg-bg short:pb-2">
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setCurrentIndex(-1)}
+                  aria-label="Go to start"
+                  className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
+                >
+                  ⏮
+                </button>
+                <button
+                  onClick={() => setCurrentIndex((i) => Math.max(-1, i - 1))}
+                  aria-label="Previous move"
+                  className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
+                >
+                  ◀
+                </button>
+                <button
+                  onClick={() => setCurrentIndex((i) => Math.min(coached.length - 1, i + 1))}
+                  aria-label="Next move"
+                  className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
+                >
+                  ▶
+                </button>
+                <button
+                  onClick={() => setCurrentIndex(coached.length - 1)}
+                  aria-label="Go to end"
+                  className="rounded-full border border-border px-2.5 py-1.5 text-[12px] transition-colors hover:border-ink/20"
+                >
+                  ⏭
+                </button>
+                <button
+                  onClick={() => setCoached(null)}
+                  className="ml-3 rounded-full border border-border px-3.5 py-1.5 text-[12px] font-medium transition-colors hover:border-ink/20"
+                >
+                  New analysis
+                </button>
+              </div>
+              {current && (
+                <div className="w-full shrink-0 rounded-xl border border-border bg-surface p-4" role="status" aria-live="polite">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[14px] font-medium text-ink">{current.san}</span>
+                    <span
+                      className={clsx(
+                        "rounded-full px-2.5 py-1 text-[11px] font-medium",
+                        current.classification === "blunder" && "bg-blunder/10 text-blunder",
+                        current.classification === "mistake" && "bg-mistake/10 text-mistake",
+                        current.classification === "inaccuracy" && "bg-warning/10 text-warning",
+                        (current.classification === "best" || current.classification === "excellent") && "bg-success/10 text-success",
+                        current.classification === "good" && "bg-accent/10 text-accent",
+                      )}
+                    >
+                      {CLASSIFICATION_META[current.classification].label}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 text-[13px] text-muted">{current.summary}</p>
+                  {current.bestAlternativeSan && <p className="mt-1 text-[13px] text-muted">Engine preferred: {current.bestAlternativeSan}</p>}
+                </div>
+              )}
+            </div>
             <div className="rounded-xl border border-border bg-surface p-5">
               <h3 className="mb-3 text-[14px] font-semibold text-ink">Game Summary</h3>
               <div className="text-[13px] text-muted">Estimated accuracy (application estimate): {summary.accuracy.toFixed(0)}%</div>
