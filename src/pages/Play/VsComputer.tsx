@@ -149,7 +149,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
   if (!started) {
     return (
-      <div className="mx-auto max-w-md">
+      <div className="mx-auto max-w-md pb-24">
         <h1 className="mb-8 text-[26px] font-semibold tracking-tight text-ink">Play Computer</h1>
 
         <div className="mb-6">
