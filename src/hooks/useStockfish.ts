@@ -59,6 +59,8 @@ export function useStockfish() {
       let result: EngineEvaluation;
       try {
         result = await promise;
+      } catch {
+        return null; // e.g. a timed-out evaluation - treat like a superseded request rather than throwing into reviewGame/Analysis
       } finally {
         if (pendingRef.current === promise) pendingRef.current = null;
       }

@@ -6,7 +6,13 @@ interface PendingGo {
   reject: (err: Error) => void;
   fen: string;
   bestInfo: { cp: number | null; mate: number | null; pvUci: string[]; depth: number } | null;
+  timeoutId: ReturnType<typeof setTimeout>;
 }
+
+// Real-world searches at every configured depth (4-18, see DIFFICULTY_CONFIG
+// and the Move Coach/Analysis depth of 12) finish in under a second - this
+// leaves over 10x headroom before concluding the worker is genuinely stuck.
+const EVALUATION_TIMEOUT_MS = 15000;
 
 /**
  * Thin UCI wrapper around the Stockfish Web Worker. One instance drives one
@@ -17,7 +23,7 @@ interface PendingGo {
  */
 export class StockfishClient {
   private worker: Worker | null = null;
-  readonly ready: Promise<void>;
+  ready: Promise<void>;
   private pending: PendingGo | null = null;
 
   constructor() {
@@ -100,6 +106,7 @@ export class StockfishClient {
         pvSan,
         depth: info?.depth ?? 0,
       };
+      clearTimeout(this.pending.timeoutId);
       const { resolve } = this.pending;
       this.pending = null;
       resolve(resolved);
@@ -119,9 +126,48 @@ export class StockfishClient {
     this.worker.postMessage("position fen " + fen);
 
     return new Promise((resolve, reject) => {
-      this.pending = { resolve, reject, fen, bestInfo: null };
+      const pendingGo = { resolve, reject, fen, bestInfo: null } as PendingGo;
+      pendingGo.timeoutId = setTimeout(() => this.handleTimeout(pendingGo), EVALUATION_TIMEOUT_MS);
+      this.pending = pendingGo;
       this.worker!.postMessage("go depth " + config.depth);
     });
+  }
+
+  /**
+   * A stuck search never emits bestmove, so the Promise would hang forever
+   * without this. Tied to the specific `stuck` request (not just "whatever
+   * this.pending is when the timer fires") so a stale timer from an already-
+   * resolved or already-terminated request can never misfire against a
+   * different, newer request that happens to be pending by then.
+   *
+   * Terminating and recreating the worker - rather than just clearing
+   * `pending` - is what makes this safe: once terminate() is called, the
+   * browser guarantees that worker will never dispatch another message, so
+   * a late bestmove from the stuck search cannot resolve or corrupt the
+   * next request.
+   */
+  private handleTimeout(stuck: PendingGo) {
+    if (this.pending !== stuck) return;
+    this.pending = null;
+    // Reject the timed-out request first, before touching the worker - so it
+    // settles even if terminating or recreating the worker below throws.
+    stuck.reject(new Error("Stockfish evaluation timed out"));
+    try {
+      this.worker?.terminate();
+    } catch {
+      // A failed termination must not prevent the replacement worker below.
+    } finally {
+      this.worker = null;
+    }
+    try {
+      this.ready = this.init();
+    } catch (err) {
+      // init() isn't expected to throw synchronously (its own Promise
+      // executor catches worker-construction failures), but if it ever did,
+      // the next evaluate()'s `await this.ready` must still see a rejection
+      // instead of an uncaught exception from this timer callback.
+      this.ready = Promise.reject(err instanceof Error ? err : new Error(String(err)));
+    }
   }
 
   /** Cancels any in-flight search so a new request can start immediately (used when a newer position supersedes an old one). */
@@ -132,10 +178,15 @@ export class StockfishClient {
   }
 
   terminate() {
+    const stuck = this.pending;
+    this.pending = null;
+    if (stuck) {
+      clearTimeout(stuck.timeoutId);
+      stuck.reject(new Error("Stockfish worker was terminated"));
+    }
     this.worker?.postMessage("quit");
     this.worker?.terminate();
     this.worker = null;
-    this.pending = null;
   }
 }
 
