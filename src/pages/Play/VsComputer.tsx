@@ -236,13 +236,13 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
         />
       </div>
 
-      <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 lg:min-h-0">
-        <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
+      <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 lg:min-h-0">
+        <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px] short:hidden">
           <span className="text-ink">Stockfish ({DIFFICULTY_CONFIG[difficulty].label})</span>
           {seconds !== null && <span className="tabular-nums font-medium text-ink">{formatClock(clocks[topColor])}</span>}
         </div>
 
-        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-0">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-[220px] short:max-h-[220px]">
           <ChessBoard
             fen={displayFen}
             onMove={handleMove}
@@ -254,27 +254,43 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
           />
         </div>
 
+        <div className="hidden w-full max-w-[560px] shrink-0 items-center justify-between gap-3 text-[13px] short:flex">
+          <span className="truncate text-ink">
+            Stockfish{seconds !== null ? ` · ${formatClock(clocks[topColor])}` : ""}
+          </span>
+          <span className="shrink-0 font-medium text-ink">
+            {gameOver ? "Game over" : thinking ? "Thinking…" : colorToMove(g.game) === playerColor ? "Your move" : "Waiting…"}
+          </span>
+          <span className="truncate text-ink">
+            You{seconds !== null ? ` · ${formatClock(clocks[orientation])}` : ""}
+          </span>
+        </div>
+
         {!viewer.isLive && (
           <button
             onClick={viewer.goLive}
-            className="shrink-0 rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10"
+            className="shrink-0 rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10 short:hidden"
           >
             Viewing move {viewer.displayIndex + 1} of {g.moves.length} · back to current position
           </button>
         )}
 
-        <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px]">
+        <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px] short:hidden">
           <span className="text-ink">You</span>
           {seconds !== null && <span className="tabular-nums font-medium text-ink">{formatClock(clocks[orientation])}</span>}
         </div>
 
-        <div className="shrink-0 text-[13px] font-medium text-ink">
+        <div className="shrink-0 text-[13px] font-medium text-ink short:hidden">
           {gameOver ? "Game over" : thinking ? "Stockfish is thinking…" : colorToMove(g.game) === playerColor ? "Your move" : "Waiting…"}
         </div>
 
-        {gameOver && resultInfo && <GameResult result={resultInfo.result} reason={resultInfo.reason} playerColor={playerColor} />}
+        {gameOver && resultInfo && (
+          <div className="short:hidden">
+            <GameResult result={resultInfo.result} reason={resultInfo.reason} playerColor={playerColor} />
+          </div>
+        )}
 
-        <div className="shrink-0">
+        <div className="shrink-0 short:hidden">
           <GameControls
             onResign={!gameOver ? (settings.confirmResignation ? () => confirm("Resign the game?") && g.resign() : g.resign) : undefined}
             onNewGame={() => setStarted(false)}
@@ -284,6 +300,26 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
       </div>
 
       <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto short:max-h-none short:w-72 lg:max-h-none lg:w-72">
+        <div className="hidden shrink-0 short:sticky short:top-0 short:z-10 short:block short:bg-surface short:pb-2">
+          <GameControls
+            onResign={!gameOver ? (settings.confirmResignation ? () => confirm("Resign the game?") && g.resign() : g.resign) : undefined}
+            onNewGame={() => setStarted(false)}
+            gameOver={gameOver}
+          />
+          {!viewer.isLive && (
+            <button
+              onClick={viewer.goLive}
+              className="mt-2 w-full rounded-full border border-accent/40 bg-accent/5 px-3.5 py-1.5 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10"
+            >
+              Viewing move {viewer.displayIndex + 1} of {g.moves.length} · back to current position
+            </button>
+          )}
+          {gameOver && resultInfo && (
+            <div className="mt-2">
+              <GameResult result={resultInfo.result} reason={resultInfo.reason} playerColor={playerColor} />
+            </div>
+          )}
+        </div>
         <MoveHistory sanMoves={g.moves.map((m) => m.san)} activeIndex={viewer.displayIndex} onSelectMove={viewer.selectIndex} />
         <div data-tutorial="coach">
           <MoveCoachPanel
