@@ -219,9 +219,21 @@ export function Puzzles() {
               <ChessBoard fen={fen} onMove={handleMove} orientation="white" draggable={status === "playing"} lastMove={lastMove} />
             </div>
 
-            {status === "solved" && <div className="shrink-0 text-[14px] font-medium text-success">Solved!</div>}
-            {status === "failed" && <div className="shrink-0 text-[14px] font-medium text-blunder">Not quite, try again.</div>}
-            {status === "revealed" && <div className="shrink-0 text-[14px] font-medium text-ink">Solution: {current.solution.join(" → ")}</div>}
+            {status === "solved" && (
+              <div className="shrink-0 text-[14px] font-medium text-success" role="status" aria-live="polite">
+                Solved!
+              </div>
+            )}
+            {status === "failed" && (
+              <div className="shrink-0 text-[14px] font-medium text-blunder" role="status" aria-live="polite">
+                Not quite, try again.
+              </div>
+            )}
+            {status === "revealed" && (
+              <div className="shrink-0 text-[14px] font-medium text-ink" role="status" aria-live="polite">
+                Solution: {current.solution.join(" → ")}
+              </div>
+            )}
             {status === "playing" && (
               <div className="shrink-0 text-[13px] text-ink">
                 {current.fen.includes(" w ") === (moveIndex % 2 === 0) ? "White" : "Black"} to move · find the best move

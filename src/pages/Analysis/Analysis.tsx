@@ -216,7 +216,7 @@ export function Analysis() {
             </div>
 
             {current && (
-              <div className="w-full max-w-[560px] shrink-0 rounded-xl border border-border bg-surface p-4">
+              <div className="w-full max-w-[560px] shrink-0 rounded-xl border border-border bg-surface p-4" role="status" aria-live="polite">
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-medium text-ink">{current.san}</span>
                   <span

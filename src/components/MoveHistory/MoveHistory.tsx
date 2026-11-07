@@ -20,6 +20,7 @@ export function MoveHistory({ sanMoves, activeIndex, onSelectMove }: MoveHistory
               <span className="w-5 pt-1 text-muted">{i + 1}.</span>
               <button
                 onClick={() => onSelectMove?.(i * 2)}
+                aria-current={activeIndex === i * 2 ? "step" : undefined}
                 className={`flex-1 rounded-md px-1.5 py-1 text-left transition-colors ${activeIndex === i * 2 ? "bg-accent/10 font-medium text-accent" : "text-ink hover:bg-ink/[0.04]"}`}
               >
                 {white}
@@ -27,6 +28,7 @@ export function MoveHistory({ sanMoves, activeIndex, onSelectMove }: MoveHistory
               {black && (
                 <button
                   onClick={() => onSelectMove?.(i * 2 + 1)}
+                  aria-current={activeIndex === i * 2 + 1 ? "step" : undefined}
                   className={`flex-1 rounded-md px-1.5 py-1 text-left transition-colors ${activeIndex === i * 2 + 1 ? "bg-accent/10 font-medium text-accent" : "text-ink hover:bg-ink/[0.04]"}`}
                 >
                   {black}

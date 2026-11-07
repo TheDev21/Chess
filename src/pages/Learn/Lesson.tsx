@@ -332,7 +332,7 @@ export function Lesson() {
             {stage === "trySuccess" && (
               <AnimatePresence>
                 <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-success">
+                  <div className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-success" role="status" aria-live="polite">
                     <Check className="h-4 w-4" />
                     <span className="text-[13px] font-medium">Nice work!</span>
                   </div>
@@ -359,7 +359,9 @@ export function Lesson() {
                 )}
                 {challengeState === "wrong" && (
                   <div className="rounded-lg border border-warning/30 bg-warning/5 p-3">
-                    <p className="text-[13px] font-medium text-warning">Not quite. That move is legal, but it's not the one we're looking for.</p>
+                    <p className="text-[13px] font-medium text-warning" role="status" aria-live="polite">
+                      Not quite. That move is legal, but it's not the one we're looking for.
+                    </p>
                     {showHint && (
                       <p className="mt-2 flex items-start gap-1.5 text-[12px] leading-relaxed text-muted">
                         <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" />
@@ -386,7 +388,7 @@ export function Lesson() {
                 )}
                 {challengeState === "right" && (
                   <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-success">
+                    <div className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-success" role="status" aria-live="polite">
                       <Check className="h-4 w-4" />
                       <span className="text-[13px] font-medium">Lesson complete!</span>
                     </div>
