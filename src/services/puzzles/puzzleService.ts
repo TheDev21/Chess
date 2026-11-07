@@ -24,7 +24,13 @@ export async function loadPuzzles(): Promise<Puzzle[]> {
 }
 
 export function dailyPuzzle(puzzles: Puzzle[]): Puzzle {
-  const dayIndex = Math.floor(Date.now() / 86400000);
+  // Keyed by the user's local calendar date (not raw elapsed time) so this
+  // rolls over at the same moment puzzleProgress.ts's local-date-keyed
+  // solved-today tracking does - using UTC-of-the-local-date components,
+  // rather than subtracting a timezone offset, means this is also safe
+  // across daylight-saving transitions, where a local day isn't exactly 24h.
+  const d = new Date();
+  const dayIndex = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
   return puzzles[dayIndex % puzzles.length];
 }
 
