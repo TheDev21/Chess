@@ -250,7 +250,7 @@ export function Analysis() {
                   </li>
                 ))}
               </ul>
-              {summary.worst && (
+              {summary.worst && (summary.worst.classification === "mistake" || summary.worst.classification === "blunder") && (
                 <div className="mt-3 border-t border-border pt-3 text-[13px] text-muted">
                   Biggest missed opportunity: move {summary.worst.ply + 1} ({summary.worst.san})
                 </div>
