@@ -18,8 +18,8 @@ const links = [
 
 function Logo() {
   return (
-    <NavLink to="/" className="flex items-center text-ink" end>
-      <img src={logoCombinedImg} alt="ChessGuru" className="h-8 w-auto" />
+    <NavLink to="/" className="flex items-center text-ink lg:w-full" end>
+      <img src={logoCombinedImg} alt="ChessGuru" className="h-12 w-auto lg:h-auto lg:w-[90%]" />
     </NavLink>
   );
 }
