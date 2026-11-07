@@ -109,7 +109,7 @@ export function Analysis() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
       {!coached && (
-        <div className="mx-auto w-full max-w-xl">
+        <div className="mx-auto w-full max-w-xl pb-24">
           <h1 className="mb-6 text-[26px] font-semibold tracking-tight text-ink">Analysis</h1>
 
           {games.length > 0 && (
