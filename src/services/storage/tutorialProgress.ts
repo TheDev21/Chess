@@ -17,14 +17,26 @@ export function markTutorialSeen(id: string): void {
   const seen = loadSeen();
   if (!seen.includes(id)) {
     seen.push(id);
-    localStorage.setItem(KEY, JSON.stringify(seen));
+    try {
+      localStorage.setItem(KEY, JSON.stringify(seen));
+    } catch {
+      // Storage full or unavailable (private browsing) - this won't persist across a reload.
+    }
   }
 }
 
 export function resetTutorial(id: string): void {
-  localStorage.setItem(KEY, JSON.stringify(loadSeen().filter((t) => t !== id)));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(loadSeen().filter((t) => t !== id)));
+  } catch {
+    // Storage full or unavailable (private browsing) - this won't persist across a reload.
+  }
 }
 
 export function resetAllTutorials(): void {
-  localStorage.removeItem(KEY);
+  try {
+    localStorage.removeItem(KEY);
+  } catch {
+    // Storage full or unavailable (private browsing) - this won't persist across a reload.
+  }
 }

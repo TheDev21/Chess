@@ -20,7 +20,11 @@ export function markLessonComplete(chapterId: string, lessonId: string): void {
   const progress = loadLessonProgress();
   if (!progress.completedLessons.includes(key)) {
     progress.completedLessons.push(key);
-    localStorage.setItem(KEY, JSON.stringify(progress));
+    try {
+      localStorage.setItem(KEY, JSON.stringify(progress));
+    } catch {
+      // Storage full or unavailable (private browsing) - this completion won't persist across a reload.
+    }
   }
 }
 

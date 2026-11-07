@@ -25,7 +25,11 @@ export function saveGame(game: StoredGame): void {
 
 export function deleteGame(id: string): void {
   const games = listGames().filter((g) => g.id !== id);
-  localStorage.setItem(KEY, JSON.stringify(games));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(games));
+  } catch {
+    // Storage full or unavailable (private browsing) - the deletion may not persist.
+  }
 }
 
 export function getGame(id: string): StoredGame | null {
