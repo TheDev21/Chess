@@ -256,7 +256,7 @@ export function Home() {
         <ProgressItem icon={PuzzleIcon} label="Puzzles Solved" value={puzzlesSolved} />
         <ProgressItem icon={Gamepad2} label="Games Played" value={gamesPlayed} />
         {gamesPlayed > 0 && <ProgressItem icon={Trophy} label="Record (W-L-D)" value={`${record.wins}-${record.losses}-${record.draws}`} />}
-        <ProgressItem icon={Flame} label="Current Streak" value={streak > 0 ? `${streak} day${streak === 1 ? "" : "s"}` : "-"} />
+        <ProgressItem icon={Flame} label="Puzzle Streak" value={streak > 0 ? `${streak} day${streak === 1 ? "" : "s"}` : "-"} />
       </div>
 
       {tip && <p className="mt-6 text-center text-[13px] text-muted">{tip}</p>}

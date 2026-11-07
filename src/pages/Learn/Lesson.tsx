@@ -145,6 +145,11 @@ export function Lesson() {
 
   const myIndex = ALL_LESSONS.findIndex((l) => l.chapterId === chapterId && l.lessonId === lessonId);
   const next = ALL_LESSONS[myIndex + 1];
+  // Only call this a "chapter complete" when there's a next chapter to move
+  // on to - the very last lesson of the whole curriculum (next is undefined)
+  // keeps the plain "Lesson complete!" message instead, so it never implies
+  // there's more to come right after the biggest milestone.
+  const isChapterComplete = Boolean(next) && chapter.lessons[chapter.lessons.length - 1].id === lesson.id;
   const watchStep = lesson.watch[watchIndex];
 
   const tabs: { stage: Stage; label: string; icon: typeof Play }[] = [
@@ -390,8 +395,9 @@ export function Lesson() {
                   <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col gap-2">
                     <div className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-success" role="status" aria-live="polite">
                       <Check className="h-4 w-4" />
-                      <span className="text-[13px] font-medium">Lesson complete!</span>
+                      <span className="text-[13px] font-medium">{isChapterComplete ? "Chapter complete!" : "Lesson complete!"}</span>
                     </div>
+                    {isChapterComplete && <p className="text-[13px] leading-relaxed text-ink">You've finished {chapter.title}.</p>}
                     <p className="text-[13px] leading-relaxed text-ink">{lesson.challenge.successMessage}</p>
                   </motion.div>
                 )}
