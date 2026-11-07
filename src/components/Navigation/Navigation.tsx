@@ -101,8 +101,16 @@ export function Navigation({ onOpenSettings }: NavigationProps) {
               )
             }
           >
-            <link.icon className="h-5 w-5" strokeWidth={1.75} />
-            {link.label}
+            {({ isActive }) => (
+              <>
+                <link.icon className="h-5 w-5" strokeWidth={1.75} />
+                {link.label}
+                <span
+                  aria-hidden="true"
+                  className={clsx("mt-0.5 h-1 w-1 rounded-full transition-colors duration-200", isActive ? "bg-accent" : "bg-transparent")}
+                />
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
