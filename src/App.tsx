@@ -61,7 +61,7 @@ export default function App() {
       }}
     >
       <Navigation onOpenSettings={() => setSettingsOpen(true)} />
-      <main className="mx-auto w-full flex-1 overflow-y-auto px-5 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] pt-4 sm:px-6 sm:py-6 lg:max-w-6xl lg:pb-6">
+      <main className="mx-auto w-full flex-1 overflow-y-auto px-5 pb-[calc(5rem+env(safe-area-inset-bottom,0px))] pt-4 sm:px-6 sm:py-6 lg:max-w-6xl lg:pb-6 short:pt-0 short:pb-2">
         <Suspense fallback={<RouteLoading />}>
           <Routes>
             <Route path="/" element={<Home />} />
