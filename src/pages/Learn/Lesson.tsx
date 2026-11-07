@@ -272,6 +272,12 @@ export function Lesson() {
               >
                 Back to Lessons
               </Link>
+              <button
+                onClick={resetChallenge}
+                className="rounded-full border border-border px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20"
+              >
+                Practice Again
+              </button>
               {next && (
                 <button
                   onClick={() => navigate(`/learn/${next.chapterId}/${next.lessonId}`)}
