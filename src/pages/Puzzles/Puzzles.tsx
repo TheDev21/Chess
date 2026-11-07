@@ -159,8 +159,8 @@ export function Puzzles() {
   ];
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4">
-      <div className="flex shrink-0 items-center justify-between">
+    <div className="flex h-full min-h-0 flex-col gap-4 short:gap-0">
+      <div className="flex shrink-0 items-center justify-between short:hidden">
         <h1 className="flex items-center gap-2 text-[22px] font-semibold tracking-tight text-ink">
           <Trophy className="h-5 w-5 text-accent" strokeWidth={1.75} />
           Puzzles
@@ -173,16 +173,16 @@ export function Puzzles() {
         )}
       </div>
 
-      <div className="flex max-w-full shrink-0 gap-1 overflow-x-auto rounded-full border border-border bg-surface p-1 shadow-card">
+      <div className="flex max-w-full shrink-0 gap-1 overflow-x-auto rounded-full border border-border bg-surface p-1 shadow-card short:p-0.5">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => selectTab(t.id)}
-            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors duration-200 sm:px-3.5 ${
+            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors duration-200 sm:px-3.5 short:gap-1 short:px-2 short:py-0.5 short:text-[10px] ${
               tab === t.id ? "bg-accent text-bg" : "text-muted hover:text-ink"
             }`}
           >
-            <t.icon className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
+            <t.icon className="h-3.5 w-3.5 shrink-0 short:h-3 short:w-3" strokeWidth={1.75} />
             {t.label}
           </button>
         ))}
@@ -212,39 +212,42 @@ export function Puzzles() {
           )}
         </div>
       ) : current ? (
-        <div className="flex flex-1 flex-col gap-4 lg:min-h-0 lg:flex-row">
-          <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0">
+        <div className="flex flex-1 flex-col gap-4 short:min-h-0 short:flex-row lg:min-h-0 lg:flex-row">
+          <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 lg:min-h-0">
             {tab !== "daily" && (
-              <button onClick={() => setBrowsing(true)} className="flex shrink-0 items-center gap-1 self-start text-[13px] text-muted hover:text-ink">
+              <button
+                onClick={() => setBrowsing(true)}
+                className="flex shrink-0 items-center gap-1 self-start text-[13px] text-muted hover:text-ink short:hidden"
+              >
                 <ChevronLeft className="h-4 w-4" /> Back to list
               </button>
             )}
-            <div className="max-h-full w-full min-h-[240px] max-w-[480px] flex-1">
+            <div className="max-h-full w-full min-h-[240px] max-w-[480px] flex-1 short:min-h-[220px] short:max-h-[220px]">
               <ChessBoard fen={fen} onMove={handleMove} orientation="white" draggable={status === "playing"} lastMove={lastMove} />
             </div>
 
             {status === "solved" && (
-              <div className="shrink-0 text-[14px] font-medium text-success" role="status" aria-live="polite">
+              <div className="shrink-0 text-[14px] font-medium text-success short:hidden" role="status" aria-live="polite">
                 Solved!
               </div>
             )}
             {status === "failed" && (
-              <div className="shrink-0 text-[14px] font-medium text-blunder" role="status" aria-live="polite">
+              <div className="shrink-0 text-[14px] font-medium text-blunder short:hidden" role="status" aria-live="polite">
                 Not quite, try again.
               </div>
             )}
             {status === "revealed" && (
-              <div className="shrink-0 text-[14px] font-medium text-ink" role="status" aria-live="polite">
+              <div className="shrink-0 text-[14px] font-medium text-ink short:hidden" role="status" aria-live="polite">
                 Solution: {current.solution.join(" → ")}
               </div>
             )}
             {status === "playing" && (
-              <div className="shrink-0 text-[13px] text-ink">
+              <div className="shrink-0 text-[13px] text-ink short:hidden">
                 {current.fen.includes(" w ") === (moveIndex % 2 === 0) ? "White" : "Black"} to move · find the best move
               </div>
             )}
 
-            <div className="flex shrink-0 flex-wrap justify-center gap-2">
+            <div className="flex shrink-0 flex-wrap justify-center gap-2 short:hidden">
               <button
                 onClick={() => startPuzzle(current)}
                 className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-panel"
@@ -260,13 +263,61 @@ export function Puzzles() {
             </div>
           </div>
 
-          <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto lg:max-h-none lg:w-80">
+          <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto short:max-h-none short:w-80 lg:max-h-none lg:w-80">
+            <div className="hidden shrink-0 flex-col gap-2 short:sticky short:top-0 short:z-10 short:flex short:bg-bg short:pb-2">
+              <button
+                onClick={() => setShowHint((v) => !v)}
+                className="flex items-center justify-center gap-1.5 rounded-full bg-accent px-3.5 py-2.5 text-[13px] font-medium text-bg shadow-card transition-all duration-200 hover:bg-accentDeep hover:shadow-panel"
+              >
+                {showHint ? `Hint: ${current.solution[moveIndex]?.slice(0, 2)}` : "Show Hint"}
+              </button>
+              <button
+                onClick={revealSolution}
+                className="flex items-center justify-center gap-1.5 rounded-full border border-border px-3.5 py-2.5 text-[13px] font-medium text-ink transition-colors duration-200 hover:bg-accent/[0.05]"
+              >
+                Show Solution
+              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => startPuzzle(current)}
+                  className="flex-1 rounded-full border border-border bg-surface px-3.5 py-1.5 text-[12px] font-medium text-ink shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:shadow-panel"
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={() => startPuzzle(randomPuzzle(puzzles, current.id))}
+                  className="flex-1 rounded-full bg-accent px-3.5 py-1.5 text-[12px] font-medium text-bg shadow-card transition-all duration-200 hover:bg-accentDeep hover:shadow-panel"
+                >
+                  Next Puzzle
+                </button>
+              </div>
+              {status === "solved" && (
+                <div className="text-[13px] font-medium text-success" role="status" aria-live="polite">
+                  Solved!
+                </div>
+              )}
+              {status === "failed" && (
+                <div className="text-[13px] font-medium text-blunder" role="status" aria-live="polite">
+                  Not quite, try again.
+                </div>
+              )}
+              {status === "revealed" && (
+                <div className="text-[13px] font-medium text-ink" role="status" aria-live="polite">
+                  Solution: {current.solution.join(" → ")}
+                </div>
+              )}
+              {status === "playing" && (
+                <div className="text-[12px] text-ink">
+                  {current.fen.includes(" w ") === (moveIndex % 2 === 0) ? "White" : "Black"} to move · find the best move
+                </div>
+              )}
+            </div>
             <div className="rounded-xl border border-border bg-surface p-5 shadow-card">
               <h3 className="text-[18px] font-semibold text-ink">{current.theme}</h3>
               <p className="mt-1.5 text-[13px] leading-relaxed text-muted">
                 Find the move that gives {current.fen.includes(" w ") ? "White" : "Black"} the advantage. Rated {current.rating}.
               </p>
-              <div className="mt-4 flex flex-col gap-2">
+              <div className="mt-4 flex flex-col gap-2 short:hidden">
                 <button
                   onClick={() => setShowHint((v) => !v)}
                   className="flex items-center justify-center gap-1.5 rounded-full bg-accent px-3.5 py-2.5 text-[13px] font-medium text-bg shadow-card transition-all duration-200 hover:bg-accentDeep hover:shadow-panel"
