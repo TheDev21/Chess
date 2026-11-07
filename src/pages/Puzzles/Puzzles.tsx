@@ -164,7 +164,7 @@ export function Puzzles() {
         {streak > 0 && (
           <span className="flex items-center gap-1.5 rounded-full bg-warning/10 px-3 py-1.5 text-[12px] font-medium text-warning">
             <Flame className="h-3.5 w-3.5" />
-            {streak} day{streak === 1 ? "" : "s"} streak
+            {streak} in a row
           </span>
         )}
       </div>
