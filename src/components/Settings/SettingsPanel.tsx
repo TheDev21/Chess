@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, RotateCcw } from "lucide-react";
 import type { AppSettings } from "../../services/storage/settings";
 import { resetAllTutorials } from "../../services/storage/tutorialProgress";
@@ -19,12 +19,13 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
+      aria-label={label}
       onClick={() => onChange(!checked)}
       className={`relative h-6 w-10 rounded-full transition-colors duration-200 ${checked ? "bg-accent" : "bg-ink/10"}`}
     >
@@ -35,15 +36,73 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   );
 }
 
+const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPanelProps) {
   const [tutorialsReset, setTutorialsReset] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
+  // Dialog behavior: move focus in on open, trap Tab/Shift+Tab inside the
+  // panel, close on Escape, and restore focus to whatever triggered the
+  // panel (the Settings button, in practice) when it closes - however it
+  // closes (Escape, the X button, or the backdrop).
+  //
+  // `open` is intentionally the only dependency: `onClose` is a fresh
+  // function identity on every parent render (including ones caused by
+  // toggling a setting inside this very panel), and re-running this effect
+  // on those unrelated renders would re-grab "previously focused" and steal
+  // focus back to the first control mid-interaction.
+  useEffect(() => {
+    if (!open) return;
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+    const panel = panelRef.current;
+    const getFocusable = () => (panel ? Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) : []);
+    getFocusable()[0]?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const items = getFocusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previouslyFocusedRef.current?.focus();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      <button aria-label="Close settings" className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto border-l border-border bg-surface p-6 shadow-panel">
+      <button aria-label="Close settings" tabIndex={-1} className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
+        className="relative flex h-full w-full max-w-sm flex-col overflow-y-auto border-l border-border bg-surface p-6 shadow-panel"
+      >
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-[17px] font-semibold text-ink">Settings</h2>
+          <h2 id="settings-title" className="text-[17px] font-semibold text-ink">
+            Settings
+          </h2>
           <button onClick={onClose} aria-label="Close" className="rounded-full p-1.5 text-muted transition-colors hover:bg-ink/5 hover:text-ink">
             <X className="h-4 w-4" />
           </button>
@@ -51,19 +110,23 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
 
         <div className="divide-y divide-border">
           <Row label="Show legal moves">
-            <Toggle checked={settings.showLegalMoves} onChange={(v) => onChange({ showLegalMoves: v })} />
+            <Toggle label="Show legal moves" checked={settings.showLegalMoves} onChange={(v) => onChange({ showLegalMoves: v })} />
           </Row>
           <Row label="Show coordinates">
-            <Toggle checked={settings.showCoordinates} onChange={(v) => onChange({ showCoordinates: v })} />
+            <Toggle label="Show coordinates" checked={settings.showCoordinates} onChange={(v) => onChange({ showCoordinates: v })} />
           </Row>
           <Row label="Sound effects">
-            <Toggle checked={settings.soundEnabled} onChange={(v) => onChange({ soundEnabled: v })} />
+            <Toggle label="Sound effects" checked={settings.soundEnabled} onChange={(v) => onChange({ soundEnabled: v })} />
           </Row>
           <Row label="Move Coach">
-            <Toggle checked={settings.moveCoachEnabled} onChange={(v) => onChange({ moveCoachEnabled: v })} />
+            <Toggle label="Move Coach" checked={settings.moveCoachEnabled} onChange={(v) => onChange({ moveCoachEnabled: v })} />
           </Row>
           <Row label="Coach detail">
+            <label htmlFor="coach-detail-select" className="sr-only">
+              Coach detail
+            </label>
             <select
+              id="coach-detail-select"
               value={settings.coachDetail}
               onChange={(e) => onChange({ coachDetail: e.target.value as AppSettings["coachDetail"] })}
               className="rounded-lg border border-border bg-bg px-2.5 py-1.5 text-[13px] text-ink"
@@ -73,10 +136,10 @@ export function SettingsPanel({ open, settings, onChange, onClose }: SettingsPan
             </select>
           </Row>
           <Row label="Confirm resignation">
-            <Toggle checked={settings.confirmResignation} onChange={(v) => onChange({ confirmResignation: v })} />
+            <Toggle label="Confirm resignation" checked={settings.confirmResignation} onChange={(v) => onChange({ confirmResignation: v })} />
           </Row>
           <Row label="Confirm draw offer">
-            <Toggle checked={settings.confirmDrawOffer} onChange={(v) => onChange({ confirmDrawOffer: v })} />
+            <Toggle label="Confirm draw offer" checked={settings.confirmDrawOffer} onChange={(v) => onChange({ confirmDrawOffer: v })} />
           </Row>
           <Row label="Guided tutorials">
             <button

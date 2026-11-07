@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
 import { Settings as SettingsIcon, Home, BookOpen, Swords, Puzzle, LineChart } from "lucide-react";
 import clsx from "clsx";
-import logoKingImg from "../../assets/logo-king-grad.png";
+import navKingWatermark from "../../assets/nav-king-watermark.png";
+import logoKingImg from "../../assets/logo-king-mark.png";
 
 interface NavigationProps {
   onOpenSettings: () => void;
@@ -19,7 +20,7 @@ function Logo() {
   return (
     <NavLink to="/" className="flex items-center gap-2 text-ink" end>
       <img src={logoKingImg} alt="" className="h-8 w-auto" />
-      <span className="text-[18px] font-semibold tracking-tight text-accent">ChessGuru</span>
+      <span className="text-[24px] font-semibold tracking-tight text-accent">ChessGuru</span>
     </NavLink>
   );
 }
@@ -32,7 +33,7 @@ export function Navigation({ onOpenSettings }: NavigationProps) {
         <div className="mb-6 px-2">
           <Logo />
         </div>
-        <nav className="flex flex-col gap-0.5">
+        <nav className="flex flex-col gap-1">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -41,16 +42,28 @@ export function Navigation({ onOpenSettings }: NavigationProps) {
               data-tutorial={`nav-${link.label.toLowerCase()}`}
               className={({ isActive }) =>
                 clsx(
-                  "flex items-center gap-2.5 rounded-full px-3 py-2 text-[13px] font-medium transition-colors duration-200",
+                  "flex items-center gap-3 rounded-2xl px-4 py-3.5 text-[15px] font-medium transition-colors duration-200",
                   isActive ? "bg-accent text-bg shadow-card" : "text-muted hover:bg-accent/[0.08] hover:text-ink",
                 )
               }
             >
-              <link.icon className="h-[17px] w-[17px]" strokeWidth={1.75} />
+              <link.icon className="h-6 w-6" strokeWidth={1.75} />
               {link.label}
             </NavLink>
           ))}
         </nav>
+        <div className="relative min-h-0 flex-1">
+          <img
+            src={navKingWatermark}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-80"
+            style={{
+              maskImage: "radial-gradient(ellipse 70% 65% at 50% 45%, black 50%, transparent 100%)",
+              WebkitMaskImage: "radial-gradient(ellipse 70% 65% at 50% 45%, black 50%, transparent 100%)",
+            }}
+          />
+        </div>
         <div className="mt-auto flex flex-col gap-1">
           <button
             type="button"

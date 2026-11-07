@@ -225,6 +225,7 @@ export function Lesson() {
                   {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                 </button>
                 <select
+                  aria-label="Playback speed"
                   value={speed}
                   onChange={(e) => setSpeed(Number(e.target.value) as (typeof SPEEDS)[number])}
                   className="rounded-full border border-border bg-surface px-2 py-1.5 text-[12px] font-medium text-ink"
