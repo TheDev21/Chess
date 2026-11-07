@@ -33,6 +33,11 @@ export function Lesson() {
   const [challengeFen, setChallengeFen] = useState(found?.lesson.challenge.fen ?? "");
   const [challengeState, setChallengeState] = useState<"playing" | "wrong" | "right">("playing");
   const [showHint, setShowHint] = useState(false);
+  // index: 0 = the lesson's base `challenge`, 1+ indexes into `additionalChallenges`.
+  // lessonKey travels with the index so a stale index from a previous lesson can
+  // never be mistaken for a valid position in a newly rendered one - even one with
+  // just as many additionalChallenges as the lesson we left.
+  const [challengePosition, setChallengePosition] = useState({ lessonKey: `${chapterId}/${lessonId}`, index: 0 });
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -46,6 +51,7 @@ export function Lesson() {
     setChallengeFen(found.lesson.challenge.fen);
     setChallengeState("playing");
     setShowHint(false);
+    setChallengePosition({ lessonKey: `${chapterId}/${lessonId}`, index: 0 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chapterId, lessonId]);
 
@@ -77,6 +83,20 @@ export function Lesson() {
     );
   }
   const { chapter, lesson } = found;
+  // On the render right after navigating to a new lesson, challengePosition can still
+  // briefly hold the previous lesson's { lessonKey, index } before the reset effect
+  // above runs - fall back to 0 for this render whenever the stored key doesn't match.
+  const lessonKey = `${chapterId}/${lessonId}`;
+  const effectiveChallengeIndex = challengePosition.lessonKey === lessonKey ? challengePosition.index : 0;
+  const currentChallenge =
+    effectiveChallengeIndex > 0 && effectiveChallengeIndex - 1 < (lesson.additionalChallenges?.length ?? 0)
+      ? lesson.additionalChallenges![effectiveChallengeIndex - 1]
+      : lesson.challenge;
+  const hasAnotherPosition = effectiveChallengeIndex < (lesson.additionalChallenges?.length ?? 0);
+  // Same staleness window as effectiveChallengeIndex above, but for the board itself:
+  // challengeFen is reset inside the lesson-change effect, which runs after this first
+  // render - without this, ChessBoard would briefly display the previous lesson's FEN.
+  const effectiveChallengeFen = challengePosition.lessonKey === lessonKey ? challengeFen : lesson.challenge.fen;
 
   const handleTryMove = (from: string, to: string): boolean => {
     if (lesson.tryIt.kind !== "move" || from !== lesson.tryIt.pieceSquare) return false;
@@ -108,7 +128,7 @@ export function Lesson() {
   };
 
   const handleChallengeMove = (from: string, to: string): boolean => {
-    if (lesson.challenge.kind !== "move") return false;
+    if (currentChallenge.kind !== "move") return false;
     const chess = new Chess(challengeFen);
     let move;
     try {
@@ -118,7 +138,7 @@ export function Lesson() {
     }
     if (!move) return false;
     setChallengeFen(chess.fen());
-    if (lesson.challenge.isGoalMove?.(chess, move)) {
+    if (currentChallenge.isGoalMove?.(chess, move)) {
       setChallengeState("right");
       markLessonComplete(chapter.id, lesson.id);
     } else {
@@ -128,8 +148,8 @@ export function Lesson() {
   };
 
   const handleChallengeTap = (square: string) => {
-    if (lesson.challenge.kind !== "find" || challengeState === "right") return;
-    if (square === lesson.challenge.targetSquare) {
+    if (currentChallenge.kind !== "find" || challengeState === "right") return;
+    if (square === currentChallenge.targetSquare) {
       setChallengeState("right");
       markLessonComplete(chapter.id, lesson.id);
     } else {
@@ -138,7 +158,15 @@ export function Lesson() {
   };
 
   const resetChallenge = () => {
-    setChallengeFen(lesson.challenge.fen);
+    setChallengeFen(currentChallenge.fen);
+    setChallengeState("playing");
+    setShowHint(false);
+  };
+
+  const nextChallengePosition = () => {
+    const nextIndex = effectiveChallengeIndex + 1;
+    setChallengePosition({ lessonKey, index: nextIndex });
+    setChallengeFen(lesson.additionalChallenges![nextIndex - 1].fen);
     setChallengeState("playing");
     setShowHint(false);
   };
@@ -199,10 +227,10 @@ export function Lesson() {
               )}
               {stage === "challenge" && (
                 <ChessBoard
-                  fen={challengeFen}
+                  fen={effectiveChallengeFen}
                   onMove={handleChallengeMove}
                   orientation="white"
-                  draggable={lesson.challenge.kind === "move"}
+                  draggable={currentChallenge.kind === "move"}
                   onSquareTap={handleChallengeTap}
                 />
               )}
@@ -278,6 +306,14 @@ export function Lesson() {
               >
                 Practice Again
               </button>
+              {hasAnotherPosition && (
+                <button
+                  onClick={nextChallengePosition}
+                  className="rounded-full border border-border px-3.5 py-1.5 text-[12px] font-medium text-ink transition-colors hover:border-ink/20"
+                >
+                  Try Another Position
+                </button>
+              )}
               {next && (
                 <button
                   onClick={() => navigate(`/learn/${next.chapterId}/${next.lessonId}`)}
@@ -365,7 +401,7 @@ export function Lesson() {
                     <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/[0.1] text-accent">
                       <Trophy className="h-3.5 w-3.5" strokeWidth={1.75} />
                     </span>
-                    <p className="text-[14px] leading-relaxed text-ink">{lesson.challenge.instructions}</p>
+                    <p className="text-[14px] leading-relaxed text-ink">{currentChallenge.instructions}</p>
                   </div>
                 )}
                 {challengeState === "wrong" && (
@@ -376,7 +412,7 @@ export function Lesson() {
                     {showHint && (
                       <p className="mt-2 flex items-start gap-1.5 text-[12px] leading-relaxed text-muted">
                         <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" />
-                        {lesson.challenge.hint}
+                        {currentChallenge.hint}
                       </p>
                     )}
                     <div className="mt-3 flex flex-wrap gap-2">
@@ -404,7 +440,7 @@ export function Lesson() {
                       <span className="text-[13px] font-medium">{isChapterComplete ? "Chapter complete!" : "Lesson complete!"}</span>
                     </div>
                     {isChapterComplete && <p className="text-[13px] leading-relaxed text-ink">You've finished {chapter.title}.</p>}
-                    <p className="text-[13px] leading-relaxed text-ink">{lesson.challenge.successMessage}</p>
+                    <p className="text-[13px] leading-relaxed text-ink">{currentChallenge.successMessage}</p>
                   </motion.div>
                 )}
               </div>

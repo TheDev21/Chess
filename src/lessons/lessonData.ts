@@ -127,6 +127,16 @@ export const CHAPTERS: Chapter[] = [
           successMessage: "Nxc6. The knight's L-shaped jump found an undefended piece.",
           hint: "From d4, which knight jump lands on a black piece?",
         },
+        additionalChallenges: [
+          {
+            instructions: "White to move. Capture the undefended black knight in one move.",
+            fen: "k7/3n4/8/4N3/8/8/8/4K3 w - - 0 1",
+            kind: "move",
+            isGoalMove: (_chess, move) => move.from === "e5" && move.to === "d7",
+            successMessage: "Nxd7. Same idea, different square - the knight's jump still found the undefended piece.",
+            hint: "From e5, which knight jump lands on a black piece?",
+          },
+        ],
       },
       {
         id: "bishop",
@@ -320,6 +330,16 @@ export const CHAPTERS: Chapter[] = [
           successMessage: "O-O! Your king is tucked away safely, and your rook joined the game.",
           hint: "The king and rook on the h-file (your right) can castle together.",
         },
+        additionalChallenges: [
+          {
+            instructions: "White to move. Castle queenside this time.",
+            fen: "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1",
+            kind: "move",
+            isGoalMove: (_chess, move) => move.san === "O-O-O",
+            successMessage: "O-O-O! Castling works the same way on either side of the board.",
+            hint: "The king and rook on the a-file (your left) can also castle together.",
+          },
+        ],
       },
       {
         id: "en-passant",
@@ -563,6 +583,16 @@ export const CHAPTERS: Chapter[] = [
           successMessage: "Nxc6! The pin meant that knight could never escape or be defended by moving.",
           hint: "The black knight can't move without exposing its own king - it's defenseless.",
         },
+        additionalChallenges: [
+          {
+            instructions: "White to move. The rook is pinned and undefended - win it.",
+            fen: "4k3/8/2r5/1B6/3N4/8/8/4K3 w - - 0 1",
+            kind: "move",
+            isGoalMove: (_chess, move) => move.from === "d4" && move.to === "c6",
+            successMessage: "Nxc6! Same pattern, different piece - the rook couldn't escape the pin either.",
+            hint: "The black rook can't move without exposing its own king - it's defenseless.",
+          },
+        ],
       },
       {
         id: "skewer",

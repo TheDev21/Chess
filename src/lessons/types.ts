@@ -42,6 +42,8 @@ export interface Lesson {
   watch: WatchStep[];
   tryIt: TryItStep;
   challenge: ChallengeStep;
+  /** Optional extra challenge positions, offered one at a time after `challenge` via "Try Another Position". */
+  additionalChallenges?: ChallengeStep[];
 }
 
 export interface Chapter {
