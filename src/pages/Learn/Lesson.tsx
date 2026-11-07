@@ -407,7 +407,9 @@ export function Lesson() {
                 {challengeState === "wrong" && (
                   <div className="rounded-lg border border-warning/30 bg-warning/5 p-3">
                     <p className="text-[13px] font-medium text-warning" role="status" aria-live="polite">
-                      Not quite. That move is legal, but it's not the one we're looking for.
+                      {currentChallenge.kind === "find"
+                        ? "Not quite. That's not the square we're looking for."
+                        : "Not quite. That move is legal, but it's not the one we're looking for."}
                     </p>
                     {showHint && (
                       <p className="mt-2 flex items-start gap-1.5 text-[12px] leading-relaxed text-muted">
