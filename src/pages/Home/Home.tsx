@@ -82,27 +82,34 @@ export function Home() {
             natural aspect ratio (never cropped, never stretched). Text and
             buttons sit on top of it as an absolutely positioned overlay;
             there is no separate box/panel behind them. */}
-        <img src={heroKingImg} alt="" aria-hidden="true" className="block h-auto w-full" />
+        <img
+          src={heroKingImg}
+          alt=""
+          aria-hidden="true"
+          className="block h-auto w-full short:h-[140px] short:object-cover short:object-[center_20%]"
+        />
         <div
           className="absolute inset-0"
           style={{ background: "linear-gradient(to right, rgba(35,55,46,0.6) 0%, rgba(35,55,46,0.2) 60%, rgba(35,55,46,0) 100%)" }}
         />
-        <div className="absolute inset-0 flex flex-col items-start justify-center p-6 sm:p-10">
-          <h1 className="text-[24px] font-semibold leading-tight tracking-tight text-ink sm:text-[44px]">Welcome to ChessGuru.</h1>
-          <p className="mt-2 text-[16px] font-medium text-ink sm:text-[18px]">One move at a time.</p>
-          <p className="mt-3 hidden max-w-md text-[14px] leading-relaxed text-muted sm:block sm:text-[15px]">
+        <div className="absolute inset-0 flex flex-col items-start justify-center p-6 short:px-4 short:py-2.5 sm:p-10">
+          <h1 className="text-[24px] font-semibold leading-tight tracking-tight text-ink short:text-[20px] short:leading-[1.1] sm:text-[44px]">
+            Welcome to ChessGuru.
+          </h1>
+          <p className="mt-2 text-[16px] font-medium text-ink short:mt-0.5 short:text-[12px] sm:text-[18px]">One move at a time.</p>
+          <p className="mt-3 hidden max-w-md text-[14px] leading-relaxed text-muted short:!hidden sm:block sm:text-[15px]">
             Learn the basics, practice slow and steady, become confident chess player.
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3 short:mt-1.5 short:gap-2">
             <Link
               to="/learn"
-              className="flex items-center gap-1.5 rounded-full bg-accent px-6 py-3 text-[14px] font-medium text-bg shadow-card transition-all duration-200 hover:brightness-110 hover:shadow-panel"
+              className="flex items-center gap-1.5 rounded-full bg-accent px-6 py-3 text-[14px] font-medium text-bg shadow-card transition-all duration-200 hover:brightness-110 hover:shadow-panel short:px-3.5 short:py-1.5 short:text-[13px]"
             >
               Start Learning <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/play"
-              className="rounded-full border border-border bg-bg px-6 py-3 text-[14px] font-medium text-ink shadow-card transition-all duration-200 hover:border-gold/60 hover:shadow-panel"
+              className="rounded-full border border-border bg-bg px-6 py-3 text-[14px] font-medium text-ink shadow-card transition-all duration-200 hover:border-gold/60 hover:shadow-panel short:px-3.5 short:py-1.5 short:text-[13px]"
             >
               Let's Play!
             </Link>
