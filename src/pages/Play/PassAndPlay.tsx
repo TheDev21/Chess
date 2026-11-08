@@ -65,9 +65,9 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
   };
 
   return (
-    <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row short:min-h-0 short:flex-row">
+    <div className="flex h-full flex-col gap-4 lg:min-h-0 lg:flex-row tabletLandscape:min-h-0 tabletLandscape:flex-row short:min-h-0 short:flex-row">
       <h1 className="sr-only">Pass and Play</h1>
-      <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0 short:min-h-0 short:gap-1">
+      <div className="flex flex-1 flex-col items-center gap-2 lg:min-h-0 tabletLandscape:min-h-0 short:min-h-0 short:gap-1">
         <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px] short:hidden">
           <span className="text-muted">
             {captured.white.map((p, i) => (
@@ -80,7 +80,7 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
           </button>
         </div>
 
-        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-[220px] short:max-h-[220px]">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-[220px] short:max-h-[220px] tabletLandscape:min-h-[220px] tabletLandscape:max-h-[calc(100vh-269px)]">
           <ChessBoard
             fen={displayFen}
             onMove={handleMove}
@@ -144,7 +144,7 @@ export function PassAndPlay({ settings }: { settings: AppSettings }) {
         </div>
       </div>
 
-      <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto lg:max-h-none lg:w-72 short:max-h-none short:w-72">
+      <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto lg:max-h-none lg:w-72 tabletLandscape:max-h-none tabletLandscape:w-72 short:max-h-none short:w-72">
         <div className="hidden shrink-0 short:sticky short:top-0 short:z-10 short:block short:bg-surface short:pb-2">
           <GameControls
             onResign={settings.confirmResignation ? () => confirm("Resign the game?") && g.resign() : g.resign}

@@ -221,9 +221,9 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
   const captured = capturedPieces(g.fen);
 
   return (
-    <div className="flex h-full flex-col gap-4 short:min-h-0 short:flex-row lg:min-h-0 lg:flex-row">
+    <div className="flex h-full flex-col gap-4 short:min-h-0 short:flex-row tabletLandscape:min-h-0 tabletLandscape:flex-row lg:min-h-0 lg:flex-row">
       <h1 className="sr-only">Playing vs. Stockfish ({DIFFICULTY_CONFIG[difficulty].label})</h1>
-      <div className="flex w-full shrink-0 flex-row gap-3 short:w-48 short:flex-col lg:w-48 lg:flex-col">
+      <div className="flex w-full shrink-0 flex-row gap-3 short:w-48 short:flex-col tabletLandscape:w-48 tabletLandscape:flex-col lg:w-48 lg:flex-col">
         <CapturedPiecesPanel
           label={topColor === "white" ? "White" : "Black"}
           pieces={topColor === "white" ? captured.capturedByBlack : captured.capturedByWhite}
@@ -236,13 +236,13 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
         />
       </div>
 
-      <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 lg:min-h-0">
+      <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 tabletLandscape:min-h-0 lg:min-h-0">
         <div className="flex w-full max-w-[560px] shrink-0 items-center justify-between text-[13px] short:hidden">
           <span className="text-ink">Stockfish ({DIFFICULTY_CONFIG[difficulty].label})</span>
           {seconds !== null && <span className="tabular-nums font-medium text-ink">{formatClock(clocks[topColor])}</span>}
         </div>
 
-        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-[220px] short:max-h-[220px]">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-[220px] short:max-h-[220px] tabletLandscape:min-h-[220px] tabletLandscape:max-h-[calc(100vh-296px)]">
           <ChessBoard
             fen={displayFen}
             onMove={handleMove}
@@ -299,7 +299,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
         </div>
       </div>
 
-      <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto short:max-h-none short:w-72 lg:max-h-none lg:w-72">
+      <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto short:max-h-none short:w-72 tabletLandscape:max-h-none tabletLandscape:w-72 lg:max-h-none lg:w-72">
         <div className="hidden shrink-0 short:sticky short:top-0 short:z-10 short:block short:bg-surface short:pb-2">
           <GameControls
             onResign={!gameOver ? (settings.confirmResignation ? () => confirm("Resign the game?") && g.resign() : g.resign) : undefined}

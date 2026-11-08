@@ -161,8 +161,8 @@ export function Analysis() {
       )}
 
       {coached && summary && (
-        <div className="flex h-full flex-col gap-4 short:min-h-0 short:flex-row lg:min-h-0 lg:flex-row">
-          <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 lg:min-h-0">
+        <div className="flex h-full flex-col gap-4 short:min-h-0 short:flex-row tabletLandscape:min-h-0 tabletLandscape:flex-row lg:min-h-0 lg:flex-row">
+          <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 tabletLandscape:min-h-0 lg:min-h-0">
             <div className="flex w-full min-h-[240px] max-w-[560px] flex-1 items-stretch gap-2 short:min-h-[220px] short:max-h-[220px]">
               <div className="h-full">
                 <EvaluationBar cp={current?.evalAfter.cp ?? null} mate={current?.evalAfter.mate ?? null} />
@@ -238,7 +238,7 @@ export function Analysis() {
             )}
           </div>
 
-          <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-4 overflow-y-auto short:max-h-none short:w-80 lg:max-h-none lg:w-80">
+          <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-4 overflow-y-auto short:max-h-none short:w-80 tabletLandscape:max-h-none tabletLandscape:w-80 lg:max-h-none lg:w-80">
             <div className="hidden shrink-0 flex-col gap-2 short:sticky short:top-0 short:z-10 short:flex short:bg-bg short:pb-2">
               <div className="flex items-center gap-1.5">
                 <button

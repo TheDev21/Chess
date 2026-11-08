@@ -252,8 +252,8 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
   const drawOfferedByOpponent = state.drawOfferedBy && state.drawOfferedBy !== "agreed" && state.drawOfferedBy !== seat;
 
   return (
-    <div className="flex h-full flex-col gap-4 short:min-h-0 short:flex-row lg:min-h-0 lg:flex-row">
-      <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-0 lg:min-h-0">
+    <div className="flex h-full flex-col gap-4 short:min-h-0 short:flex-row tabletLandscape:min-h-0 tabletLandscape:flex-row lg:min-h-0 lg:flex-row">
+      <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-0 tabletLandscape:min-h-0 lg:min-h-0">
         <div className="flex shrink-0 items-center gap-2 text-[13px] short:text-[12px]">
           <span className="text-muted">
             Code: <span className="font-medium text-ink">{roomId}</span>
@@ -292,7 +292,7 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
           </div>
         )}
 
-        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-[220px] short:max-h-[220px]">
+        <div className="max-h-full w-full min-h-[240px] max-w-[560px] flex-1 short:min-h-[220px] short:max-h-[220px] tabletLandscape:min-h-[220px] tabletLandscape:max-h-[calc(100vh-281px)]">
           <ChessBoard
             fen={state.fen}
             onMove={handleMove}
@@ -347,7 +347,7 @@ export function OnlineGame({ settings }: { settings: { showLegalMoves: boolean; 
         {actionError && <p className="shrink-0 text-[12px] text-blunder short:hidden">{actionError}</p>}
       </div>
 
-      <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto short:max-h-none short:w-72 lg:max-h-none lg:w-72">
+      <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto short:max-h-none short:w-72 tabletLandscape:max-h-none tabletLandscape:w-72 lg:max-h-none lg:w-72">
         <div className="hidden shrink-0 flex-col gap-2 short:sticky short:top-0 short:z-10 short:flex short:bg-bg short:pb-2">
           <div className="shrink-0 text-[13px] text-ink">
             {seat ? `You are playing ${seat}.` : "Spectating."} White {presence.white ? "connected" : "disconnected"} · Black{" "}

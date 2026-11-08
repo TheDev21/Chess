@@ -159,8 +159,8 @@ export function Puzzles() {
   ];
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 short:gap-0">
-      <div className="flex shrink-0 items-center justify-between short:hidden">
+    <div className="flex h-full min-h-0 flex-col gap-4 short:gap-0 tabletLandscape:gap-0">
+      <div className="flex shrink-0 items-center justify-between short:hidden tabletLandscape:hidden">
         <h1 className="flex items-center gap-2 text-[22px] font-semibold tracking-tight text-ink">
           <Trophy className="h-5 w-5 text-accent" strokeWidth={1.75} />
           Puzzles
@@ -173,16 +173,16 @@ export function Puzzles() {
         )}
       </div>
 
-      <div className="flex max-w-full shrink-0 gap-1 overflow-x-auto rounded-full border border-border bg-surface p-1 shadow-card short:p-0.5">
+      <div className="flex max-w-full shrink-0 gap-1 overflow-x-auto rounded-full border border-border bg-surface p-1 shadow-card short:p-0.5 tabletLandscape:p-0.5">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => selectTab(t.id)}
-            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors duration-200 sm:px-3.5 short:gap-1 short:px-2 short:py-0.5 short:text-[10px] ${
+            className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors duration-200 sm:px-3.5 short:gap-1 short:px-2 short:py-0.5 short:text-[10px] tabletLandscape:gap-1 tabletLandscape:px-2 tabletLandscape:py-0.5 tabletLandscape:text-[10px] ${
               tab === t.id ? "bg-accent text-bg" : "text-muted hover:text-ink"
             }`}
           >
-            <t.icon className="h-3.5 w-3.5 shrink-0 short:h-3 short:w-3" strokeWidth={1.75} />
+            <t.icon className="h-3.5 w-3.5 shrink-0 short:h-3 short:w-3 tabletLandscape:h-3 tabletLandscape:w-3" strokeWidth={1.75} />
             {t.label}
           </button>
         ))}
@@ -212,8 +212,8 @@ export function Puzzles() {
           )}
         </div>
       ) : current ? (
-        <div className="flex flex-1 flex-col gap-4 short:min-h-0 short:flex-row lg:min-h-0 lg:flex-row">
-          <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 lg:min-h-0">
+        <div className="flex flex-1 flex-col gap-4 short:min-h-0 short:flex-row tabletLandscape:min-h-0 tabletLandscape:flex-row lg:min-h-0 lg:flex-row">
+          <div className="flex flex-1 flex-col items-center gap-2 short:min-h-0 short:gap-1 tabletLandscape:min-h-0 lg:min-h-0">
             {tab !== "daily" && (
               <button
                 onClick={() => setBrowsing(true)}
@@ -222,7 +222,7 @@ export function Puzzles() {
                 <ChevronLeft className="h-4 w-4" /> Back to list
               </button>
             )}
-            <div className="max-h-full w-full min-h-[240px] max-w-[480px] flex-1 short:min-h-[220px] short:max-h-[220px]">
+            <div className="max-h-full w-full min-h-[240px] max-w-[480px] flex-1 short:min-h-[220px] short:max-h-[220px] tabletLandscape:min-h-[220px] tabletLandscape:max-h-[calc(100vh-341px)]">
               <ChessBoard fen={fen} onMove={handleMove} orientation="white" draggable={status === "playing"} lastMove={lastMove} />
             </div>
 
@@ -263,7 +263,7 @@ export function Puzzles() {
             </div>
           </div>
 
-          <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto short:max-h-none short:w-80 lg:max-h-none lg:w-80">
+          <div className="max-h-[42dvh] min-h-0 w-full overflow-y-auto short:max-h-none short:w-80 tabletLandscape:max-h-none tabletLandscape:w-80 lg:max-h-none lg:w-80">
             <div className="hidden shrink-0 flex-col gap-2 short:sticky short:top-0 short:z-10 short:flex short:bg-bg short:pb-2">
               <button
                 onClick={() => setShowHint((v) => !v)}
