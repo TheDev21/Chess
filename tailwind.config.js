@@ -6,7 +6,7 @@ export default {
     extend: {
       screens: {
         short: { raw: "(max-height: 500px) and (orientation: landscape)" },
-        tabletLandscape: { raw: "(min-width: 900px) and (min-height: 525px) and (max-height: 850px)" },
+        tabletLandscape: { raw: "(orientation: landscape) and (min-width: 900px) and (min-height: 525px) and (max-height: 850px)" },
       },
       fontFamily: {
         sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
