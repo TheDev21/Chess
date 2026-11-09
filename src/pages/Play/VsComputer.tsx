@@ -48,6 +48,8 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
   const opponent = useStockfish();
   const [coachEnabled, setCoachEnabled] = useState(settings.moveCoachEnabled);
   const [thinking, setThinking] = useState(false);
+  const [engineError, setEngineError] = useState(false);
+  const requestInFlightRef = useRef(false);
   const [flagFall, setFlagFall] = useState<PlayerColor | null>(null);
   const savedRef = useRef(false);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -79,18 +81,29 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
     setClocks({ white: seconds ?? 0, black: seconds ?? 0 });
     setFlagFall(null);
     savedRef.current = false;
+    setEngineError(false);
     viewer.goLive();
     setStarted(true);
     if (!isTutorialSeen(CHESSBOARD_TUTORIAL_ID)) setShowTutorial(true);
   };
 
   const playOpponentMove = async (fen: string) => {
-    if (opponent.status !== "ready") return;
+    if (requestInFlightRef.current) return;
+    if (opponent.status === "error") {
+      setEngineError(true);
+      return;
+    }
+    if (opponent.status !== "ready") return; // still loading - not a failure yet
+    requestInFlightRef.current = true;
     setThinking(true);
     try {
       const config = DIFFICULTY_CONFIG[difficulty];
       const evalResult = await opponent.evaluate(fen, config);
-      if (!evalResult) return;
+      if (!evalResult) {
+        setEngineError(true);
+        return;
+      }
+      setEngineError(false);
       const from = evalResult.bestMoveUci.slice(0, 2);
       const to = evalResult.bestMoveUci.slice(2, 4);
       const promotion = evalResult.bestMoveUci.length > 4 ? evalResult.bestMoveUci.slice(4, 5) : undefined;
@@ -101,18 +114,37 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
       }
     } finally {
       setThinking(false);
+      requestInFlightRef.current = false;
     }
   };
 
-  // Trigger the opponent's move whenever it becomes their turn.
+  // Trigger the opponent's move whenever it becomes their turn. opponent.status
+  // is included so a status change from retryOpponentMove's recovery path
+  // (loading -> ready/error) re-evaluates - playOpponentMove's own internal
+  // status check decides what to do, so no move-selection logic changes here.
   useEffect(() => {
     if (!started || gameOver) return;
     const turn = colorToMove(g.game);
-    if (turn !== playerColor && !thinking) {
+    if (turn !== playerColor && !thinking && !engineError) {
       void playOpponentMove(g.fen);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [started, g.fen, playerColor, gameOver]);
+  }, [started, g.fen, playerColor, gameOver, opponent.status]);
+
+  // Manual recovery only - never retried automatically. In the error-status
+  // branch this does NOT call playOpponentMove itself; it only triggers
+  // retryInit() and lets the turn-trigger effect above (which reacts to
+  // opponent.status) make the single follow-up call once the engine is
+  // ready again, so Retry can never start two opponent moves.
+  const retryOpponentMove = () => {
+    if (requestInFlightRef.current) return;
+    setEngineError(false);
+    if (opponent.status === "error") {
+      opponent.retryInit();
+    } else {
+      void playOpponentMove(g.fen);
+    }
+  };
 
   useEffect(() => {
     if (gameOver && started && !savedRef.current) {
@@ -259,7 +291,19 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
             Stockfish{seconds !== null ? ` · ${formatClock(clocks[topColor])}` : ""}
           </span>
           <span className="shrink-0 font-medium text-ink">
-            {gameOver ? "Game over" : thinking ? "Thinking…" : colorToMove(g.game) === playerColor ? "Your move" : "Waiting…"}
+            {engineError ? (
+              <button onClick={retryOpponentMove} className="text-mistake underline underline-offset-2 hover:no-underline">
+                Engine error · Retry
+              </button>
+            ) : gameOver ? (
+              "Game over"
+            ) : thinking ? (
+              "Thinking…"
+            ) : colorToMove(g.game) === playerColor ? (
+              "Your move"
+            ) : (
+              "Waiting…"
+            )}
           </span>
           <span className="truncate text-ink">
             You{seconds !== null ? ` · ${formatClock(clocks[orientation])}` : ""}
@@ -281,7 +325,22 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
         </div>
 
         <div className="shrink-0 text-[13px] font-medium text-ink short:hidden">
-          {gameOver ? "Game over" : thinking ? "Stockfish is thinking…" : colorToMove(g.game) === playerColor ? "Your move" : "Waiting…"}
+          {engineError ? (
+            <span className="flex items-center gap-2 text-mistake">
+              Stockfish couldn't make a move.
+              <button onClick={retryOpponentMove} className="underline underline-offset-2 hover:no-underline">
+                Retry
+              </button>
+            </span>
+          ) : gameOver ? (
+            "Game over"
+          ) : thinking ? (
+            "Stockfish is thinking…"
+          ) : colorToMove(g.game) === playerColor ? (
+            "Your move"
+          ) : (
+            "Waiting…"
+          )}
         </div>
 
         {gameOver && resultInfo && (
