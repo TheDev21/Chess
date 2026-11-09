@@ -65,7 +65,7 @@ export function useChessGame() {
     setDrawAgreed(false);
   }, []);
 
-  const resign = useCallback(() => setResignedBy(turn), [turn]);
+  const resign = useCallback((color: PlayerColor = turn) => setResignedBy(color), [turn]);
   const offerDraw = useCallback(() => setDrawAgreed(true), []);
 
   const pgn = useCallback(() => gameRef.current.pgn(), []);

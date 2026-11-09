@@ -292,7 +292,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
 
         <div className="shrink-0 short:hidden">
           <GameControls
-            onResign={!gameOver ? (settings.confirmResignation ? () => confirm("Resign the game?") && g.resign() : g.resign) : undefined}
+            onResign={!gameOver ? (settings.confirmResignation ? () => confirm("Resign the game?") && g.resign(playerColor) : () => g.resign(playerColor)) : undefined}
             onNewGame={() => setStarted(false)}
             gameOver={gameOver}
           />
@@ -302,7 +302,7 @@ export function VsComputer({ settings }: { settings: AppSettings }) {
       <div className="flex max-h-[42dvh] min-h-0 w-full flex-col gap-3 overflow-y-auto short:max-h-none short:w-72 tabletLandscape:max-h-none tabletLandscape:w-72 lg:max-h-none lg:w-72">
         <div className="hidden shrink-0 short:sticky short:top-0 short:z-10 short:block short:bg-surface short:pb-2">
           <GameControls
-            onResign={!gameOver ? (settings.confirmResignation ? () => confirm("Resign the game?") && g.resign() : g.resign) : undefined}
+            onResign={!gameOver ? (settings.confirmResignation ? () => confirm("Resign the game?") && g.resign(playerColor) : () => g.resign(playerColor)) : undefined}
             onNewGame={() => setStarted(false)}
             gameOver={gameOver}
           />
